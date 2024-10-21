@@ -15,16 +15,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v4
+      - uses: astral-sh/setup-uv@v3
         with:
-          cache: true
+          enable-cache: true
+          version: "0.4.x"
       - name: Install dependencies
         run: |
-          pdm install
-          pdm run python -m ensurepip
-          pdm run python -m pip install coverage pytest-github-actions-annotate-failures
-      - run: pdm run robotpy coverage test
-      - run: pdm run coverage xml
+          uv sync
+          uv pip install coverage pytest-github-actions-annotate-failures
+      - run: uv run robotpy coverage test
+      - run: uv run coverage xml
       - uses: codecov/codecov-action@v4
         with:
           use_oidc: true
@@ -34,14 +34,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pdm-project/setup-pdm@v4
+      - uses: astral-sh/setup-uv@v3
         with:
-          cache: true
+          enable-cache: true
+          version: "0.4.x"
       - name: Install dependencies
         run: |
-          pdm install
+          uv sync
       - name: mypy
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: mypy
-          run: pdm run mypy --show-column-numbers .
+          run: uv run mypy --show-column-numbers .
