@@ -62,6 +62,14 @@ download = "robotpy sync --no-install"
 sim = "robotpy sim"
 test = "robotpy test --"
 
+[tool.uv]
+dev-dependencies = [
+    "hypothesis>=6.112.1",
+    "mypy>=1.8.0",
+    "pytest>=7.2.0",
+    "pytest-integration>=0.2.3",
+]
+
 [tool.pdm.dev-dependencies]
 dev = [
     "hypothesis",
