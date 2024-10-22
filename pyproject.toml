@@ -55,6 +55,7 @@ ignore = ["E501"]
 
 
 [tool.pdm]
+distribution = false
 [project]
 name = "pyreefscape"
 version = "0.0.0"
