@@ -311,6 +311,7 @@ class ChassisComponent:
         )
 
     def setup(self) -> None:
+        # TODO update with new game info
         initial_pose = TeamPoses.RED_TEST_POSE if is_red() else TeamPoses.BLUE_TEST_POSE
 
         self.estimator = SwerveDrive4PoseEstimator(
@@ -418,6 +419,7 @@ class ChassisComponent:
         # If so, it means we have an update from the FMS and need to re-init the odom
         if is_red() != self.on_red_alliance:
             self.on_red_alliance = is_red()
+            # TODO update with new game info
             if self.on_red_alliance:
                 self.set_pose(TeamPoses.RED_TEST_POSE)
             else:
@@ -450,6 +452,7 @@ class ChassisComponent:
 
     def reset_odometry(self) -> None:
         """Reset odometry to current team's podium"""
+        # TODO update with new game info
         if is_red():
             self.set_pose(TeamPoses.RED_PODIUM)
         else:
