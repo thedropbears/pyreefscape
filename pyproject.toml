@@ -53,9 +53,25 @@ select = [
 ]
 ignore = ["E501"]
 
-
 [tool.pdm]
-distribution = false
+package-type = "application"
+
+[tool.pdm.scripts]
+deploy = "robotpy deploy"
+download = "robotpy sync --no-install"
+sim = "robotpy sim"
+test = "robotpy test --"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "hypothesis",
+    "pytest>=7.2.0",
+    "pytest-integration>=0.2.3",
+]
+typing = [
+    "mypy>=1.8.0",
+]
+
 [project]
 name = "pyreefscape"
 version = "0.0.0"
@@ -71,11 +87,11 @@ dependencies = [
     "numpy~=1.25",
     "phoenix6~=24.2.0",
     # robotpy[apriltag] pins numpy to a version that doesn't build cleanly on Python 3.12.
-    "robotpy==2024.3.2.1",
+    "robotpy==2024.3.2.2",
     "robotpy-apriltag~=2024.3.2",
     "robotpy-navx==2024.1.1",
     "robotpy-rev~=2024.2.4",
-    "robotpy-wpilib-utilities==2024.0.0",
+    "robotpy-wpilib-utilities==2024.1.0",
     "photonlibpy==2024.3.1",
 ]
 
@@ -85,8 +101,8 @@ requires = [
     "phoenix6~=24.2.0",
     "robotpy-navx==2024.1.1",
     "robotpy-rev~=2024.2.4",
-    "robotpy-wpilib-utilities==2024.0.0",
+    "robotpy-wpilib-utilities==2024.1.0",
     "photonlibpy==2024.3.1",
 ]
-robotpy_version = "2024.3.2.1"
+robotpy_version = "2024.3.2.2"
 robotpy_extras = ["apriltag"]
