@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  merge_group:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pdm-project/setup-pdm@v4
+        with:
+          cache: true
+      - name: Install dependencies
+        run: |
+          pdm install
+          pdm run python -m ensurepip
+          pdm run python -m pip install coverage pytest-github-actions-annotate-failures
+      - run: pdm run robotpy coverage test
+      - run: pdm run coverage xml
+      - uses: codecov/codecov-action@v4
+        with:
+          use_oidc: true
+
+  mypy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pdm-project/setup-pdm@v4
+        with:
+          cache: true
+      - name: Install dependencies
+        run: |
+          pdm install
+      - name: mypy
+        uses: liskin/gh-problem-matcher-wrap@v3
+        with:
+          linters: mypy
+          run: pdm run mypy --show-column-numbers .

@@ -12,8 +12,6 @@ from components.vision import VisualLocalizer
 
 from utilities.game import is_red
 from utilities.scalers import rescale_js
-from utilities.functions import clamp
-from utilities.position import distance_between
 
 
 class MyRobot(magicbot.MagicRobot):
