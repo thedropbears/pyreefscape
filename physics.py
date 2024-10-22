@@ -13,7 +13,6 @@ from wpimath.system.plant import DCMotor
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
-from components.shooter import ShooterComponent
 
 if typing.TYPE_CHECKING:
     from robot import MyRobot
@@ -93,14 +92,6 @@ class PhysicsEngine:
             for module in robot.chassis.modules
         ]
 
-        # TODO(davo): update CAD to include hex shaft and remeasure
-        single_roller_moi = 0.00041  # measured from CAD
-        self.flywheel = Falcon500MotorSim(
-            robot.shooter_component.flywheel_left,
-            gearing=ShooterComponent.FLYWHEEL_GEAR_RATIO,
-            moi=2 * single_roller_moi,
-        )
-
         self.imu = SimDeviceSim("navX-Sensor", 4)
         self.imu_yaw = self.imu.getDouble("Yaw")
 
@@ -114,8 +105,6 @@ class PhysicsEngine:
             wheel.update(tm_diff)
         for steer in self.steer:
             steer.update(tm_diff)
-
-        self.flywheel.update(tm_diff)
 
         speeds = self.kinematics.toChassisSpeeds(
             (
