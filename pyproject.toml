@@ -54,7 +54,7 @@ select = [
 ignore = ["E501"]
 
 [tool.pdm]
-package-type = "application"
+distribution = false
 
 [tool.pdm.scripts]
 deploy = "robotpy deploy"
