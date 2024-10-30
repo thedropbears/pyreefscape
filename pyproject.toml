@@ -70,16 +70,6 @@ dev-dependencies = [
     "pytest-integration>=0.2.3",
 ]
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "hypothesis",
-    "pytest>=7.2.0",
-    "pytest-integration>=0.2.3",
-]
-typing = [
-    "mypy>=1.8.0",
-]
-
 [project]
 name = "pyreefscape"
 version = "0.0.0"
