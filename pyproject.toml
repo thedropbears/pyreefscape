@@ -53,15 +53,6 @@ select = [
 ]
 ignore = ["E501"]
 
-[tool.pdm]
-package-type = "application"
-
-[tool.pdm.scripts]
-deploy = "robotpy deploy"
-download = "robotpy sync --no-install"
-sim = "robotpy sim"
-test = "robotpy test --"
-
 [tool.uv]
 dev-dependencies = [
     "hypothesis>=6.112.1",
