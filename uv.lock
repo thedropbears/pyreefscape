@@ -591,7 +591,7 @@ wheels = [
 
 [[package]]
 name = "robotpy-installer"
-version = "2024.2.2"
+version = "2024.2.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
@@ -601,9 +601,9 @@ dependencies = [
     { name = "tomli" },
     { name = "tomlkit" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6e/be/3c341f62f7af8cb2b4da5b926a3845b486ef8d394d3367c4a76f758ff677/robotpy-installer-2024.2.2.tar.gz", hash = "sha256:12e243acd6b956f80f7985e40ea8b331819ff4d6324a7c541b7045ac32678087", size = 32529 }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/89/4a8a5f53b5e709a4fb1aedbd6e023b5a690c4e5c7a218a5fa8c67d74c8bd/robotpy_installer-2024.2.3.tar.gz", hash = "sha256:7de8c6abafe4fa0d3e2296226eb745eadc350504d859f33f9dcfd6a1c870b62d", size = 32605 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d0/fb/bb9e232dc3e76366f1a1b547a89b999fbf967850c58bb4f15fd08f74dd51/robotpy_installer-2024.2.2-py3-none-any.whl", hash = "sha256:510cc4c7cc11b0fd248604d7dd7eb366b9018b53b9cb36c06306e762c92bfea7", size = 39716 },
+    { url = "https://files.pythonhosted.org/packages/52/e6/4f68514763ac07bb72044e403feed22df14fd065d8fe1f0890909c21776c/robotpy_installer-2024.2.3-py3-none-any.whl", hash = "sha256:9780e38a744779ae41a4ae7ecf79e65b10bb88b38c7b07d214555d3e95991b73", size = 39768 },
 ]
 
 [[package]]
