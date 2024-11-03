@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import math
 import wpilib
 import wpilib.event
@@ -126,6 +125,3 @@ class MyRobot(magicbot.MagicRobot):
 
         self.vision_port.execute()
         self.vision_starboard.execute()
-
-        if __name__ == "__main__":
-            wpilib.run(MyRobot)
