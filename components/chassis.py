@@ -32,7 +32,7 @@ from utilities.functions import rate_limit_module
 from utilities.game import is_red
 from utilities.ctre import FALCON_FREE_RPS
 from utilities.position import TeamPoses
-from ids import CancoderIds, TalonIds
+from ids import CancoderId, TalonId
 
 
 class SwerveModule:
@@ -240,33 +240,33 @@ class ChassisComponent:
             SwerveModule(
                 self.WHEEL_BASE / 2,
                 self.TRACK_WIDTH / 2,
-                TalonIds.drive_1,
-                TalonIds.steer_1,
-                CancoderIds.swerve_1,
+                TalonId.drive_1,
+                TalonId.steer_1,
+                CancoderId.swerve_1,
             ),
             # Back Left
             SwerveModule(
                 -self.WHEEL_BASE / 2,
                 self.TRACK_WIDTH / 2,
-                TalonIds.drive_2,
-                TalonIds.steer_2,
-                CancoderIds.swerve_2,
+                TalonId.drive_2,
+                TalonId.steer_2,
+                CancoderId.swerve_2,
             ),
             # Back Right
             SwerveModule(
                 -self.WHEEL_BASE / 2,
                 -self.TRACK_WIDTH / 2,
-                TalonIds.drive_3,
-                TalonIds.steer_3,
-                CancoderIds.swerve_3,
+                TalonId.drive_3,
+                TalonId.steer_3,
+                CancoderId.swerve_3,
             ),
             # Front Right
             SwerveModule(
                 self.WHEEL_BASE / 2,
                 -self.TRACK_WIDTH / 2,
-                TalonIds.drive_4,
-                TalonIds.steer_4,
-                CancoderIds.swerve_4,
+                TalonId.drive_4,
+                TalonId.steer_4,
+                CancoderId.swerve_4,
             ),
         )
 

@@ -2,7 +2,9 @@ import enum
 
 
 @enum.unique
-class TalonIds(enum.IntEnum):
+class TalonId(enum.IntEnum):
+    """CAN ID for CTRE Talon motor controllers (e.g. Talon FX, Talon SRX)."""
+
     drive_1 = 1
     steer_1 = 5
 
@@ -17,7 +19,9 @@ class TalonIds(enum.IntEnum):
 
 
 @enum.unique
-class CancoderIds(enum.IntEnum):
+class CancoderId(enum.IntEnum):
+    """CAN ID for CTRE CANcoder."""
+
     swerve_1 = 1
     swerve_2 = 2
     swerve_3 = 3
@@ -25,15 +29,15 @@ class CancoderIds(enum.IntEnum):
 
 
 @enum.unique
-class SparkMaxIds(enum.IntEnum):
-    pass
+class SparkId(enum.IntEnum):
+    """CAN ID for REV SPARK motor controllers (Spark Max, Spark Flex)."""
 
 
 @enum.unique
-class DioChannels(enum.IntEnum):
-    pass
+class DioChannel(enum.IntEnum):
+    """roboRIO Digital I/O channel number."""
 
 
 @enum.unique
-class PwmChannels(enum.IntEnum):
-    pass
+class PwmChannel(enum.IntEnum):
+    """roboRIO PWM output channel number."""
