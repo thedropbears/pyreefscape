@@ -12,7 +12,10 @@ from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
+from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
+
 from components.chassis import SwerveModule
+from utilities import game
 
 if typing.TYPE_CHECKING:
     from robot import MyRobot
@@ -97,6 +100,11 @@ class PhysicsEngine:
         self.imu = SimDeviceSim("navX-Sensor", 4)
         self.imu_yaw = self.imu.getDouble("Yaw")
 
+        self.vision = VisionSystemSim("main")
+        self.vision.addAprilTags(game.apriltag_layout)
+        properties = SimCameraProperties()
+        self.camera = PhotonCameraSim(robot.vision_port.camera, properties)
+
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
         # TODO: delete when phoenix6 integrates with wpilib
@@ -120,3 +128,5 @@ class PhysicsEngine:
         self.imu_yaw.set(self.imu_yaw.get() - math.degrees(speeds.omega * tm_diff))
 
         self.physics_controller.drive(speeds, tm_diff)
+
+        self.vision.update(self.physics_controller.get_pose())
