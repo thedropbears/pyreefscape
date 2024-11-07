@@ -102,8 +102,9 @@ class PhysicsEngine:
 
         self.vision = VisionSystemSim("main")
         self.vision.addAprilTags(game.apriltag_layout)
-        properties = SimCameraProperties()
+        properties = SimCameraProperties.PI4_LIFECAM_320_240()
         self.camera = PhotonCameraSim(robot.vision_port.camera, properties)
+        self.vision.addCamera(self.camera, robot.vision_port.robot_to_camera)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
