@@ -70,24 +70,20 @@ class VisualLocalizer:
         return self.current_reproj
 
     def execute(self) -> None:
-        # stop warnings in simulation
-        if wpilib.RobotBase.isSimulation():
-            return
-
         results = self.camera.getLatestResult()
         # if results didn't see any targets
         if not results.getTargets():
             return
 
         # if we have already processed these results
-        timestamp = results.getTimestamp()
+        timestamp = results.getTimestampSeconds()
 
         if timestamp == self.last_timestamp:
             return
         self.last_recieved_timestep = time.monotonic()
         self.last_timestamp = timestamp
 
-        if results.multiTagResult.estimatedPose.isPresent:
+        if results.multiTagResult:
             p = results.multiTagResult.estimatedPose
             pose = (Pose3d() + p.best + self.camera_to_robot).toPose2d()
             reprojectionErr = p.bestReprojError
@@ -153,6 +149,7 @@ class VisualLocalizer:
                         )
                     )
 
+    @feedback
     def sees_target(self):
         return time.monotonic() - self.last_recieved_timestep < self.TIMEOUT
 
