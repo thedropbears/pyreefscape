@@ -33,7 +33,7 @@ class VisualLocalizer:
     last_pose_z = tunable(0.0, writeDefault=False)
     linear_vision_uncertainty = tunable(0.3)
     rotation_vision_uncertainty = tunable(0.08)
-    reproj_error_threshold = 1
+    reproj_error_threshold = 0.1
 
     def __init__(
         self,
@@ -53,13 +53,11 @@ class VisualLocalizer:
         self.last_timestamp = -1
         self.last_recieved_timestep = -1.0
 
-        self.single_best_log = field.getObject(name + "single_best_log")
-        self.single_alt_log = field.getObject(name + "single_alt_log")
-        self.multi_best_log = field.getObject(name + "multi_best_log")
-        self.multi_alt_log = field.getObject(name + "multi_alt_log")
-        self.field_pos_obj = field.getObject(name + "vision_pose")
+        self.best_log = field.getObject(name + "_best_log")
+        self.alt_log = field.getObject(name + "_alt_log")
+        self.field_pos_obj = field.getObject(name + "_vision_pose")
         self.pose_log_entry = wpiutil.log.FloatArrayLogEntry(
-            data_log, name + "vision_pose"
+            data_log, name + "_vision_pose"
         )
 
         self.chassis = chassis
@@ -106,10 +104,10 @@ class VisualLocalizer:
                 )
 
             if self.should_log:
-                self.multi_best_log.setPose(
+                self.best_log.setPose(
                     Pose2d(p.best.x, p.best.y, p.best.rotation().toRotation2d())
                 )
-                self.multi_alt_log.setPose(
+                self.alt_log.setPose(
                     Pose2d(p.alt.x, p.alt.y, p.alt.rotation().toRotation2d())
                 )
         else:
@@ -134,20 +132,8 @@ class VisualLocalizer:
                 self.chassis.estimator.addVisionMeasurement(pose, timestamp)
 
                 if self.should_log:
-                    self.single_best_log.setPose(
-                        Pose2d(
-                            target.bestCameraToTarget.x,
-                            target.bestCameraToTarget.y,
-                            target.bestCameraToTarget.rotation().toRotation2d(),
-                        )
-                    )
-                    self.single_alt_log.setPose(
-                        Pose2d(
-                            target.altCameraToTarget.x,
-                            target.altCameraToTarget.y,
-                            target.altCameraToTarget.rotation().toRotation2d(),
-                        )
-                    )
+                    self.best_log.setPose(best)
+                    self.alt_log.setPose(alt)
 
     @feedback
     def sees_target(self):
