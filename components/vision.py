@@ -61,10 +61,15 @@ class VisualLocalizer:
 
         self.chassis = chassis
         self.current_reproj = 0.0
+        self.has_multitag = False
 
     @feedback
     def reproj(self) -> float:
         return self.current_reproj
+
+    @feedback
+    def multitag(self) -> bool:
+        return self.has_multitag
 
     def execute(self) -> None:
         results = self.camera.getLatestResult()
@@ -81,6 +86,7 @@ class VisualLocalizer:
         self.last_timestamp = timestamp
 
         if results.multiTagResult:
+            self.has_multitag = True
             p = results.multiTagResult.estimatedPose
             pose = (Pose3d() + p.best + self.camera_to_robot).toPose2d()
             reprojectionErr = p.bestReprojError
@@ -110,6 +116,7 @@ class VisualLocalizer:
                     Pose2d(p.alt.x, p.alt.y, p.alt.rotation().toRotation2d())
                 )
         else:
+            self.has_multitag = False
             for target in results.getTargets():
                 # filter out likely bad targets
                 if target.getPoseAmbiguity() > 0.25:
