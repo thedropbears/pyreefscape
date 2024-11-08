@@ -52,7 +52,6 @@ class VisualLocalizer:
         self.camera_to_robot = self.robot_to_camera.inverse()
         self.last_timestamp = -1
         self.last_recieved_timestep = -1.0
-
         self.best_log = field.getObject(name + "_best_log")
         self.alt_log = field.getObject(name + "_alt_log")
         self.field_pos_obj = field.getObject(name + "_vision_pose")
@@ -129,7 +128,15 @@ class VisualLocalizer:
                 )
 
                 self.field_pos_obj.setPose(pose)
-                self.chassis.estimator.addVisionMeasurement(pose, timestamp)
+                self.chassis.estimator.addVisionMeasurement(
+                    pose,
+                    timestamp,
+                    (
+                        self.linear_vision_uncertainty,
+                        self.linear_vision_uncertainty,
+                        self.rotation_vision_uncertainty,
+                    ),
+                )
 
                 if self.should_log:
                     self.best_log.setPose(best)
