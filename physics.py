@@ -102,15 +102,10 @@ class PhysicsEngine:
 
         self.vision = VisionSystemSim("main")
         self.vision.addAprilTags(game.apriltag_layout)
-        properties = SimCameraProperties.PI4_LIFECAM_320_240()
-        self.port_camera = PhotonCameraSim(robot.vision_port.camera, properties)
-        self.vision.addCamera(self.port_camera, robot.vision_port.robot_to_camera)
-        self.starboard_camera = PhotonCameraSim(
-            robot.vision_starboard.camera, properties
-        )
-        self.vision.addCamera(
-            self.starboard_camera, robot.vision_starboard.robot_to_camera
-        )
+        properties = SimCameraProperties.LL2_1280_720()
+        self.camera = PhotonCameraSim(robot.vision.camera, properties)
+        self.camera.setMaxSightRange(5.0)
+        self.vision.addCamera(self.camera, robot.vision.robot_to_camera)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices

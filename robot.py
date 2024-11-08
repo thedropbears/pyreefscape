@@ -24,8 +24,7 @@ class MyRobot(magicbot.MagicRobot):
     max_spin_rate = magicbot.tunable(4)  # m/s
     lower_max_spin_rate = magicbot.tunable(2)  # m/s
     inclination_angle = tunable(0.0)
-    vision_port: VisualLocalizer
-    vision_starboard: VisualLocalizer
+    vision: VisualLocalizer
 
     START_POS_TOLERANCE = 1
 
@@ -40,17 +39,9 @@ class MyRobot(magicbot.MagicRobot):
         # side: (28*3)*2 + front: (30*3) - 2 (R.I.P)
         self.status_lights_strip_length = (28 * 3) * 2 + (30 * 3) - 2
 
-        self.vision_port_name = "ardu_cam_port"
-        self.vision_port_pos = Translation3d(0.005, 0.221, 0.503)
-        self.vision_port_rot = Rotation3d(
-            0, -math.radians(20), math.radians(180) - math.radians(90 - 71.252763)
-        )
-
-        self.vision_starboard_name = "ardu_cam_starboard"
-        self.vision_starboard_pos = Translation3d(0.005, 0.161, 0.503)
-        self.vision_starboard_rot = Rotation3d(
-            0, -math.radians(20), math.radians(180) + math.radians(90 - 71.252763)
-        )
+        self.vision_name = "ardu_cam"
+        self.vision_pos = Translation3d(0.25, 0.0, 0.20)
+        self.vision_rot = Rotation3d(0, -math.radians(20), 0)
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
@@ -116,12 +107,10 @@ class MyRobot(magicbot.MagicRobot):
 
         self.chassis.update_odometry()
 
-        self.vision_port.execute()
-        self.vision_starboard.execute()
+        self.vision.execute()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
-        self.vision_port.execute()
-        self.vision_starboard.execute()
+        self.vision.execute()
