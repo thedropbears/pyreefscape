@@ -102,7 +102,7 @@ class PhysicsEngine:
 
         self.vision = VisionSystemSim("main")
         self.vision.addAprilTags(game.apriltag_layout)
-        properties = SimCameraProperties.LL2_1280_720()
+        properties = SimCameraProperties.OV9281_1280_720()
         self.camera = PhotonCameraSim(robot.vision.camera, properties)
         self.camera.setMaxSightRange(5.0)
         self.vision.addCamera(self.camera, robot.vision.robot_to_camera)
