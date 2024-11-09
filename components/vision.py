@@ -85,11 +85,11 @@ class VisualLocalizer:
         self.last_recieved_timestep = time.monotonic()
         self.last_timestamp = timestamp
 
-        if results.multiTagResult:
+        if results.multitagResult:
             self.has_multitag = True
-            p = results.multiTagResult.estimatedPose
+            p = results.multitagResult.estimatedPose
             pose = (Pose3d() + p.best + self.camera_to_robot).toPose2d()
-            reprojectionErr = p.bestReprojError
+            reprojectionErr = p.bestReprojErr
             self.current_reproj = reprojectionErr
 
             self.field_pos_obj.setPose(pose)
