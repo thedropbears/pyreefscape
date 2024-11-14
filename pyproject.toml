@@ -73,25 +73,25 @@ license = {text = "MIT"}
 requires-python = ">=3.10,<3.13"
 
 dependencies = [
-    "numpy~=1.25",
-    "phoenix6~=24.2.0",
+    "numpy~=2.1.3",
+    "phoenix6~=24.3.0",
     # robotpy[apriltag] pins numpy to a version that doesn't build cleanly on Python 3.12.
-    "robotpy==2024.3.2.2",
-    "robotpy-apriltag~=2024.3.2",
-    "robotpy-navx==2024.1.1",
-    "robotpy-rev~=2024.2.4",
-    "robotpy-wpilib-utilities==2024.1.0",
-    "photonlibpy==2024.3.1",
+    "robotpy==2025.0.0b1",
+    "robotpy-apriltag~=2025.0.0b1",
+    "robotpy-navx==2025.0.0b1",
+    "robotpy-rev~=2025.0.0b1",
+    "robotpy-wpilib-utilities==2025.0.0b1",
+    "photonlibpy==2025.0.0b2",
 ]
 
 [tool.robotpy]
 requires = [
-    "numpy~=1.25",
-    "phoenix6~=24.2.0",
-    "robotpy-navx==2024.1.1",
-    "robotpy-rev~=2024.2.4",
-    "robotpy-wpilib-utilities==2024.1.0",
-    "photonlibpy==2024.3.1",
+    "numpy~=2.1.3",
+    "phoenix6~=24.3.0",
+    "robotpy-navx==2025.0.0b1",
+    "robotpy-rev~=2025.0.0b1",
+    "robotpy-wpilib-utilities==2025.0.0b1",
+    "photonlibpy==2025.0.0-beta-2",
 ]
-robotpy_version = "2024.3.2.2"
+robotpy_version = "2025.0.0b1"
 robotpy_extras = ["apriltag"]
