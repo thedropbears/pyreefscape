@@ -65,33 +65,31 @@ dev-dependencies = [
 name = "pyreefscape"
 version = "0.0.0"
 description = "The Drop Bears' FRC 2025 robot code"
-authors = [
-    {name = "The Drop Bears", email = "enquiries@thedropbears.org.au"},
-]
+authors = [{ name = "The Drop Bears", email = "enquiries@thedropbears.org.au" }]
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 requires-python = ">=3.10,<3.13"
 
 dependencies = [
-    "numpy~=2.1.3",
-    "phoenix6~=24.3.0",
-    # robotpy[apriltag] pins numpy to a version that doesn't build cleanly on Python 3.12.
-    "robotpy==2025.0.0b1",
-    "robotpy-apriltag~=2025.0.0b1",
-    "robotpy-navx==2025.0.0b1",
-    "robotpy-rev~=2025.0.0b1",
-    "robotpy-wpilib-utilities==2025.0.0b1",
-    "photonlibpy==2025.0.0b3",
+    # "numpy~=2.1.3",
+    # "phoenix6~=24.3.0",
+    # # robotpy[apriltag] pins numpy to a version that doesn't build cleanly on Python 3.12.
+    # "robotpy==2025.0.0b1",
+    # "robotpy-apriltag~=2025.0.0b1",
+    # "robotpy-navx==2025.0.0b1",
+    # "robotpy-rev~=2025.0.0b1",
+    # "robotpy-wpilib-utilities==2025.0.0b1",
+    "photonlibpy @ file:///home/lucien/git/photonvision/photon-lib/py",
 ]
 
 [tool.robotpy]
 requires = [
-    "numpy~=2.1.3",
-    "phoenix6~=24.3.0",
-    "robotpy-navx==2025.0.0b1",
-    "robotpy-rev~=2025.0.0b1",
-    "robotpy-wpilib-utilities==2025.0.0b1",
+    # "numpy~=2.1.3",
+    # "phoenix6~=24.3.0",
+    # "robotpy-navx==2025.0.0b1",
+    # "robotpy-rev~=2025.0.0b1",
+    # "robotpy-wpilib-utilities==2025.0.0b1",
     "photonlibpy==2025.0.0b3",
 ]
 robotpy_version = "2025.0.0b1"
-robotpy_extras = ["apriltag"]
+# robotpy_extras = ["apriltag"]
