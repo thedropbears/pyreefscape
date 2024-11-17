@@ -9,7 +9,7 @@ import wpilib
 from pyfrc.physics.core import PhysicsInterface
 from wpilib.simulation import DCMotorSim, SimDeviceSim
 from wpimath.kinematics import SwerveDrive4Kinematics
-from wpimath.system.plant import DCMotor
+from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
@@ -48,7 +48,15 @@ class Falcon500MotorSim:
         self.sim_states = [motor.sim_state for motor in motors]
         for sim_state in self.sim_states:
             sim_state.set_supply_voltage(12.0)
-        self.motor_sim = DCMotorSim(DCMotor.falcon500(len(motors)), gearing, moi)
+        motor = DCMotor.falcon500(len(motors))
+        self.motor_sim = DCMotorSim(
+            LinearSystemId.DCMotorSystem(
+                motor,
+                moi,
+                gearing,
+            ),
+            motor,
+        )
 
     def update(self, dt: float) -> None:
         voltage = self.sim_states[0].motor_voltage

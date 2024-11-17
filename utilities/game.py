@@ -12,7 +12,7 @@ from wpimath.geometry import (
 )
 
 # TODO leaving as placeholder to keep utils
-apriltag_layout = robotpy_apriltag.loadAprilTagLayoutField(
+apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
     robotpy_apriltag.AprilTagField.k2024Crescendo
 )
 

@@ -161,7 +161,7 @@ class SwerveModule:
         else:
             self.state = desired_state
         current_angle = self.get_rotation()
-        self.state = SwerveModuleState.optimize(self.state, current_angle)
+        self.state.optimize(current_angle)
 
         if abs(self.state.speed) < 0.01 and not self.module_locked:
             self.drive.set_control(
