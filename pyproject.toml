@@ -60,6 +60,7 @@ dev-dependencies = [
     "pytest>=7.2.0",
     "pytest-integration>=0.2.3",
 ]
+prerelease = "allow"
 
 [project]
 name = "pyreefscape"
