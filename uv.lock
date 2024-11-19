@@ -61,7 +61,7 @@ name = "cffi"
 version = "1.17.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser" },
+    { name = "pycparser", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fc/97/c783634659c2920c3fc70419e3af40972dbaf758daa229a7d6ea6135c90d/cffi-1.17.1.tar.gz", hash = "sha256:1c39c6016c32bc48dd54561950ebd6836e1670f2ae46128f67cf49e789c52824", size = 516621 }
 wheels = [
@@ -116,7 +116,7 @@ name = "cryptography"
 version = "43.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_python_implementation != 'PyPy'" },
+    { name = "cffi", marker = "(platform_machine != 'aarch64' and platform_python_implementation != 'PyPy') or (platform_python_implementation != 'PyPy' and platform_system != 'Linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0d/05/07b55d1fa21ac18c3a8c79f764e2514e6f6a9698f1be44994f5adf0d29db/cryptography-43.0.3.tar.gz", hash = "sha256:315b9001266a492a6ff443b61238f956b214dbec9910a081ba5b6646a055a805", size = 686989 }
 wheels = [
@@ -158,7 +158,7 @@ name = "flexcache"
 version = "0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions" },
+    { name = "typing-extensions", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/55/b0/8a21e330561c65653d010ef112bf38f60890051d244ede197ddaa08e50c1/flexcache-0.3.tar.gz", hash = "sha256:18743bd5a0621bfe2cf8d519e4c3bfdf57a269c15d1ced3fb4b64e0ff4600656", size = 15816 }
 wheels = [
@@ -170,7 +170,7 @@ name = "flexparser"
 version = "0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions" },
+    { name = "typing-extensions", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/82/99/b4de7e39e8eaf8207ba1a8fa2241dd98b2ba72ae6e16960d8351736d8702/flexparser-0.4.tar.gz", hash = "sha256:266d98905595be2ccc5da964fe0a2c3526fbbffdc45b65b3146d75db992ef6b2", size = 31799 }
 wheels = [
@@ -311,9 +311,9 @@ name = "paramiko"
 version = "3.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "bcrypt" },
-    { name = "cryptography" },
-    { name = "pynacl" },
+    { name = "bcrypt", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "cryptography", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "pynacl", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1b/0f/c00296e36ff7485935b83d466c4f2cf5934b84b0ad14e81796e1d9d3609b/paramiko-3.5.0.tar.gz", hash = "sha256:ad11e540da4f55cedda52931f1a3f812a8238a7af7f62a60de538cd80bb28124", size = 1704305 }
 wheels = [
@@ -322,17 +322,17 @@ wheels = [
 
 [[package]]
 name = "phoenix6"
-version = "24.3.0"
+version = "25.0.0b2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "setuptools" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/9a/512ac9a1b7ab878ac5ce42273e99798e7a7a619de8173fd6f35aad513b59/phoenix6-24.3.0-cp39-abi3-macosx_10_16_universal2.whl", hash = "sha256:9adbf30291a2e64054cdee4221df1509a11f2056942438f89c278614830911d2", size = 2966721 },
-    { url = "https://files.pythonhosted.org/packages/a4/93/3b61e24656fcdb4b8497b557fd615447136d917b5808b70ab19e5850d1d4/phoenix6-24.3.0-cp39-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:36c1eeaebd0359e6ce21b2d73a83f75c2dbcec59d0fac78e86942fc882a584fb", size = 1122536 },
-    { url = "https://files.pythonhosted.org/packages/ce/6f/47c3885aa3501e771af871ffeffaf858f42cc0275c8176bbb635f7ac396f/phoenix6-24.3.0-cp39-abi3-manylinux_2_35_armv7l.whl", hash = "sha256:218df8b9de0bb5621b7a737d9962d76722db12c9d96c84feadc386b8c82d23f3", size = 1134858 },
-    { url = "https://files.pythonhosted.org/packages/48/78/6b2c0da293216282221c373059c739ba87ea112b93277d40413507853ff8/phoenix6-24.3.0-cp39-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:7af6f9b27bfbbd46f9cccc14528f0e022c82916edecd20ae00deec136af83fe1", size = 2763899 },
-    { url = "https://files.pythonhosted.org/packages/15/31/4cb2750a8fa5d093b80d9bbb8cdf7e579c4f67c08f9ef155305750fee555/phoenix6-24.3.0-cp39-abi3-win_amd64.whl", hash = "sha256:bdbda4ec7807e9215cba216676fae98de7fce3e93277a47d4739e0e4fcf12c9a", size = 2134197 },
+    { url = "https://files.pythonhosted.org/packages/ae/49/4b1ded92e9d44c6b8fb29b251f6feda2de5d92d1335712028e03a2aea884/phoenix6-25.0.0b2-cp310-abi3-macosx_10_16_universal2.whl", hash = "sha256:a230a779c2ec334542325d72ef51fdcb82419076a49e59a180baca51cecfb36b", size = 6375273 },
+    { url = "https://files.pythonhosted.org/packages/28/0e/3ae733c027d4e74e33d6dac0b554e1f6bae9aa5bbc26541915aab49cfae0/phoenix6-25.0.0b2-cp310-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:77e93ead9df999f6652fc0690af7e55022453e77a20ae08a45bf84ff88e7552f", size = 1665649 },
+    { url = "https://files.pythonhosted.org/packages/d7/34/c1db3610d62a74f168c760bfaa2b8462b776194238ec60ef7f24aaeb7eb4/phoenix6-25.0.0b2-cp310-abi3-manylinux_2_35_armv7l.whl", hash = "sha256:3587a28d5adab33519d6f7434546ff2ab8a3de26992122bb8fe2a618a3a8b6c5", size = 1668155 },
+    { url = "https://files.pythonhosted.org/packages/72/b1/b93608806e4b0615dda669eb07e1edf5da2aaa46b2823f58a6f74a4fb3c1/phoenix6-25.0.0b2-cp310-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:678ec6615c7ea81218386ed8bf32b85251a586edf1dd685aafa2e449344feaa2", size = 5194909 },
+    { url = "https://files.pythonhosted.org/packages/ad/3c/3f7177b317df65c6b620a3651cd1fa31610b0072c981365d64d040397db3/phoenix6-25.0.0b2-cp310-abi3-win_amd64.whl", hash = "sha256:cce26e41802210b30b40248929f501ab912a2cd65d953c6ec956dd2504f0d7c3", size = 3929383 },
 ]
 
 [[package]]
@@ -358,10 +358,10 @@ name = "pint"
 version = "0.24.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "flexcache" },
-    { name = "flexparser" },
-    { name = "platformdirs" },
-    { name = "typing-extensions" },
+    { name = "flexcache", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "flexparser", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "platformdirs", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "typing-extensions", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/20/bb/52b15ddf7b7706ed591134a895dbf6e41c8348171fb635e655e0a4bbb0ea/pint-0.24.4.tar.gz", hash = "sha256:35275439b574837a6cd3020a5a4a73645eb125ce4152a73a2f126bf164b91b80", size = 342225 }
 wheels = [
@@ -400,11 +400,11 @@ name = "pyfrc"
 version = "2025.0.0b1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pint" },
-    { name = "pytest" },
-    { name = "pytest-reraise" },
-    { name = "robotpy-cli" },
-    { name = "wpilib" },
+    { name = "pint", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "pytest", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "pytest-reraise", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "robotpy-cli", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "wpilib", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b3/14/765b378405cb8ac37a0c0425e56d2ee5ffd1a8e1663a7a51cc2d1365b1f1/pyfrc-2025.0.0b1.tar.gz", hash = "sha256:bc23a72cfc762ec481f8f6ac34f2210d4516404abc81ba0c6d5edda08955bcc7", size = 37736 }
 wheels = [
@@ -416,7 +416,7 @@ name = "pynacl"
 version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi" },
+    { name = "cffi", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a7/22/27582568be639dfe22ddb3902225f91f2f17ceff88ce80e4db396c8986da/PyNaCl-1.5.0.tar.gz", hash = "sha256:8ac7448f09ab85811607bdd21ec2464495ac8b7c66d146bf545b0f08fb9220ba", size = 3392854 }
 wheels = [
@@ -485,10 +485,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "numpy", specifier = "~=2.1.3" },
-    { name = "phoenix6", specifier = "~=24.3.0" },
+    { name = "numpy", specifier = "~=2.1" },
+    { name = "phoenix6", specifier = "~=25.0.0b2" },
     { name = "photonlibpy", specifier = "==2025.0.0b4" },
-    { name = "robotpy", specifier = "==2025.0.0b1" },
+    { name = "robotpy", specifier = "==2025.0.0b1.post1" },
     { name = "robotpy-apriltag", specifier = "~=2025.0.0b1" },
     { name = "robotpy-navx", specifier = "==2025.0.0b1" },
     { name = "robotpy-rev", specifier = "~=2025.0.0b1" },
@@ -534,7 +534,7 @@ name = "pytest-reraise"
 version = "2.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pytest" },
+    { name = "pytest", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/37/9b/efba721806e9018eee657dda66ffeaca7b5e6de26718b5e5aa7e62f60b03/pytest-reraise-2.1.2.tar.gz", hash = "sha256:5ab59bd0e2028be095289e6dfc9e36cc0b56936465278f3223e81bea0f2d1c70", size = 5158 }
 wheels = [
@@ -543,7 +543,7 @@ wheels = [
 
 [[package]]
 name = "robotpy"
-version = "2025.0.0b1"
+version = "2025.0.0b1.post1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyfrc", marker = "platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio'" },
@@ -558,9 +558,9 @@ dependencies = [
     { name = "robotpy-wpiutil" },
     { name = "wpilib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/04/3b/fe98c868a280c6b3b6fe60709780a154bf7e58eea09fe1d1be9f26e33826/robotpy-2025.0.0b1.tar.gz", hash = "sha256:c42c1f454c79750a2ad4377129ba9cc83536d35af443692f5057983b9d1a629f", size = 6468 }
+sdist = { url = "https://files.pythonhosted.org/packages/b7/dd/8b26cd552b6d68b1556cb442a3592edcb9fa71dbb8e989ec14594d803da8/robotpy-2025.0.0b1.post1.tar.gz", hash = "sha256:b50b52ca1e4e69be9e9c11c9a7b59b9e2f51ac714daa7f4d4fad360b2ed3c0e2", size = 6570 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3d/50/952ebf304a57e11e8f44f48d34ed24f7d39bb35225bcc8a8e0c21a8315ba/robotpy-2025.0.0b1-py3-none-any.whl", hash = "sha256:c51312d01837b3b517c805391f25aa59e86a840e2618096e14c031ded4bc3c44", size = 2383 },
+    { url = "https://files.pythonhosted.org/packages/6b/68/24b8a5bb40e884953cbd48c568569ef6a5198adb2de44b5fc62e2a74f274/robotpy-2025.0.0b1.post1-py3-none-any.whl", hash = "sha256:fd10e9122b393d68db9670b33e75eaeae0e45552ca7abde86971be938db74a5d", size = 2472 },
 ]
 
 [[package]]
@@ -637,10 +637,10 @@ name = "robotpy-halsim-gui"
 version = "2025.0.0b1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyntcore" },
-    { name = "robotpy-hal" },
-    { name = "robotpy-wpimath" },
-    { name = "robotpy-wpiutil" },
+    { name = "pyntcore", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "robotpy-hal", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "robotpy-wpimath", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "robotpy-wpiutil", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/60/5f/e2cecd90e1ba926746664fae494ad54be528d3b4afd497d784143c67a5a9/robotpy_halsim_gui-2025.0.0b1-cp310-cp310-macosx_13_0_x86_64.whl", hash = "sha256:4e69e777a273885cb611364d5bddb35a43dc426f6a60faef5f4403c8b29baf4d", size = 23457658 },
@@ -659,12 +659,12 @@ name = "robotpy-installer"
 version = "2025.0.0b1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "packaging" },
-    { name = "paramiko" },
-    { name = "pynetconsole" },
-    { name = "robotpy-cli" },
-    { name = "tomli" },
-    { name = "tomlkit" },
+    { name = "packaging", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "paramiko", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "pynetconsole", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "robotpy-cli", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "tomli", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
+    { name = "tomlkit", marker = "platform_machine != 'aarch64' or platform_system != 'Linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1c/f9/b2904c9c811797265a7710cfb651f4e26b32fc626b92159447a5fe399080/robotpy_installer-2025.0.0b1.tar.gz", hash = "sha256:1cfbd7b27a761e7367def9af5c45241232b00cd3ea335e722bd74c4dcff546ac", size = 32562 }
 wheels = [
