@@ -44,12 +44,13 @@ class Falcon500MotorSim:
         gearing: float,
         moi: kilogram_square_meters,
     ):
-        self.plant = LinearSystemId.DCMotorSystem(DCMotor.falcon500(), moi, gearing)
+        self.falcon = DCMotor.falcon500(len(motors))
+        self.plant = LinearSystemId.DCMotorSystem(self.falcon, moi, gearing)
         self.gearing = gearing
         self.sim_states = [motor.sim_state for motor in motors]
         for sim_state in self.sim_states:
             sim_state.set_supply_voltage(12.0)
-        self.motor_sim = DCMotorSim(self.plant, DCMotor.falcon500(len(motors)))
+        self.motor_sim = DCMotorSim(self.plant, self.falcon)
 
     def update(self, dt: float) -> None:
         voltage = self.sim_states[0].motor_voltage
