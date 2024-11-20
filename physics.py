@@ -11,7 +11,6 @@ from wpilib.simulation import DCMotorSim, SimDeviceSim
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
-
 from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 
 from components.chassis import SwerveModule
