@@ -7,7 +7,6 @@ import wpiutil.log
 from magicbot import tunable, feedback
 from photonlibpy import PhotonCamera
 from photonlibpy.targeting import PhotonTrackedTarget
-
 from wpimath import objectToRobotPose
 from wpimath.geometry import Pose2d, Rotation3d, Transform3d, Translation3d, Pose3d
 
