@@ -1,5 +1,6 @@
 [tool.coverage.run]
 branch = true
+omit = ["config.py", "config-3.py"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -66,11 +67,9 @@ prerelease = "allow"
 name = "pyreefscape"
 version = "0.0.0"
 description = "The Drop Bears' FRC 2025 robot code"
-authors = [
-    {name = "The Drop Bears", email = "enquiries@thedropbears.org.au"},
-]
+authors = [{ name = "The Drop Bears", email = "enquiries@thedropbears.org.au" }]
 readme = "README.md"
-license = {text = "MIT"}
+license = { text = "MIT" }
 requires-python = ">=3.10,<3.13"
 
 dependencies = [

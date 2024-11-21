@@ -5,8 +5,8 @@ from typing import Optional
 import wpilib
 import wpiutil.log
 from magicbot import tunable, feedback
-from photonlibpy.photonCamera import PhotonCamera
-from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
+from photonlibpy import PhotonCamera
+from photonlibpy.targeting import PhotonTrackedTarget
 from wpimath import objectToRobotPose
 from wpimath.geometry import Pose2d, Rotation3d, Transform3d, Translation3d, Pose3d
 
@@ -32,7 +32,7 @@ class VisualLocalizer:
     last_pose_z = tunable(0.0, writeDefault=False)
     linear_vision_uncertainty = tunable(0.3)
     rotation_vision_uncertainty = tunable(0.08)
-    reproj_error_threshold = 1
+    reproj_error_threshold = 0.1
 
     def __init__(
         self,
@@ -51,45 +51,44 @@ class VisualLocalizer:
         self.camera_to_robot = self.robot_to_camera.inverse()
         self.last_timestamp = -1
         self.last_recieved_timestep = -1.0
-
-        self.single_best_log = field.getObject(name + "single_best_log")
-        self.single_alt_log = field.getObject(name + "single_alt_log")
-        self.multi_best_log = field.getObject(name + "multi_best_log")
-        self.multi_alt_log = field.getObject(name + "multi_alt_log")
-        self.field_pos_obj = field.getObject(name + "vision_pose")
+        self.best_log = field.getObject(name + "_best_log")
+        self.alt_log = field.getObject(name + "_alt_log")
+        self.field_pos_obj = field.getObject(name + "_vision_pose")
         self.pose_log_entry = wpiutil.log.FloatArrayLogEntry(
-            data_log, name + "vision_pose"
+            data_log, name + "_vision_pose"
         )
 
         self.chassis = chassis
         self.current_reproj = 0.0
+        self.has_multitag = False
 
     @feedback
     def reproj(self) -> float:
         return self.current_reproj
 
-    def execute(self) -> None:
-        # stop warnings in simulation
-        if wpilib.RobotBase.isSimulation():
-            return
+    @feedback
+    def using_multitag(self) -> bool:
+        return self.has_multitag
 
+    def execute(self) -> None:
         results = self.camera.getLatestResult()
         # if results didn't see any targets
         if not results.getTargets():
             return
 
         # if we have already processed these results
-        timestamp = results.getTimestamp()
+        timestamp = results.getTimestampSeconds()
 
         if timestamp == self.last_timestamp:
             return
         self.last_recieved_timestep = time.monotonic()
         self.last_timestamp = timestamp
 
-        if results.multiTagResult.estimatedPose.isPresent:
-            p = results.multiTagResult.estimatedPose
+        if results.multitagResult:
+            self.has_multitag = True
+            p = results.multitagResult.estimatedPose
             pose = (Pose3d() + p.best + self.camera_to_robot).toPose2d()
-            reprojectionErr = p.bestReprojError
+            reprojectionErr = p.bestReprojErr
             self.current_reproj = reprojectionErr
 
             self.field_pos_obj.setPose(pose)
@@ -109,13 +108,14 @@ class VisualLocalizer:
                 )
 
             if self.should_log:
-                self.multi_best_log.setPose(
+                self.best_log.setPose(
                     Pose2d(p.best.x, p.best.y, p.best.rotation().toRotation2d())
                 )
-                self.multi_alt_log.setPose(
+                self.alt_log.setPose(
                     Pose2d(p.alt.x, p.alt.y, p.alt.rotation().toRotation2d())
                 )
         else:
+            self.has_multitag = False
             for target in results.getTargets():
                 # filter out likely bad targets
                 if target.getPoseAmbiguity() > 0.25:
@@ -134,24 +134,21 @@ class VisualLocalizer:
                 )
 
                 self.field_pos_obj.setPose(pose)
-                self.chassis.estimator.addVisionMeasurement(pose, timestamp)
+                self.chassis.estimator.addVisionMeasurement(
+                    pose,
+                    timestamp,
+                    (
+                        self.linear_vision_uncertainty,
+                        self.linear_vision_uncertainty,
+                        self.rotation_vision_uncertainty,
+                    ),
+                )
 
                 if self.should_log:
-                    self.single_best_log.setPose(
-                        Pose2d(
-                            target.bestCameraToTarget.x,
-                            target.bestCameraToTarget.y,
-                            target.bestCameraToTarget.rotation().toRotation2d(),
-                        )
-                    )
-                    self.single_alt_log.setPose(
-                        Pose2d(
-                            target.altCameraToTarget.x,
-                            target.altCameraToTarget.y,
-                            target.altCameraToTarget.rotation().toRotation2d(),
-                        )
-                    )
+                    self.best_log.setPose(best)
+                    self.alt_log.setPose(alt)
 
+    @feedback
     def sees_target(self):
         return time.monotonic() - self.last_recieved_timestep < self.TIMEOUT
 
