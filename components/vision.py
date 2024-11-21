@@ -67,7 +67,7 @@ class VisualLocalizer:
         return self.current_reproj
 
     @feedback
-    def multitag(self) -> bool:
+    def using_multitag(self) -> bool:
         return self.has_multitag
 
     def execute(self) -> None:
