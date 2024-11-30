@@ -240,33 +240,33 @@ class ChassisComponent:
             SwerveModule(
                 self.WHEEL_BASE / 2,
                 self.TRACK_WIDTH / 2,
-                TalonId.drive_1,
-                TalonId.steer_1,
-                CancoderId.swerve_1,
+                TalonId.DRIVE_1,
+                TalonId.STEER_1,
+                CancoderId.SWERVE_1,
             ),
             # Back Left
             SwerveModule(
                 -self.WHEEL_BASE / 2,
                 self.TRACK_WIDTH / 2,
-                TalonId.drive_2,
-                TalonId.steer_2,
-                CancoderId.swerve_2,
+                TalonId.DRIVE_2,
+                TalonId.STEER_2,
+                CancoderId.SWERVE_2,
             ),
             # Back Right
             SwerveModule(
                 -self.WHEEL_BASE / 2,
                 -self.TRACK_WIDTH / 2,
-                TalonId.drive_3,
-                TalonId.steer_3,
-                CancoderId.swerve_3,
+                TalonId.DRIVE_3,
+                TalonId.STEER_3,
+                CancoderId.SWERVE_3,
             ),
             # Front Right
             SwerveModule(
                 self.WHEEL_BASE / 2,
                 -self.TRACK_WIDTH / 2,
-                TalonId.drive_4,
-                TalonId.steer_4,
-                CancoderId.swerve_4,
+                TalonId.DRIVE_4,
+                TalonId.STEER_4,
+                CancoderId.SWERVE_4,
             ),
         )
 
