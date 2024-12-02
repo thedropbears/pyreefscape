@@ -1,14 +1,13 @@
 import math
+
+import magicbot
 import wpilib
 import wpilib.event
-from wpimath.geometry import Rotation3d, Translation3d
-import magicbot
 from magicbot import tunable
+from wpimath.geometry import Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
 from components.vision import VisualLocalizer
-
-
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 

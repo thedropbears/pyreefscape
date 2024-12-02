@@ -1,10 +1,10 @@
-from math import sin, cos, hypot
-from pytest import approx
+from math import cos, hypot, sin
+
 from hypothesis import given
 from hypothesis.strategies import floats, tuples
+from pytest import approx
 
 from utilities.functions import clamp_2d, rate_limit_2d
-
 
 sensible_floats = floats(allow_infinity=False, allow_nan=False, width=16)
 sensible_positive_floats = floats(

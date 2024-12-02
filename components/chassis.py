@@ -1,38 +1,39 @@
-from logging import Logger
 import math
+from logging import Logger
 
-from phoenix6.hardware import TalonFX, CANcoder
-from phoenix6.controls import VoltageOut, VelocityVoltage, PositionDutyCycle
-from phoenix6.signals import InvertedValue, NeutralModeValue
-from phoenix6.configs import (
-    ClosedLoopGeneralConfigs,
-    MotorOutputConfigs,
-    FeedbackConfigs,
-    Slot0Configs,
-)
 import magicbot
 import navx
 import ntcore
 import wpilib
-from wpimath.kinematics import (
-    SwerveDrive4Kinematics,
-    ChassisSpeeds,
-    SwerveModuleState,
-    SwerveModulePosition,
-)
-from wpimath.geometry import Translation2d, Rotation2d, Pose2d
-from wpimath.estimator import SwerveDrive4PoseEstimator
-from wpimath.controller import SimpleMotorFeedforwardMeters
-from wpimath.trajectory import TrapezoidProfileRadians
-from wpimath.controller import ProfiledPIDControllerRadians
-
 from magicbot import feedback
+from phoenix6.configs import (
+    ClosedLoopGeneralConfigs,
+    FeedbackConfigs,
+    MotorOutputConfigs,
+    Slot0Configs,
+)
+from phoenix6.controls import PositionDutyCycle, VelocityVoltage, VoltageOut
+from phoenix6.hardware import CANcoder, TalonFX
+from phoenix6.signals import InvertedValue, NeutralModeValue
+from wpimath.controller import (
+    ProfiledPIDControllerRadians,
+    SimpleMotorFeedforwardMeters,
+)
+from wpimath.estimator import SwerveDrive4PoseEstimator
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d
+from wpimath.kinematics import (
+    ChassisSpeeds,
+    SwerveDrive4Kinematics,
+    SwerveModulePosition,
+    SwerveModuleState,
+)
+from wpimath.trajectory import TrapezoidProfileRadians
 
+from ids import CancoderId, TalonId
+from utilities.ctre import FALCON_FREE_RPS
 from utilities.functions import rate_limit_module
 from utilities.game import is_red
-from utilities.ctre import FALCON_FREE_RPS
 from utilities.position import TeamPoses
-from ids import CancoderId, TalonId
 
 
 class SwerveModule:
