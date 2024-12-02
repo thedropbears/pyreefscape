@@ -39,6 +39,8 @@ select = [
     "F",
     # flake8-bugbear
     "B",
+    # isort
+    "I",
     # pyupgrade
     "UP",
     # flake8-comprehensions
