@@ -1,6 +1,7 @@
 import math
-from wpimath.kinematics import SwerveModuleState
+
 from wpimath.geometry import Rotation2d
+from wpimath.kinematics import SwerveModuleState
 
 
 def constrain_angle(angle: float) -> float:

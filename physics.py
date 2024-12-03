@@ -6,12 +6,12 @@ import typing
 import phoenix6
 import phoenix6.unmanaged
 import wpilib
+from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 from pyfrc.physics.core import PhysicsInterface
 from wpilib.simulation import DCMotorSim, SimDeviceSim
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
-from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 
 from components.chassis import SwerveModule
 from utilities import game
