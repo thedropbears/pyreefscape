@@ -1,6 +1,5 @@
 import math
 import time
-from typing import Optional
 
 import wpilib
 import wpiutil.log
@@ -155,7 +154,7 @@ class VisualLocalizer:
 
 def estimate_poses_from_apriltag(
     robot_to_camera: Transform3d, target: PhotonTrackedTarget
-) -> Optional[tuple[Pose2d, Pose2d, float]]:
+) -> tuple[Pose2d, Pose2d, float] | None:
     tag_id = target.getFiducialId()
     tag_pose = apriltag_layout.getTagPose(tag_id)
     if tag_pose is None:
