@@ -2,7 +2,6 @@ import math
 from logging import Logger
 
 import magicbot
-import navx
 import ntcore
 import wpilib
 from magicbot import feedback
@@ -13,7 +12,7 @@ from phoenix6.configs import (
     Slot0Configs,
 )
 from phoenix6.controls import PositionDutyCycle, VelocityVoltage, VoltageOut
-from phoenix6.hardware import CANcoder, TalonFX
+from phoenix6.hardware import CANcoder, Pigeon2, TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from wpimath.controller import (
     ProfiledPIDControllerRadians,
@@ -226,7 +225,7 @@ class ChassisComponent:
     # TODO: Read from positions.py once autonomous is finished
 
     def __init__(self) -> None:
-        self.imu = navx.AHRS.create_spi()
+        self.imu = Pigeon2(0)
         self.heading_controller = ProfiledPIDControllerRadians(
             3, 0, 0, TrapezoidProfileRadians.Constraints(100, 100)
         )
@@ -278,8 +277,8 @@ class ChassisComponent:
             self.modules[3].translation,
         )
         self.sync_all()
-        self.imu.zeroYaw()
-        self.imu.resetDisplacement()
+        self.imu.reset()
+        # self.imu.resetDisplacement()
 
         nt = ntcore.NetworkTableInstance.getDefault().getTable("/components/chassis")
         module_states_table = nt.getSubTable("module_states")
@@ -296,8 +295,8 @@ class ChassisComponent:
         return self.kinematics.toChassisSpeeds(self.get_module_states())
 
     @feedback
-    def imu_rotation(self) -> float:
-        return self.imu.getAngle()
+    def imu_rotation(self) -> Rotation2d:
+        return self.imu.getRotation2d()
 
     def get_module_states(
         self,
@@ -402,12 +401,10 @@ class ChassisComponent:
         self.update_alliance()
         self.update_odometry()
 
-    @magicbot.feedback
-    def get_imu_speed(self) -> float:
-        return math.hypot(self.imu.getVelocityX(), self.imu.getVelocityY())
-
     def get_rotational_velocity(self) -> float:
-        return math.radians(-self.imu.getRate())
+        return math.radians(
+            self.imu.get_angular_velocity_z_world().value
+        )  # TODO Check direction of positive rotation
 
     def lock_swerve(self) -> None:
         self.swerve_lock = True
