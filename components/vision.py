@@ -48,7 +48,7 @@ class VisualLocalizer:
         self.camera = PhotonCamera(name)
         self.robot_to_camera = Transform3d(pos, rot)
         self.camera_to_robot = self.robot_to_camera.inverse()
-        self.last_timestamp = -1
+        self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
         self.best_log = field.getObject(name + "_best_log")
         self.alt_log = field.getObject(name + "_alt_log")
