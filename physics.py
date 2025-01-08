@@ -8,7 +8,7 @@ import phoenix6.unmanaged
 import wpilib
 from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 from pyfrc.physics.core import PhysicsInterface
-from wpilib.simulation import DCMotorSim, SimDeviceSim
+from wpilib.simulation import DCMotorSim
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
@@ -96,8 +96,7 @@ class PhysicsEngine:
             for module in robot.chassis.modules
         ]
 
-        self.imu = SimDeviceSim("navX-Sensor", 4)
-        self.imu_yaw = self.imu.getDouble("Yaw")
+        self.imu = robot.chassis.imu.sim_state
 
         self.vision = VisionSystemSim("main")
         self.vision.addAprilTags(game.apriltag_layout)
@@ -126,7 +125,7 @@ class PhysicsEngine:
             )
         )
 
-        self.imu_yaw.set(self.imu_yaw.get() - math.degrees(speeds.omega * tm_diff))
+        self.imu.add_yaw(math.degrees(speeds.omega * tm_diff))
 
         self.physics_controller.drive(speeds, tm_diff)
 
