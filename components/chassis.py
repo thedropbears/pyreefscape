@@ -244,7 +244,7 @@ class ChassisComponent:
                 TalonId.STEER_FL,
                 CancoderId.SWERVE_FL,
             ),
-            # Back Left
+            # Rear Left
             SwerveModule(
                 -self.WHEEL_BASE / 2,
                 self.TRACK_WIDTH / 2,
@@ -252,7 +252,7 @@ class ChassisComponent:
                 TalonId.STEER_RL,
                 CancoderId.SWERVE_RL,
             ),
-            # Back Right
+            # Rear Right
             SwerveModule(
                 -self.WHEEL_BASE / 2,
                 -self.TRACK_WIDTH / 2,
