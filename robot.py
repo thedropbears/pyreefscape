@@ -22,14 +22,14 @@ class MyRobot(magicbot.MagicRobot):
     # Components
     chassis: ChassisComponent
     coral_placer_component: CoralPlacerComponent
+    manipulator_component: ManipulatorComponent
+    vision: VisualLocalizer
 
     max_speed = magicbot.tunable(5)  # m/s
     lower_max_speed = magicbot.tunable(2)  # m/s
     max_spin_rate = magicbot.tunable(4)  # m/s
     lower_max_spin_rate = magicbot.tunable(2)  # m/s
     inclination_angle = tunable(0.0)
-    vision: VisualLocalizer
-    manipulator_component: ManipulatorComponent
 
     START_POS_TOLERANCE = 1
 
@@ -122,10 +122,10 @@ class MyRobot(magicbot.MagicRobot):
 
         self.vision.execute()
 
+        self.manipulator_component.execute()
+
         if self.gamepad.getXButton():
             self.manipulator_component.spin_flywheels()
-        else:
-            self.manipulator_component.coast_flywheels()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
