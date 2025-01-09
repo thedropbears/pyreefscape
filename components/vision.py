@@ -47,7 +47,9 @@ class VisualLocalizer:
     ) -> None:
         self.camera = PhotonCamera(name)
         # Assuming channel is 0 for encoder
-        self.encoder = wpilib.DutyCycleEncoder(0) 
+        self.encoder = wpilib.DutyCycleEncoder(0)
+        # Offset of encoder in radians when facing forwards (the desired zero)
+        self.encoderoffset = 0
         self.pos = pos
         self.robot_to_camera = Transform3d(pos, rot)
         self.camera_to_robot = self.robot_to_camera.inverse()
@@ -72,6 +74,12 @@ class VisualLocalizer:
     def using_multitag(self) -> bool:
         return self.has_multitag
     
+    @feedback
+    def read_encoder(self) -> float:
+        # reads value from encoder (presumed to be value from 0 - 1) and converts to radians by multiplying by 2pi
+        encoder_result_radians = self.encoder.get() * math.tau
+        return encoder_result_radians
+    
     def look_at_tags(self) -> None:
         pass
         # Use current estimated position of robot to determine a visible tag
@@ -81,13 +89,10 @@ class VisualLocalizer:
         # Swivel camera to that point
 
     def execute(self) -> None:
-        #TODO Calculate new rotation3d and then transform3d
-
         # Read encoder angle
         # account for offset
-        # - 0.323 is an example offset
         # set as self.robot_to_camera
-        self.robot_to_camera = Transform3d(self.pos, Rotation3d(0, (self.encoder.get() * 2 * math.pi) - 0.323, 0))
+        self.robot_to_camera = Transform3d(self.pos, Rotation3d(0, self.read_encoder() - self.encoderoffset, 0))
         # reset self.camera_to_robot
         self.camera_to_robot = self.robot_to_camera.inverse()
 
