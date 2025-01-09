@@ -46,6 +46,9 @@ class VisualLocalizer:
         chassis: ChassisComponent,
     ) -> None:
         self.camera = PhotonCamera(name)
+        # Assuming channel is 0 for encoder
+        self.encoder = wpilib.DutyCycleEncoder(0) 
+        self.pos = pos
         self.robot_to_camera = Transform3d(pos, rot)
         self.camera_to_robot = self.robot_to_camera.inverse()
         self.last_timestamp = -1.0
@@ -68,8 +71,26 @@ class VisualLocalizer:
     @feedback
     def using_multitag(self) -> bool:
         return self.has_multitag
+    
+    def look_at_tags(self) -> None:
+        pass
+        # Use current estimated position of robot to determine a visible tag
+
+        # Determine where camera needs to swivel to point directly at it
+
+        # Swivel camera to that point
 
     def execute(self) -> None:
+        #TODO Calculate new rotation3d and then transform3d
+
+        # Read encoder angle
+        # account for offset
+        # - 0.323 is an example offset
+        # set as self.robot_to_camera
+        self.robot_to_camera = Transform3d(self.pos, Rotation3d(0, (self.encoder.get() * 2 * math.pi) - 0.323, 0))
+        # reset self.camera_to_robot
+        self.camera_to_robot = self.robot_to_camera.inverse()
+
         results = self.camera.getLatestResult()
         # if results didn't see any targets
         if not results.getTargets():
