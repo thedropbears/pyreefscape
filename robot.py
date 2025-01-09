@@ -8,6 +8,7 @@ from wpimath.geometry import Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
 from components.coral_placer import CoralPlacerComponent
+from components.manipulator import ManipulatorComponent
 from components.vision import VisualLocalizer
 from controllers.coral_placer import CoralPlacer
 from utilities.game import is_red
@@ -28,6 +29,7 @@ class MyRobot(magicbot.MagicRobot):
     lower_max_spin_rate = magicbot.tunable(2)  # m/s
     inclination_angle = tunable(0.0)
     vision: VisualLocalizer
+    manipulator_component: ManipulatorComponent
 
     START_POS_TOLERANCE = 1
 
@@ -119,6 +121,11 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.update_odometry()
 
         self.vision.execute()
+
+        if self.gamepad.getXButton():
+            self.manipulator_component.spin_flywheels()
+        else:
+            self.manipulator_component.coast_flywheels()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
