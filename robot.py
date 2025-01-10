@@ -124,6 +124,8 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getXButton():
             self.manipulator_component.spin_flywheels()
+        if self.gamepad.getYButton():
+            self.manipulator_component.inject()
 
         self.manipulator_component.execute()
 
