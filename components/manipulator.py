@@ -3,11 +3,11 @@ from rev import SparkMax
 
 
 class ManipulatorComponent:
-    flywheel_setpoint = tunable(0.5)
+    flywheel_setpoint = tunable(6.0)
 
     def __init__(self) -> None:
-        self.flywheel_1 = SparkMax(1, SparkMax.MotorType.kBrushless)
-        self.flywheel_2 = SparkMax(2, SparkMax.MotorType.kBrushless)
+        self.flywheel_1 = SparkMax(5, SparkMax.MotorType.kBrushless)
+        self.flywheel_2 = SparkMax(4, SparkMax.MotorType.kBrushless)
         self.desired_flywheel_speed = 0.0
         """self.left_flywheel = TalonFX(9)
         self.right_flywheel = TalonFX(10)
@@ -25,6 +25,7 @@ class ManipulatorComponent:
         self.desired_flywheel_speed = self.flywheel_setpoint
 
     def execute(self) -> None:
-        self.flywheel_1.set(self.desired_flywheel_speed)
+        self.flywheel_1.setVoltage(-self.desired_flywheel_speed)
+        self.flywheel_2.setVoltage(self.desired_flywheel_speed)
 
         self.desired_flywheel_speed = 0.0

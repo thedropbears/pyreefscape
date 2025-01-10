@@ -122,10 +122,10 @@ class MyRobot(magicbot.MagicRobot):
 
         self.vision.execute()
 
-        self.manipulator_component.execute()
-
         if self.gamepad.getXButton():
             self.manipulator_component.spin_flywheels()
+
+        self.manipulator_component.execute()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
