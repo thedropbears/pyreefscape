@@ -420,8 +420,7 @@ dependencies = [
     { name = "numpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
     { name = "phoenix6", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
     { name = "photonlibpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
-    { name = "robotpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
-    { name = "robotpy-apriltag", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy", extra = ["apriltag"], marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
     { name = "robotpy-rev", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
     { name = "robotpy-wpilib-utilities", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
@@ -439,8 +438,7 @@ requires-dist = [
     { name = "numpy", specifier = "~=2.1" },
     { name = "phoenix6", specifier = "~=25.1.0" },
     { name = "photonlibpy", specifier = "==2025.0.0b8" },
-    { name = "robotpy", specifier = "==2025.1.1.1" },
-    { name = "robotpy-apriltag", specifier = "~=2025.1.1" },
+    { name = "robotpy", extras = ["apriltag"], specifier = "==2025.1.1.1" },
     { name = "robotpy-rev", specifier = "~=2025.0.0" },
     { name = "robotpy-wpilib-utilities", specifier = "==2025.0.0" },
 ]
@@ -509,6 +507,12 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a1/10/196d3bb8ae4af7328335e36c2665a60b6df553cf1de5c2aab138cab124c0/robotpy-2025.1.1.1.tar.gz", hash = "sha256:9077cdf548842adcbc4807f4cdba2bac6bc58b07b35ed247dbed9c2cb96628b5", size = 6192 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/00/9db4fa5f28ad8411239e7f74abb0eeaa714f7391bb8b9150594617bf64fb/robotpy-2025.1.1.1-py3-none-any.whl", hash = "sha256:0ecf5b88c02cb0127ca3be70c336b6cfc2e97ab1f76445d5367c46878a3e544a", size = 2110 },
+]
+
+[package.optional-dependencies]
+apriltag = [
+    { name = "numpy", marker = "(platform_machine == 'roborio' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine == 'roborio' and platform_system == 'Darwin')" },
+    { name = "robotpy-apriltag", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 
 [[package]]

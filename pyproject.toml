@@ -75,9 +75,7 @@ requires-python = ">=3.12,<3.14"
 dependencies = [
     "numpy~=2.1",
     "phoenix6~=25.1.0",
-    # robotpy[apriltag] pins numpy to a version that doesn't build cleanly on Python 3.12.
-    "robotpy==2025.1.1.1",
-    "robotpy-apriltag~=2025.1.1",
+    "robotpy[apriltag]==2025.1.1.1",
     "robotpy-rev~=2025.0.0",
     "robotpy-wpilib-utilities==2025.0.0",
     "photonlibpy==2025.0.0b8",
