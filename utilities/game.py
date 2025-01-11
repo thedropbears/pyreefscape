@@ -1,3 +1,5 @@
+"""Descriptions of the field and match state."""
+
 import math
 import typing
 
@@ -11,23 +13,24 @@ from wpimath.geometry import (
     Translation3d,
 )
 
-# TODO leaving as placeholder to keep utils
 apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
-    robotpy_apriltag.AprilTagField.k2024Crescendo
+    robotpy_apriltag.AprilTagField.k2025Reefscape
 )
 
-TagId = typing.Literal[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+TagId = typing.Literal[
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
+]
 
 get_fiducial_pose = typing.cast(
     typing.Callable[[TagId], Pose3d],
     apriltag_layout.getTagPose,
 )
-# TODO leaving as placeholder to keep utils
-RED_SPEAKER_POSE = get_fiducial_pose(4)
-BLUE_SPEAKER_POSE = get_fiducial_pose(7)
 
-FIELD_WIDTH = 8.0161
-FIELD_LENGTH = RED_SPEAKER_POSE.x + BLUE_SPEAKER_POSE.x
+FIELD_WIDTH = apriltag_layout.getFieldWidth()
+FIELD_LENGTH = apriltag_layout.getFieldLength()
+
+
+# TODO: write functions for rotational symmetry
 
 
 def field_flip_pose2d(p: Pose2d):
