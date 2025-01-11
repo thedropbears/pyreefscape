@@ -5,7 +5,6 @@ from ids import SparkId
 
 
 class CoralShooterComponent:
-
     voltage_set_point = will_reset_to(0.0)
     deposit_voltage = tunable(7.0)
 
