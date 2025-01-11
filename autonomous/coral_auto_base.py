@@ -6,9 +6,12 @@ from wpimath.kinematics import ChassisSpeeds
 
 from components.chassis import ChassisComponent
 from utilities import game
+from controllers.coral_placer import CoralPlacer
 
 
 class CoralAutoBase(AutonomousStateMachine):
+    coral_placer: CoralPlacer
+
     chassis: ChassisComponent
 
     DISTANCE_TOLERANCE = 0.20  # metres
@@ -84,5 +87,6 @@ class CoralAutoBase(AutonomousStateMachine):
         self.chassis.drive_field(speeds.vx, speeds.vy, speeds.omega)
 
     @state
-    def scoring_coral(self) -> None:
-        pass
+    def scoring_coral(self, initial_call: bool) -> None:
+        if initial_call:
+            self.coral_placer.place()
