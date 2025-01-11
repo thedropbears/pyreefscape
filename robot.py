@@ -1,4 +1,4 @@
-import math
+import math  # noqa: I001
 
 import magicbot
 import wpilib
@@ -8,15 +8,21 @@ from wpimath.geometry import Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
 from components.vision import VisualLocalizer
+from components.coral_placer import CoralPlacerComponent
+
+from controllers.coral_placer import CoralPlacer
+
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
 
 class MyRobot(magicbot.MagicRobot):
     # Controllers
+    coral_placer: CoralPlacer
 
     # Components
     chassis: ChassisComponent
+    coral_placer_compnent: CoralPlacerComponent
 
     max_speed = magicbot.tunable(5)  # m/s
     lower_max_speed = magicbot.tunable(2)  # m/s
