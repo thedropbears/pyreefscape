@@ -13,7 +13,7 @@ class CoralPlacerComponent:
 
         motor_config = SparkMaxConfig()
         motor_config.inverted(False)  # TODO Change if needed
-        motor_config.setIdleMode(SparkMax.IdleMode.kCoast)
+        motor_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
 
         self.motor.configure(
             motor_config,
