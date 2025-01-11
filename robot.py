@@ -52,7 +52,7 @@ class MyRobot(magicbot.MagicRobot):
         self.field.getObject("Intended start pos").setPoses([])
 
     def teleopPeriodic(self) -> None:
-        if self.gamepad.getYButton:
+        if self.gamepad.getYButton():
             self.coral_placer.place()
 
         # Set max speed
