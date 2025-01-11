@@ -4,12 +4,13 @@ import time
 import wpilib
 import wpiutil.log
 from magicbot import feedback, tunable
-from photonlibpy import PhotonCamera
-from photonlibpy.targeting import PhotonTrackedTarget
+from photonlibpy.photonCamera import PhotonCamera
+from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
 from wpimath import objectToRobotPose
 from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Transform3d, Translation3d
 
 from components.chassis import ChassisComponent
+from utilities.functions import clamp
 from utilities.game import apriltag_layout
 
 
@@ -24,6 +25,8 @@ class VisualLocalizer:
 
     # Time since the last target sighting we allow before informing drivers
     TIMEOUT = 1.0  # s
+
+    SERVO_MAX_ANGLE = math.radians(135)
 
     add_to_estimator = tunable(True)
     should_log = tunable(True)
@@ -47,12 +50,12 @@ class VisualLocalizer:
     ) -> None:
         self.camera = PhotonCamera(name)
         # Assuming channel is 0 for encoder
-        self.encoder = wpilib.DutyCycleEncoder(0)
+        self.encoder = wpilib.DutyCycleEncoder(1)
         # Offset of encoder in radians when facing forwards (the desired zero)
-        self.encoderoffset = 0
+        self.encoder_offset = 3.33
+        self.servo = wpilib.Servo(0)
         self.pos = pos
-        self.robot_to_camera = Transform3d(pos, rot)
-        self.camera_to_robot = self.robot_to_camera.inverse()
+        self.robot_to_servo = Transform3d(pos, rot)
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
         self.best_log = field.getObject(name + "_best_log")
@@ -73,28 +76,54 @@ class VisualLocalizer:
     @feedback
     def using_multitag(self) -> bool:
         return self.has_multitag
-    
+
     @feedback
     def read_encoder(self) -> float:
         # reads value from encoder (presumed to be value from 0 - 1) and converts to radians by multiplying by 2pi
         encoder_result_radians = self.encoder.get() * math.tau
         return encoder_result_radians
-    
-    def look_at_tags(self) -> None:
-        pass
-        # Use current estimated position of robot to determine a visible tag
 
-        # Determine where camera needs to swivel to point directly at it
+    @feedback
+    def bearing_to_closest_tag(self) -> float:
+        # initialise default variables
+        # closest tag, distance, robot position
+        distance = float("nan")
 
-        # Swivel camera to that point
+        for tag in apriltag_layout.getTags():
+            robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
+            if robot_to_tag.translation().norm() < distance:
+                closest_tag = tag
+
+        diff = (closest_tag.pose.toPose2d() - self.chassis.get_pose()).translation()
+
+        yaw = math.atan2(diff.Y(), diff.X())
+        return yaw
+
+    @property
+    def turret_rotation(self) -> float:
+        return self.read_encoder() - self.encoder_offset
 
     def execute(self) -> None:
         # Read encoder angle
         # account for offset
-        # set as self.robot_to_camera
-        self.robot_to_camera = Transform3d(self.pos, Rotation3d(0, self.read_encoder() - self.encoderoffset, 0))
+        servo_to_camera = Transform3d(
+            Translation3d(), Rotation3d(0, self.turret_rotation, 0)
+        )
+
+        desired_servo_angle = (
+            self.bearing_to_closest_tag()
+            - self.chassis.get_rotation().radians()
+            - self.robot_to_servo.rotation().Z()
+        )
+        clamped_angle = clamp(
+            desired_servo_angle, -self.SERVO_MAX_ANGLE, self.SERVO_MAX_ANGLE
+        )
+        rescaled_angle = clamped_angle / (self.SERVO_MAX_ANGLE) + 0.5
+        self.servo.set(rescaled_angle)
+
         # reset self.camera_to_robot
-        self.camera_to_robot = self.robot_to_camera.inverse()
+        robot_to_camera = self.robot_to_servo + servo_to_camera
+        camera_to_robot = robot_to_camera.inverse()
 
         results = self.camera.getLatestResult()
         # if results didn't see any targets
@@ -112,7 +141,7 @@ class VisualLocalizer:
         if results.multitagResult:
             self.has_multitag = True
             p = results.multitagResult.estimatedPose
-            pose = (Pose3d() + p.best + self.camera_to_robot).toPose2d()
+            pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
             reprojectionErr = p.bestReprojErr
             self.current_reproj = reprojectionErr
 
@@ -146,7 +175,7 @@ class VisualLocalizer:
                 if target.getPoseAmbiguity() > 0.25:
                     continue
 
-                poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
+                poses = estimate_poses_from_apriltag(robot_to_camera, target)
                 if poses is None:
                     # tag doesn't exist
                     continue
