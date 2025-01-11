@@ -3,7 +3,7 @@ from rev import MotorType, SparkMax
 from ids import SparkId
 
 
-class CoralShooter:
+class CoralShooterComponent:
     def __init__(self):
         self.motor = SparkMax(SparkId.CORAL_SHOOTER, MotorType.kBrushless)
         self.motor.setInverted(False)  # Change if needed-----------------------------
