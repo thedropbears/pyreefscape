@@ -1,5 +1,5 @@
 from magicbot import tunable, will_reset_to
-from rev import SparkMax
+from rev import SparkMax, SparkMaxConfig
 
 from ids import SparkId
 
@@ -10,8 +10,16 @@ class CoralShooterComponent:
 
     def __init__(self):
         self.motor = SparkMax(SparkId.CORAL_SHOOTER, SparkMax.MotorType.kBrushless)
-        # TODO Change if needed
-        self.motor.setInverted(False)
+
+        motor_config = SparkMaxConfig()
+        motor_config.inverted(False)  # TODO Change if needed
+        motor_config.setIdleMode(SparkMax.IdleMode.kCoast)
+
+        self.motor.configure(
+            motor_config,
+            SparkMax.ResetMode.kResetSafeParameters,
+            SparkMax.PersistMode.kPersistParameters,
+        )
 
     def deploy(self):
         self.voltage_set_point = self.deposit_voltage
