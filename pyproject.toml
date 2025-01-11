@@ -17,11 +17,6 @@ warn_unused_ignores = true
 warn_unreachable = true
 strict_equality = true
 
-[[tool.mypy.overrides]]
-module = "photonlibpy.*"
-# https://github.com/PhotonVision/photonvision/issues/1210
-ignore_missing_imports = true
-
 [tool.pytest.ini_options]
 addopts = "--strict-markers -v --maxfail=2"
 pythonpath = "."
