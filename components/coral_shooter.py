@@ -10,7 +10,8 @@ class CoralShooterComponent:
 
     def __init__(self):
         self.motor = SparkMax(SparkId.CORAL_SHOOTER, SparkMax.MotorType.kBrushless)
-        self.motor.setInverted(False)  # Change if needed-----------------------------
+        # TODO Change if needed
+        self.motor.setInverted(False)
 
     def deploy(self):
         self.voltage_set_point = self.deposit_voltage
