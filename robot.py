@@ -1,4 +1,4 @@
-import math  # noqa: I001
+import math
 
 import magicbot
 import wpilib
@@ -7,11 +7,9 @@ from magicbot import tunable
 from wpimath.geometry import Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
-from components.vision import VisualLocalizer
 from components.coral_placer import CoralPlacerComponent
-
+from components.vision import VisualLocalizer
 from controllers.coral_placer import CoralPlacer
-
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
