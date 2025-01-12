@@ -1,8 +1,8 @@
 import choreo
 from choreo.trajectory import SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
-from wpimath._controls._controls.controller import PIDController
-from wpimath.kinematics._kinematics import ChassisSpeeds
+from wpimath.controller import PIDController
+from wpimath.kinematics import ChassisSpeeds
 
 from components.chassis import ChassisComponent
 from utilities import game
