@@ -22,7 +22,7 @@ class MyRobot(magicbot.MagicRobot):
 
     # Components
     chassis: ChassisComponent
-    coral_placer_compnent: CoralPlacerComponent
+    coral_placer_component: CoralPlacerComponent
 
     max_speed = magicbot.tunable(5)  # m/s
     lower_max_speed = magicbot.tunable(2)  # m/s
@@ -110,6 +110,9 @@ class MyRobot(magicbot.MagicRobot):
         else:
             self.chassis.stop_snapping()
             self.chassis.drive_local(0, 0, 0)
+
+        if self.gamepad.getYButton():
+            self.coral_placer_component.place()
 
         self.chassis.execute()
 
