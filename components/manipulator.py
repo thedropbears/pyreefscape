@@ -18,7 +18,6 @@ class ManipulatorComponent:
 
         self.flywheel_1 = TalonFX(9)
         self.flywheel_2 = TalonFX(10)
-        self.flywheel_2.set_control(Follower(9, True))
         flywheel_1_config = self.flywheel_1.configurator
         flywheel_2_config = self.flywheel_2.configurator
         motor_config = MotorOutputConfigs()
@@ -47,6 +46,7 @@ class ManipulatorComponent:
         self.injector_2.setVoltage(self.desired_injector_speed)
 
         self.flywheel_1.set_control(VoltageOut(self.desired_flywheel_speed))
+        self.flywheel_2.set_control(Follower(9, True))
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.0
