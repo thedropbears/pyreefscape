@@ -1,13 +1,11 @@
 """Descriptions of the field and match state."""
 
 import math
-import typing
 
 import robotpy_apriltag
 import wpilib
 from wpimath.geometry import (
     Pose2d,
-    Pose3d,
     Rotation2d,
     Translation2d,
     Translation3d,
@@ -15,15 +13,6 @@ from wpimath.geometry import (
 
 apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
     robotpy_apriltag.AprilTagField.k2025Reefscape
-)
-
-TagId = typing.Literal[
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
-]
-
-get_fiducial_pose = typing.cast(
-    typing.Callable[[TagId], Pose3d],
-    apriltag_layout.getTagPose,
 )
 
 FIELD_WIDTH = apriltag_layout.getFieldWidth()
