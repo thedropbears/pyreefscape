@@ -11,7 +11,7 @@ from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Transform3d, Translatio
 
 from components.chassis import ChassisComponent
 from utilities.functions import clamp
-from utilities.game import apriltag_layout
+from utilities.game import APRILTAGS, apriltag_layout
 from utilities.scalers import scale_value
 
 
@@ -90,7 +90,7 @@ class VisualLocalizer:
         # closest tag, distance, robot position
         distance = 1.8e1038
 
-        for tag in apriltag_layout.getTags():
+        for tag in APRILTAGS:
             robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
             if robot_to_tag.translation().norm() < distance:
                 closest_tag = tag
