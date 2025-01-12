@@ -9,9 +9,9 @@ from rev import SparkMax
 class ManipulatorComponent:
     flywheel_setpoint = tunable(6.0)
     injector_setpoint = tunable(6.0)
-    flywheel_intake_setpoint = tunable(4.0)
-    injector_intake_setpoint = tunable(4.0)
-    
+    flywheel_intake_setpoint = tunable(2.0)
+    injector_intake_setpoint = tunable(0.25)
+
     def __init__(self) -> None:
         self.injector_1 = SparkMax(5, SparkMax.MotorType.kBrushless)
         self.injector_2 = SparkMax(4, SparkMax.MotorType.kBrushless)
