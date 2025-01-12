@@ -114,6 +114,8 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getYButton():
             self.coral_placer_component.place()
 
+        self.coral_placer_component.execute()
+
         self.chassis.execute()
 
         self.chassis.update_odometry()
