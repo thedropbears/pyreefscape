@@ -15,6 +15,8 @@ apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
     robotpy_apriltag.AprilTagField.k2025Reefscape
 )
 
+APRILTAGS = apriltag_layout.getTags()
+
 FIELD_WIDTH = apriltag_layout.getFieldWidth()
 FIELD_LENGTH = apriltag_layout.getFieldLength()
 
