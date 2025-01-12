@@ -7,10 +7,16 @@ from magicbot import feedback, tunable
 from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
 from wpimath import objectToRobotPose
-from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Transform3d, Translation3d
+from wpimath.geometry import (
+    Pose2d,
+    Pose3d,
+    Rotation2d,
+    Rotation3d,
+    Transform3d,
+    Translation3d,
+)
 
 from components.chassis import ChassisComponent
-from utilities.functions import clamp
 from utilities.game import APRILTAGS, apriltag_layout
 from utilities.scalers import scale_value
 
@@ -27,7 +33,9 @@ class VisualLocalizer:
     # Time since the last target sighting we allow before informing drivers
     TIMEOUT = 1.0  # s
 
-    SERVO_MAX_ANGLE = math.radians(135)
+    # range between 0 and 270
+    SERVO_MAX_ANGLE = math.radians(270)
+    CAMERA_PITCH = -math.radians(20)
 
     add_to_estimator = tunable(True)
     should_log = tunable(True)
@@ -51,9 +59,9 @@ class VisualLocalizer:
     ) -> None:
         self.camera = PhotonCamera(name)
         # Assuming channel is 0 for encoder
-        self.encoder = wpilib.DutyCycleEncoder(1)
+        self.encoder = wpilib.DutyCycleEncoder(1, math.tau, 0)
         # Offset of encoder in radians when facing forwards (the desired zero)
-        self.encoder_offset = 3.33
+        self.encoder_offset = Rotation2d(3.33)
         self.servo = wpilib.Servo(0)
         self.pos = pos
         self.robot_to_servo = Transform3d(pos, rot)
@@ -79,53 +87,65 @@ class VisualLocalizer:
         return self.has_multitag
 
     @feedback
-    def read_encoder(self) -> float:
+    def read_encoder(self) -> Rotation2d:
         # reads value from encoder (presumed to be value from 0 - 1) and converts to radians by multiplying by 2pi
-        encoder_result_radians = self.encoder.get() * math.tau
-        return encoder_result_radians
+        return Rotation2d(self.encoder.get())
 
     @feedback
-    def bearing_to_closest_tag(self) -> float:
+    def bearing_to_closest_tag(self) -> Rotation2d:
         # initialise default variables
         # closest tag, distance, robot position
-        distance = 1.8e1038
+        distance = math.inf
 
         for tag in APRILTAGS:
             robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
             if robot_to_tag.translation().norm() < distance:
                 closest_tag = tag
+                distance = robot_to_tag.translation().norm()
 
-        diff = (closest_tag.pose.toPose2d() - self.chassis.get_pose()).translation()
+        return (
+            (closest_tag.pose.toPose2d() - self.chassis.get_pose())
+            .translation()
+            .angle()
+        )
 
-        yaw = math.atan2(diff.Y(), diff.X())
-        return yaw
+    @feedback
+    def desired_servo_angle(self) -> Rotation2d:
+        # Read encoder angle and account for offset
+        return (
+            self.bearing_to_closest_tag()
+            - self.robot_to_servo.rotation().toRotation2d()
+        )
 
     @property
-    def turret_rotation(self) -> float:
+    def turret_rotation(self) -> Rotation2d:
         return self.read_encoder() - self.encoder_offset
 
     @property
     def servo_to_camera(self) -> Transform3d:
-        return Transform3d(Translation3d(), Rotation3d(0, 0.0, self.turret_rotation))
+        return Transform3d(
+            Translation3d(),
+            Rotation3d(0, self.CAMERA_PITCH, self.turret_rotation.radians()),
+        )
 
     @property
     def robot_to_camera(self) -> Transform3d:
-        return self.robot_to_servo + self.servo_to_camera
+        return (
+            self.robot_to_servo
+            + self.servo_to_camera
+            + Transform3d(
+                Translation3d(), Rotation3d(self.chassis.get_rotation())
+            ).inverse()
+        )
 
     def execute(self) -> None:
-        # Read encoder angle
-        # account for offset
-        desired_servo_angle = (
-            self.bearing_to_closest_tag()
-            - self.chassis.get_rotation().radians()
-            - self.robot_to_servo.rotation().Z()
-        )
-        clamped_angle = clamp(
-            desired_servo_angle, -self.SERVO_MAX_ANGLE, self.SERVO_MAX_ANGLE
-        )
         self.servo.set(
             scale_value(
-                clamped_angle, -self.SERVO_MAX_ANGLE, self.SERVO_MAX_ANGLE, 0.0, 1.0
+                self.desired_servo_angle().radians(),
+                0.0,
+                self.SERVO_MAX_ANGLE,
+                0.0,
+                1.0,
             )
         )
 
