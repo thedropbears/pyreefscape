@@ -88,7 +88,7 @@ class VisualLocalizer:
     def bearing_to_closest_tag(self) -> float:
         # initialise default variables
         # closest tag, distance, robot position
-        distance = float("nan")
+        distance = 1.8e1038
 
         for tag in apriltag_layout.getTags():
             robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
