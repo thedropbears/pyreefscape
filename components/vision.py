@@ -12,6 +12,7 @@ from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Transform3d, Translatio
 from components.chassis import ChassisComponent
 from utilities.functions import clamp
 from utilities.game import apriltag_layout
+from utilities.scalers import scale_value
 
 
 class VisualLocalizer:
@@ -118,8 +119,11 @@ class VisualLocalizer:
         clamped_angle = clamp(
             desired_servo_angle, -self.SERVO_MAX_ANGLE, self.SERVO_MAX_ANGLE
         )
-        rescaled_angle = clamped_angle / (self.SERVO_MAX_ANGLE) + 0.5
-        self.servo.set(rescaled_angle)
+        self.servo.set(
+            scale_value(
+                clamped_angle, -self.SERVO_MAX_ANGLE, self.SERVO_MAX_ANGLE, 0.0, 1.0
+            )
+        )
 
         # reset self.camera_to_robot
         robot_to_camera = self.robot_to_servo + servo_to_camera
