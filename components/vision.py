@@ -104,13 +104,17 @@ class VisualLocalizer:
     def turret_rotation(self) -> float:
         return self.read_encoder() - self.encoder_offset
 
+    @property
+    def servo_to_camera(self) -> Transform3d:
+        return Transform3d(Translation3d(), Rotation3d(0, 0.0, self.turret_rotation))
+
+    @property
+    def robot_to_camera(self) -> Transform3d:
+        return self.robot_to_servo + self.servo_to_camera
+
     def execute(self) -> None:
         # Read encoder angle
         # account for offset
-        servo_to_camera = Transform3d(
-            Translation3d(), Rotation3d(0, 0.0, self.turret_rotation)
-        )
-
         desired_servo_angle = (
             self.bearing_to_closest_tag()
             - self.chassis.get_rotation().radians()
@@ -126,8 +130,7 @@ class VisualLocalizer:
         )
 
         # reset self.camera_to_robot
-        robot_to_camera = self.robot_to_servo + servo_to_camera
-        camera_to_robot = robot_to_camera.inverse()
+        camera_to_robot = self.robot_to_camera.inverse()
 
         results = self.camera.getLatestResult()
         # if results didn't see any targets
@@ -179,7 +182,7 @@ class VisualLocalizer:
                 if target.getPoseAmbiguity() > 0.25:
                     continue
 
-                poses = estimate_poses_from_apriltag(robot_to_camera, target)
+                poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
                 if poses is None:
                     # tag doesn't exist
                     continue
