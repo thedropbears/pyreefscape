@@ -107,7 +107,7 @@ class VisualLocalizer:
         # Read encoder angle
         # account for offset
         servo_to_camera = Transform3d(
-            Translation3d(), Rotation3d(0, self.turret_rotation, 0)
+            Translation3d(), Rotation3d(0, 0.0, self.turret_rotation)
         )
 
         desired_servo_angle = (
