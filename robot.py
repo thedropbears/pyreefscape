@@ -128,6 +128,8 @@ class MyRobot(magicbot.MagicRobot):
             self.manipulator_component.inject()
         if self.gamepad.getAButton():
             self.manipulator_component.intake()
+        if self.gamepad.getBButton():
+            self.manipulator_component.intake_inject_only()
 
         self.manipulator_component.execute()
 
