@@ -7,4 +7,4 @@ class CoralAuto(CoralAutoBase):
     MODE_NAME = "Coral Shooter"
 
     def __init__(self):
-        super().__init__(f"{wpilib.getDeployDirectory()}/traj/Coral_blue")
+        super().__init__(f"{wpilib.getDeployDirectory()}/traj/Coral")
