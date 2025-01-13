@@ -65,10 +65,10 @@ class VisualLocalizer:
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
         # This has nothing to do with the servo - do it by hand!!
-        self.encoder_offset = Rotation2d(0.0)
+        self.encoder_offset = Rotation2d(0.2)
 
         # To find the servo offset, command the servo to neutral in test mode and record the encoder value
-        self.servo_offset = Rotation2d(-1.0)
+        self.servo_offset = Rotation2d(0.1)
 
         self.servo = wpilib.Servo(0)
         self.pos = pos
@@ -104,19 +104,21 @@ class VisualLocalizer:
         # initialise default variables
         # closest tag, distance, robot position
         distance = math.inf
-        closest_tag = APRILTAGS[0]
+        closest_bearing = Rotation2d()
 
         for tag in APRILTAGS:
             robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
-            if robot_to_tag.translation().norm() < distance:
-                closest_tag = tag
+            relative_bearing = robot_to_tag.translation().angle()
+            if (
+                robot_to_tag.translation().norm() < distance
+                and -self.SERVO_HALF_ANGLE
+                <= relative_bearing.radians()
+                <= self.SERVO_HALF_ANGLE
+            ):
                 distance = robot_to_tag.translation().norm()
+                closest_bearing = relative_bearing
 
-        return (
-            (closest_tag.pose.toPose2d() - self.chassis.get_pose())
-            .translation()
-            .angle()
-        )
+        return closest_bearing
 
     @feedback
     def desired_turret_rotation(self) -> Rotation2d:
@@ -200,12 +202,9 @@ class VisualLocalizer:
                 )
 
             if self.should_log:
-                self.best_log.setPose(
-                    Pose2d(p.best.x, p.best.y, p.best.rotation().toRotation2d())
-                )
-                self.alt_log.setPose(
-                    Pose2d(p.alt.x, p.alt.y, p.alt.rotation().toRotation2d())
-                )
+                # Multitag results don't have best and alternates
+                self.best_log.setPose(pose)
+                self.alt_log.setPose(pose)
         else:
             self.has_multitag = False
             for target in results.getTargets():
