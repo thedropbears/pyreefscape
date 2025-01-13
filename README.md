@@ -29,19 +29,31 @@ uv run robotpy sync --no-install
 [pre-commit][] is configured to run our formatters and linters.
 These are enforced for all code committed to this project.
 
-You must install pre-commit outside of this project's virtual environment.
+To use pre-commit, you must install it outside of this project's virtual environment.
 Either use your system package manager, or use `uv tool`:
 
-```
+```sh
 uv tool install pre-commit
 ```
 
 You can then set up the pre-commit hooks to run on commit:
-```
+
+```sh
 pre-commit install
 ```
 
 [pre-commit]: https://pre-commit.com
+
+### IDE setup
+
+#### Visual Studio Code
+
+1. Install the workspace's recommended extensions.
+2. Copy `.vscode/settings.default.json` to `.vscode/settings.json`.
+
+   ```sh
+   cp .vscode/settings.default.json .vscode/settings.json
+   ```
 
 ## Run
 
