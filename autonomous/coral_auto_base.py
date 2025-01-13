@@ -19,8 +19,8 @@ class CoralAutoBase(AutonomousStateMachine):
     def __init__(self, tracjectory_file) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
         super().__init__()
-        self.x_controller = PIDController(10.0, 0.0, 0.0)
-        self.y_controller = PIDController(10.0, 0.0, 0.0)
+        self.x_controller = PIDController(1.0, 0.0, 0.0)
+        self.y_controller = PIDController(1.0, 0.0, 0.0)
 
         try:
             self.trajectory = choreo.load_swerve_trajectory(
