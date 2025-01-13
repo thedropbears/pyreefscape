@@ -146,9 +146,10 @@ class PhysicsEngine:
         self.encoder_sim.set(
             constrain_angle(
                 (
-                    self.visual_localiser.servo.getPosition()
-                    * self.visual_localiser.SERVO_MAX_ANGLE
+                    (2.0 * self.visual_localiser.servo.getPosition() - 1.0)
+                    * self.visual_localiser.SERVO_HALF_ANGLE
                 )
+                + self.visual_localiser.servo_offset.radians()
                 + self.visual_localiser.encoder_offset.radians()
             )
         )
