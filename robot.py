@@ -121,8 +121,12 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getYButton():
             self.coral_placer_component.place()
-
         self.coral_placer_component.execute()
+
+        if self.gamepad.getBButton():
+            self.vision.zero_servo_()
+        else:
+            self.vision.execute()
 
         self.chassis.execute()
 
