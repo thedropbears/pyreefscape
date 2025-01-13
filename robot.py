@@ -12,6 +12,7 @@ from components.coral_placer import CoralPlacerComponent
 from components.manipulator import ManipulatorComponent
 from components.vision import VisualLocalizer
 from controllers.coral_placer import CoralPlacer
+from ids import DioChannel, PwmChannel
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -55,6 +56,8 @@ class MyRobot(magicbot.MagicRobot):
         self.vision_name = "ardu_cam"
         self.vision_pos = Translation3d(0.22, 0, 0.295)
         self.vision_rot = Rotation3d(0, -math.radians(20), 0)
+        self.vision_servo_id = PwmChannel.VISION_SERVO
+        self.vision_encoder_id = DioChannel.VISION_ENCODER
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])

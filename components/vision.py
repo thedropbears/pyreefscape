@@ -55,13 +55,15 @@ class VisualLocalizer:
         pos: Translation3d,
         # The camera rotation at its neutral position (ie centred).
         rot: Rotation3d,
+        servo_id: int,
+        encoder_id: int,
         field: wpilib.Field2d,
         data_log: wpiutil.log.DataLog,
         chassis: ChassisComponent,
     ) -> None:
         self.camera = PhotonCamera(name)
         # Assuming channel is 0 for encoder
-        self.encoder = wpilib.DutyCycleEncoder(1, math.tau, 0)
+        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
         # This has nothing to do with the servo - do it by hand!!
@@ -70,7 +72,7 @@ class VisualLocalizer:
         # To find the servo offset, command the servo to neutral in test mode and record the encoder value
         self.servo_offset = Rotation2d(0.1)
 
-        self.servo = wpilib.Servo(0)
+        self.servo = wpilib.Servo(servo_id)
         self.pos = pos
         self.robot_to_turret = Transform3d(pos, rot)
         self.last_timestamp = -1.0
