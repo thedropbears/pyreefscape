@@ -167,79 +167,80 @@ class VisualLocalizer:
         # reset self.camera_to_robot
         camera_to_robot = self.robot_to_camera.inverse()
 
-        results = self.camera.getLatestResult()
-        # if results didn't see any targets
-        if not results.getTargets():
-            return
+        all_results = self.camera.getAllUnreadResults()
+        for results in all_results:
+            # if results didn't see any targets
+            if not results.getTargets():
+                return
 
-        # if we have already processed these results
-        timestamp = results.getTimestampSeconds()
+            # if we have already processed these results
+            timestamp = results.getTimestampSeconds()
 
-        if timestamp == self.last_timestamp:
-            return
-        self.last_recieved_timestep = time.monotonic()
-        self.last_timestamp = timestamp
+            if timestamp == self.last_timestamp:
+                return
+            self.last_recieved_timestep = time.monotonic()
+            self.last_timestamp = timestamp
 
-        if results.multitagResult:
-            self.has_multitag = True
-            p = results.multitagResult.estimatedPose
-            pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
-            reprojectionErr = p.bestReprojErr
-            self.current_reproj = reprojectionErr
-
-            self.field_pos_obj.setPose(pose)
-
-            if (
-                self.add_to_estimator
-                and self.current_reproj < self.reproj_error_threshold
-            ):
-                self.chassis.estimator.addVisionMeasurement(
-                    pose,
-                    timestamp,
-                    (
-                        self.linear_vision_uncertainty,
-                        self.linear_vision_uncertainty,
-                        self.rotation_vision_uncertainty,
-                    ),
-                )
-
-            if self.should_log:
-                # Multitag results don't have best and alternates
-                self.best_log.setPose(pose)
-                self.alt_log.setPose(pose)
-        else:
-            self.has_multitag = False
-            for target in results.getTargets():
-                # filter out likely bad targets
-                if target.getPoseAmbiguity() > 0.25:
-                    continue
-
-                poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
-                if poses is None:
-                    # tag doesn't exist
-                    continue
-
-                best, alt, self.last_pose_z = poses
-                pose = choose_pose(
-                    best,
-                    alt,
-                    self.chassis.get_pose(),
-                )
+            if results.multitagResult:
+                self.has_multitag = True
+                p = results.multitagResult.estimatedPose
+                pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
+                reprojectionErr = p.bestReprojErr
+                self.current_reproj = reprojectionErr
 
                 self.field_pos_obj.setPose(pose)
-                self.chassis.estimator.addVisionMeasurement(
-                    pose,
-                    timestamp,
-                    (
-                        self.linear_vision_uncertainty,
-                        self.linear_vision_uncertainty,
-                        self.rotation_vision_uncertainty,
-                    ),
-                )
+
+                if (
+                    self.add_to_estimator
+                    and self.current_reproj < self.reproj_error_threshold
+                ):
+                    self.chassis.estimator.addVisionMeasurement(
+                        pose,
+                        timestamp,
+                        (
+                            self.linear_vision_uncertainty,
+                            self.linear_vision_uncertainty,
+                            self.rotation_vision_uncertainty,
+                        ),
+                    )
 
                 if self.should_log:
-                    self.best_log.setPose(best)
-                    self.alt_log.setPose(alt)
+                    # Multitag results don't have best and alternates
+                    self.best_log.setPose(pose)
+                    self.alt_log.setPose(pose)
+            else:
+                self.has_multitag = False
+                for target in results.getTargets():
+                    # filter out likely bad targets
+                    if target.getPoseAmbiguity() > 0.25:
+                        continue
+
+                    poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
+                    if poses is None:
+                        # tag doesn't exist
+                        continue
+
+                    best, alt, self.last_pose_z = poses
+                    pose = choose_pose(
+                        best,
+                        alt,
+                        self.chassis.get_pose(),
+                    )
+
+                    self.field_pos_obj.setPose(pose)
+                    self.chassis.estimator.addVisionMeasurement(
+                        pose,
+                        timestamp,
+                        (
+                            self.linear_vision_uncertainty,
+                            self.linear_vision_uncertainty,
+                            self.rotation_vision_uncertainty,
+                        ),
+                    )
+
+                    if self.should_log:
+                        self.best_log.setPose(best)
+                        self.alt_log.setPose(alt)
 
     @feedback
     def sees_target(self):
