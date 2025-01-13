@@ -7,16 +7,20 @@ from magicbot import tunable
 from wpimath.geometry import Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
+from components.coral_placer import CoralPlacerComponent
 from components.vision import VisualLocalizer
+from controllers.coral_placer import CoralPlacer
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
 
 class MyRobot(magicbot.MagicRobot):
     # Controllers
+    coral_placer: CoralPlacer
 
     # Components
     chassis: ChassisComponent
+    coral_placer_component: CoralPlacerComponent
 
     max_speed = magicbot.tunable(5)  # m/s
     lower_max_speed = magicbot.tunable(2)  # m/s
@@ -46,6 +50,9 @@ class MyRobot(magicbot.MagicRobot):
         self.field.getObject("Intended start pos").setPoses([])
 
     def teleopPeriodic(self) -> None:
+        if self.gamepad.getYButton():
+            self.coral_placer.place()
+
         # Set max speed
         max_speed = self.max_speed
         max_spin_rate = self.max_spin_rate
@@ -101,6 +108,11 @@ class MyRobot(magicbot.MagicRobot):
         else:
             self.chassis.stop_snapping()
             self.chassis.drive_local(0, 0, 0)
+
+        if self.gamepad.getYButton():
+            self.coral_placer_component.place()
+
+        self.coral_placer_component.execute()
 
         self.chassis.execute()
 
