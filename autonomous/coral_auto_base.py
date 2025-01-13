@@ -14,7 +14,7 @@ class CoralAutoBase(AutonomousStateMachine):
 
     chassis: ChassisComponent
 
-    DISTANCE_TOLERANCE = 0.20  # metres
+    DISTANCE_TOLERANCE = 0.05  # metres
 
     def __init__(self, tracjectory_file) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
