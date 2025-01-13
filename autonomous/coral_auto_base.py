@@ -36,15 +36,6 @@ class CoralAutoBase(AutonomousStateMachine):
         # init any other defaults
         pass
 
-    def on_enable(self) -> None:
-        # configure defaults for pose in sim
-
-        initial_pose = self.trajectory.get_initial_pose(game.is_red())
-
-        self.chassis.set_pose(initial_pose)
-
-        return super().on_enable()
-
     @state(first=True)
     def initialising(self) -> None:
         # Copy path instances to be able to reset auto without reset robot
