@@ -5,8 +5,8 @@ from wpimath.controller import PIDController
 from wpimath.kinematics import ChassisSpeeds
 
 from components.chassis import ChassisComponent
-from utilities import game
 from controllers.coral_placer import CoralPlacer
+from utilities import game
 
 
 class CoralAutoBase(AutonomousStateMachine):
@@ -55,7 +55,7 @@ class CoralAutoBase(AutonomousStateMachine):
     def tracking_trajectory(self, state_tm) -> None:
         # get next leg on entry
         current_pose = self.chassis.get_pose()
-        final_pose = self.trajectory.get_final_pose()
+        final_pose = self.trajectory.get_final_pose(True)
 
         distance = (current_pose.translation() - final_pose.translation()).norm()
 
