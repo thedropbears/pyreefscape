@@ -6,7 +6,7 @@ from ids import SparkId
 
 class CoralPlacerComponent:
     voltage_set_point = will_reset_to(0.0)
-    deposit_voltage = tunable(7.0)
+    deposit_voltage = tunable(12.0)
 
     def __init__(self):
         self.motor = SparkMax(SparkId.CORAL_PLACER, SparkMax.MotorType.kBrushless)
