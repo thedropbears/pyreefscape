@@ -46,7 +46,7 @@ class CoralAutoBase(AutonomousStateMachine):
     def tracking_trajectory(self, state_tm) -> None:
         # get next leg on entry
         current_pose = self.chassis.get_pose()
-        final_pose = self.trajectory.get_final_pose(True)
+        final_pose = self.trajectory.get_final_pose(game.is_red())
 
         distance = (current_pose.translation() - final_pose.translation()).norm()
 
