@@ -39,8 +39,8 @@ class MyRobot(magicbot.MagicRobot):
         self.status_lights_strip_length = (28 * 3) * 2 + (30 * 3) - 2
 
         self.vision_name = "ardu_cam"
-        self.vision_pos = Translation3d(-0.25, -0.05, 0.30)
-        self.vision_rot = Rotation3d(0, -math.radians(20), -math.radians(180))
+        self.vision_pos = Translation3d(0.22, 0, 0.295)
+        self.vision_rot = Rotation3d(0, -math.radians(20), 0)
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
