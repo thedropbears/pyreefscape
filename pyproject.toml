@@ -21,6 +21,15 @@ strict_equality = true
 module = "choreo.*"
 ignore_missing_imports = true
 
+[tool.pyright]
+exclude = [
+    "ctre_sim",
+    "logs",
+    # Default excludes
+    "**/__pycache__",
+    "**/.*",
+]
+
 [tool.pytest.ini_options]
 addopts = "--strict-markers -v --maxfail=2"
 pythonpath = "."
