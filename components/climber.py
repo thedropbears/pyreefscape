@@ -1,20 +1,20 @@
 class Climber:
+    SPEED = 1.0
+
     def __init__(self) -> None:
-        self.deployed = False
-        self.retracted = False
-        self.target_speed = 0.0
+        self.will_reset_to = 0.0
 
     def deploy(self) -> None:
-        self.target_speed = 1.0
+        self.will_reset_to = Climber.SPEED
 
     def retract(self) -> None:
-        self.target_speed = -1.0
+        self.will_reset_to = -Climber.SPEED
 
     def is_deployed(self) -> bool:
-        return self.deployed
+        return False
 
     def is_retracted(self) -> bool:
-        return self.retracted
+        return False
 
     def elevation(self) -> float:
         return 0.0
@@ -23,9 +23,9 @@ class Climber:
     def execute(self) -> None:
         if (
             self.is_deployed()
-            and self.target_speed > 0
+            and self.will_reset_to > 0
             or self.is_retracted()
-            and self.target_speed < 0
+            and self.will_reset_to < 0
         ):
             self.target_speed = 0.0
             # stop motor if fully retracted
