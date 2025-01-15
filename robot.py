@@ -137,8 +137,6 @@ class MyRobot(magicbot.MagicRobot):
 
         self.chassis.update_odometry()
 
-        self.vision.execute()
-
         if self.gamepad.getXButton():
             self.manipulator_component.spin_flywheels()
         if self.gamepad.getYButton():
