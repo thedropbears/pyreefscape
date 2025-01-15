@@ -113,9 +113,7 @@ class VisualLocalizer:
             relative_bearing = robot_to_tag.translation().angle()
             if (
                 robot_to_tag.translation().norm() < distance
-                and -self.SERVO_HALF_ANGLE
-                <= relative_bearing.radians()
-                <= self.SERVO_HALF_ANGLE
+                and abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
             ):
                 distance = robot_to_tag.translation().norm()
                 closest_bearing = relative_bearing
