@@ -62,7 +62,6 @@ class VisualLocalizer:
         chassis: ChassisComponent,
     ) -> None:
         self.camera = PhotonCamera(name)
-        # Assuming channel is 0 for encoder
         self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
