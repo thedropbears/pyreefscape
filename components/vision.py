@@ -56,7 +56,9 @@ class VisualLocalizer:
         # The camera rotation at its neutral position (ie centred).
         rot: Rotation3d,
         servo_id: int,
+        servo_offset: Rotation2d,
         encoder_id: int,
+        encoder_offset: Rotation2d,
         field: wpilib.Field2d,
         data_log: wpiutil.log.DataLog,
         chassis: ChassisComponent,
@@ -66,10 +68,10 @@ class VisualLocalizer:
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
         # This has nothing to do with the servo - do it by hand!!
-        self.encoder_offset = Rotation2d(0.2)
+        self.encoder_offset = encoder_offset
 
         # To find the servo offset, command the servo to neutral in test mode and record the encoder value
-        self.servo_offset = Rotation2d(0.1)
+        self.servo_offset = servo_offset
 
         self.servo = wpilib.Servo(servo_id)
         self.pos = pos
