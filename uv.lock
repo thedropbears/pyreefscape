@@ -305,7 +305,7 @@ wheels = [
 
 [[package]]
 name = "photonlibpy"
-version = "2025.0.0b8"
+version = "2025.1.1rc1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
@@ -316,9 +316,9 @@ dependencies = [
     { name = "robotpy-wpimath" },
     { name = "wpilib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/91/57/9c5d99b7f814e9b420c12333520301a512f2391eb8edb04f2a4ddbd50006/photonlibpy-2025.0.0b8.tar.gz", hash = "sha256:70ffc02b46b709e99fc401853002c763546a04c38bfe4bb48c907e39fdd33eea", size = 37151 }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/c0/bff2d6b8b855fe68f48bfe08d2feb23a2ff666e71f5ce5115c18b7baaffe/photonlibpy-2025.1.1rc1.tar.gz", hash = "sha256:dca9400cf0031c9fe90ffc569fb9e7cfca80f72304794d372a85141bedbd19aa", size = 39429 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fc/ef/da5e8c58fad9863ffa629751c0802a70cbd58fb6791947a0588013005797/photonlibpy-2025.0.0b8-py3-none-any.whl", hash = "sha256:d10badfb7973a1b5517503e2e21dcd59aa745d62c55e4b3a6e52f8d36932e135", size = 50942 },
+    { url = "https://files.pythonhosted.org/packages/7f/af/0f20463dcbc22dcf60590c17905f20826e1d5f14727efd4bb516ddd06a02/photonlibpy-2025.1.1rc1-py3-none-any.whl", hash = "sha256:b1fac464b0e448dc5715c6e18cb98feadb31cc73108515185c8fc9e1b88c9ce2", size = 54111 },
 ]
 
 [[package]]
@@ -451,7 +451,7 @@ dev = [
 requires-dist = [
     { name = "numpy", specifier = "~=2.1" },
     { name = "phoenix6", specifier = "~=25.1.0" },
-    { name = "photonlibpy", specifier = "==2025.0.0b8" },
+    { name = "photonlibpy", specifier = "==2025.1.1rc1" },
     { name = "robotpy", extras = ["apriltag"], specifier = "==2025.2.1.0" },
     { name = "robotpy-rev", specifier = "~=2025.0.1" },
     { name = "robotpy-wpilib-utilities", specifier = "==2025.0.0" },
