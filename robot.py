@@ -1,6 +1,7 @@
 import math
 
 import magicbot
+import ntcore
 import wpilib
 import wpilib.event
 from magicbot import tunable
@@ -35,6 +36,13 @@ class MyRobot(magicbot.MagicRobot):
 
     def createObjects(self) -> None:
         self.data_log = wpilib.DataLogManager.getLog()
+
+        # Log deploy info to show in AdvantageScope.
+        deploy_info = wpilib.deployinfo.getDeployData()
+        if deploy_info is not None:
+            meta_table = ntcore.NetworkTableInstance.getDefault().getTable("Metadata")
+            for k, v in deploy_info.items():
+                meta_table.putString(k, v)
 
         self.gamepad = wpilib.XboxController(0)
 
