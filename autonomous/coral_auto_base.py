@@ -1,4 +1,5 @@
 import choreo
+import wpilib
 from choreo.trajectory import SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
 from wpilib import RobotBase
@@ -18,15 +19,17 @@ class CoralAutoBase(AutonomousStateMachine):
 
     DISTANCE_TOLERANCE = 0.05  # metres
 
-    def __init__(self, tracjectory_file) -> None:
+    def __init__(self, trajectory_name: str) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
         super().__init__()
         self.x_controller = PIDController(1.0, 0.0, 0.0)
         self.y_controller = PIDController(1.0, 0.0, 0.0)
 
         try:
+            # TODO: Stop passing deploy path after the next Choreo release
+            # https://github.com/SleipnirGroup/Choreo/pull/1139
             self.trajectory = choreo.load_swerve_trajectory(
-                trajectory_name=tracjectory_file
+                f"{wpilib.getDeployDirectory()}/choreo/{trajectory_name}"
             )
             self.starting_pose = self.trajectory.get_initial_pose(game.is_red())
         except ValueError:
