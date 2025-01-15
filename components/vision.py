@@ -137,12 +137,13 @@ class VisualLocalizer:
 
     @property
     def robot_to_camera(self) -> Transform3d:
+        robot_to_turret_rotation = self.robot_to_turret.rotation()
         return Transform3d(
             self.robot_to_turret.translation(),
             Rotation3d(
-                self.robot_to_turret.rotation().x,
-                self.robot_to_turret.rotation().y,
-                self.robot_to_turret.rotation().z + self.turret_rotation.radians(),
+                robot_to_turret_rotation.x,
+                robot_to_turret_rotation.y,
+                robot_to_turret_rotation.z + self.turret_rotation.radians(),
             ),
         )
 
