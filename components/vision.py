@@ -163,7 +163,6 @@ class VisualLocalizer:
             )
         )
 
-        # reset self.camera_to_robot
         camera_to_robot = self.robot_to_camera.inverse()
 
         all_results = self.camera.getAllUnreadResults()
