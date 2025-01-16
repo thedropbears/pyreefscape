@@ -20,6 +20,7 @@ class ManipulatorComponent:
         self.flywheel_2 = TalonFX(10)
         flywheel_1_config = self.flywheel_1.configurator
         flywheel_2_config = self.flywheel_2.configurator
+
         motor_config = MotorOutputConfigs()
         motor_config.neutral_mode = NeutralModeValue.COAST
         flywheel_1_config.apply(motor_config)
@@ -37,7 +38,7 @@ class ManipulatorComponent:
         self.desired_injector_speed = -self.injector_setpoint
 
     def intake(self) -> None:
-        self.desired_flywheel_speed = self.flywheel_intake_setpoint
+        self.desired_flywheel_speed = -self.flywheel_intake_setpoint
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
