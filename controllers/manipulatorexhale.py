@@ -9,10 +9,12 @@ class ManipulatorExhale(StateMachine):
         pass
 
     def exhale(self):
-        self.manipulator_component.intake()
-
+        self.engage()
+    
+    @state(first=True)
     def spiningflywheels(self):
         self.manipulator_component.spin_flywheels()
 
+    @timedstate(duration=1, must_finish=True)
     def exhaling(self):
         self.manipulator_component.inject()
