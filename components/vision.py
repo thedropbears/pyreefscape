@@ -4,13 +4,21 @@ import time
 import wpilib
 import wpiutil.log
 from magicbot import feedback, tunable
-from photonlibpy import PhotonCamera
-from photonlibpy.targeting import PhotonTrackedTarget
+from photonlibpy.photonCamera import PhotonCamera
+from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
 from wpimath import objectToRobotPose
-from wpimath.geometry import Pose2d, Pose3d, Rotation3d, Transform3d, Translation3d
+from wpimath.geometry import (
+    Pose2d,
+    Pose3d,
+    Rotation2d,
+    Rotation3d,
+    Transform3d,
+    Translation3d,
+)
 
 from components.chassis import ChassisComponent
-from utilities.game import apriltag_layout
+from utilities.game import APRILTAGS, apriltag_layout
+from utilities.scalers import scale_value
 
 
 class VisualLocalizer:
@@ -24,6 +32,12 @@ class VisualLocalizer:
 
     # Time since the last target sighting we allow before informing drivers
     TIMEOUT = 1.0  # s
+
+    CAMERA_PITCH = -math.radians(20)
+
+    # Calibration constants for servo and encoder
+    # range between +/-135 deg
+    SERVO_HALF_ANGLE = math.radians(135)
 
     add_to_estimator = tunable(True)
     should_log = tunable(True)
@@ -39,15 +53,29 @@ class VisualLocalizer:
         name: str,
         # Position of the camera relative to the center of the robot
         pos: Translation3d,
-        # The camera rotation.
+        # The camera rotation at its neutral position (ie centred).
         rot: Rotation3d,
+        servo_id: int,
+        servo_offset: Rotation2d,
+        encoder_id: int,
+        encoder_offset: Rotation2d,
         field: wpilib.Field2d,
         data_log: wpiutil.log.DataLog,
         chassis: ChassisComponent,
     ) -> None:
         self.camera = PhotonCamera(name)
-        self.robot_to_camera = Transform3d(pos, rot)
-        self.camera_to_robot = self.robot_to_camera.inverse()
+        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
+        # Offset of encoder in radians when facing forwards (the desired zero)
+        # To find this value, manually point the camera forwards and record the encoder value
+        # This has nothing to do with the servo - do it by hand!!
+        self.encoder_offset = encoder_offset
+
+        # To find the servo offset, command the servo to neutral in test mode and record the encoder value
+        self.servo_offset = servo_offset
+
+        self.servo = wpilib.Servo(servo_id)
+        self.pos = pos
+        self.robot_to_turret = Transform3d(pos, rot)
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
         self.best_log = field.getObject(name + "_best_log")
@@ -69,83 +97,146 @@ class VisualLocalizer:
     def using_multitag(self) -> bool:
         return self.has_multitag
 
-    def execute(self) -> None:
-        results = self.camera.getLatestResult()
-        # if results didn't see any targets
-        if not results.getTargets():
-            return
+    @feedback
+    def raw_encoder_rotation(self) -> Rotation2d:
+        # The encoder has been set up to return values in the interval [0, 2pi]
+        return Rotation2d(self.encoder.get())
 
-        # if we have already processed these results
-        timestamp = results.getTimestampSeconds()
+    @feedback
+    def relative_bearing_to_closest_tag(self) -> Rotation2d:
+        # initialise default variables
+        # closest tag, distance, robot position
+        distance = math.inf
+        closest_bearing = Rotation2d()
 
-        if timestamp == self.last_timestamp:
-            return
-        self.last_recieved_timestep = time.monotonic()
-        self.last_timestamp = timestamp
-
-        if results.multitagResult:
-            self.has_multitag = True
-            p = results.multitagResult.estimatedPose
-            pose = (Pose3d() + p.best + self.camera_to_robot).toPose2d()
-            reprojectionErr = p.bestReprojErr
-            self.current_reproj = reprojectionErr
-
-            self.field_pos_obj.setPose(pose)
-
+        for tag in APRILTAGS:
+            robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
+            relative_bearing = robot_to_tag.translation().angle()
             if (
-                self.add_to_estimator
-                and self.current_reproj < self.reproj_error_threshold
+                robot_to_tag.translation().norm() < distance
+                and abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
             ):
-                self.chassis.estimator.addVisionMeasurement(
-                    pose,
-                    timestamp,
-                    (
-                        self.linear_vision_uncertainty,
-                        self.linear_vision_uncertainty,
-                        self.rotation_vision_uncertainty,
-                    ),
-                )
+                distance = robot_to_tag.translation().norm()
+                closest_bearing = relative_bearing
 
-            if self.should_log:
-                self.best_log.setPose(
-                    Pose2d(p.best.x, p.best.y, p.best.rotation().toRotation2d())
-                )
-                self.alt_log.setPose(
-                    Pose2d(p.alt.x, p.alt.y, p.alt.rotation().toRotation2d())
-                )
-        else:
-            self.has_multitag = False
-            for target in results.getTargets():
-                # filter out likely bad targets
-                if target.getPoseAmbiguity() > 0.25:
-                    continue
+        return closest_bearing
 
-                poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
-                if poses is None:
-                    # tag doesn't exist
-                    continue
+    @feedback
+    def desired_turret_rotation(self) -> Rotation2d:
+        # Read encoder angle and account for offset
+        return self.relative_bearing_to_closest_tag() - self.chassis.get_rotation()
 
-                best, alt, self.last_pose_z = poses
-                pose = choose_pose(
-                    best,
-                    alt,
-                    self.chassis.get_pose(),
-                )
+    def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
+        return turret - self.servo_offset
+
+    @property
+    def turret_rotation(self) -> Rotation2d:
+        return self.raw_encoder_rotation() - self.encoder_offset
+
+    @property
+    def robot_to_camera(self) -> Transform3d:
+        robot_to_turret_rotation = self.robot_to_turret.rotation()
+        return Transform3d(
+            self.robot_to_turret.translation(),
+            Rotation3d(
+                robot_to_turret_rotation.x,
+                robot_to_turret_rotation.y,
+                robot_to_turret_rotation.z + self.turret_rotation.radians(),
+            ),
+        )
+
+    def zero_servo_(self) -> None:
+        # ONLY CALL THIS IN TEST MODE!
+        # This is used to put the servo in a neutral position to record the encoder value at that point
+        self.servo.set(0.5)
+
+    def execute(self) -> None:
+        self.servo.set(
+            scale_value(
+                self.turret_to_servo(self.desired_turret_rotation()).radians(),
+                -self.SERVO_HALF_ANGLE,
+                self.SERVO_HALF_ANGLE,
+                0.0,
+                1.0,
+            )
+        )
+
+        camera_to_robot = self.robot_to_camera.inverse()
+
+        all_results = self.camera.getAllUnreadResults()
+        for results in all_results:
+            # if results didn't see any targets
+            if not results.getTargets():
+                return
+
+            # if we have already processed these results
+            timestamp = results.getTimestampSeconds()
+
+            if timestamp == self.last_timestamp:
+                return
+            self.last_recieved_timestep = time.monotonic()
+            self.last_timestamp = timestamp
+
+            if results.multitagResult:
+                self.has_multitag = True
+                p = results.multitagResult.estimatedPose
+                pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
+                reprojectionErr = p.bestReprojErr
+                self.current_reproj = reprojectionErr
 
                 self.field_pos_obj.setPose(pose)
-                self.chassis.estimator.addVisionMeasurement(
-                    pose,
-                    timestamp,
-                    (
-                        self.linear_vision_uncertainty,
-                        self.linear_vision_uncertainty,
-                        self.rotation_vision_uncertainty,
-                    ),
-                )
+
+                if (
+                    self.add_to_estimator
+                    and self.current_reproj < self.reproj_error_threshold
+                ):
+                    self.chassis.estimator.addVisionMeasurement(
+                        pose,
+                        timestamp,
+                        (
+                            self.linear_vision_uncertainty,
+                            self.linear_vision_uncertainty,
+                            self.rotation_vision_uncertainty,
+                        ),
+                    )
 
                 if self.should_log:
-                    self.best_log.setPose(best)
-                    self.alt_log.setPose(alt)
+                    # Multitag results don't have best and alternates
+                    self.best_log.setPose(pose)
+                    self.alt_log.setPose(pose)
+            else:
+                self.has_multitag = False
+                for target in results.getTargets():
+                    # filter out likely bad targets
+                    if target.getPoseAmbiguity() > 0.25:
+                        continue
+
+                    poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
+                    if poses is None:
+                        # tag doesn't exist
+                        continue
+
+                    best, alt, self.last_pose_z = poses
+                    pose = choose_pose(
+                        best,
+                        alt,
+                        self.chassis.get_pose(),
+                    )
+
+                    self.field_pos_obj.setPose(pose)
+                    self.chassis.estimator.addVisionMeasurement(
+                        pose,
+                        timestamp,
+                        (
+                            self.linear_vision_uncertainty,
+                            self.linear_vision_uncertainty,
+                            self.rotation_vision_uncertainty,
+                        ),
+                    )
+
+                    if self.should_log:
+                        self.best_log.setPose(best)
+                        self.alt_log.setPose(alt)
 
     @feedback
     def sees_target(self):

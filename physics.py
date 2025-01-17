@@ -8,13 +8,14 @@ import phoenix6.unmanaged
 import wpilib
 from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 from pyfrc.physics.core import PhysicsInterface
-from wpilib.simulation import DCMotorSim
+from wpilib.simulation import DCMotorSim, DutyCycleEncoderSim, PWMSim
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
 from utilities import game
+from utilities.functions import constrain_angle
 
 if typing.TYPE_CHECKING:
     from robot import MyRobot
@@ -68,6 +69,15 @@ class Falcon500MotorSim:
             )
 
 
+# class ServoEncoderSim:
+#     def __init__(self, pwm, encoder):
+#         self.pwm_sim = PWMSim(pwm)
+#         self.encoder_sim = DutyCycleEncoderSim(encoder)
+
+#     def update(self):
+#         command = self.pwm_sim.getPosition()
+
+
 class PhysicsEngine:
     def __init__(self, physics_controller: PhysicsInterface, robot: MyRobot):
         self.physics_controller = physics_controller
@@ -98,12 +108,16 @@ class PhysicsEngine:
 
         self.imu = robot.chassis.imu.sim_state
 
-        self.vision = VisionSystemSim("main")
-        self.vision.addAprilTags(game.apriltag_layout)
+        self.vision_sim = VisionSystemSim("main")
+        self.vision_sim.addAprilTags(game.apriltag_layout)
         properties = SimCameraProperties.OV9281_1280_720()
         self.camera = PhotonCameraSim(robot.vision.camera, properties)
         self.camera.setMaxSightRange(5.0)
-        self.vision.addCamera(self.camera, robot.vision.robot_to_camera)
+        self.visual_localiser = robot.vision
+        self.vision_sim.addCamera(self.camera, self.visual_localiser.robot_to_camera)
+
+        self.servo_sim = PWMSim(self.visual_localiser.servo)
+        self.encoder_sim = DutyCycleEncoderSim(self.visual_localiser.encoder)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -129,4 +143,16 @@ class PhysicsEngine:
 
         self.physics_controller.drive(speeds, tm_diff)
 
-        self.vision.update(self.physics_controller.get_pose())
+        self.encoder_sim.set(
+            constrain_angle(
+                (
+                    (2.0 * self.visual_localiser.servo.getPosition() - 1.0)
+                    * self.visual_localiser.SERVO_HALF_ANGLE
+                )
+                + self.visual_localiser.servo_offset.radians()
+                + self.visual_localiser.encoder_offset.radians()
+            )
+        )
+
+        self.vision_sim.adjustCamera(self.camera, self.visual_localiser.robot_to_camera)
+        self.vision_sim.update(self.physics_controller.get_pose())

@@ -5,13 +5,14 @@ import ntcore
 import wpilib
 import wpilib.event
 from magicbot import tunable
-from wpimath.geometry import Rotation3d, Translation3d
+from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
 from components.coral_placer import CoralPlacerComponent
 from components.manipulator import ManipulatorComponent
 from components.vision import VisualLocalizer
 from controllers.coral_placer import CoralPlacer
+from ids import DioChannel, PwmChannel
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -55,6 +56,10 @@ class MyRobot(magicbot.MagicRobot):
         self.vision_name = "ardu_cam"
         self.vision_pos = Translation3d(0.22, 0, 0.295)
         self.vision_rot = Rotation3d(0, -math.radians(20), 0)
+        self.vision_servo_id = PwmChannel.VISION_SERVO
+        self.vision_servo_offset = Rotation2d(3.022)
+        self.vision_encoder_id = DioChannel.VISION_ENCODER
+        self.vision_encoder_offset = Rotation2d(3.083)
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
@@ -121,14 +126,16 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getYButton():
             self.coral_placer_component.place()
-
         self.coral_placer_component.execute()
+
+        if self.gamepad.getBButton():
+            self.vision.zero_servo_()
+        else:
+            self.vision.execute()
 
         self.chassis.execute()
 
         self.chassis.update_odometry()
-
-        self.vision.execute()
 
         if self.gamepad.getXButton():
             self.manipulator_component.spin_flywheels()
