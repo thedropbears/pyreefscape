@@ -63,3 +63,6 @@ networktables.json
 simgui*.json
 logs/
 ctre_sim/
+
+# pycharm ignores
+.idea/
