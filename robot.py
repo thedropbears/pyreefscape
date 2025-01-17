@@ -8,6 +8,7 @@ from magicbot import tunable
 from wpimath.geometry import Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
+from components.climber import ClimberComponent
 from components.coral_placer import CoralPlacerComponent
 from components.manipulator import ManipulatorComponent
 from components.vision import VisualLocalizer
@@ -22,6 +23,7 @@ class MyRobot(magicbot.MagicRobot):
 
     # Components
     chassis: ChassisComponent
+    climber: ClimberComponent
     coral_placer_component: CoralPlacerComponent
     manipulator_component: ManipulatorComponent
     vision: VisualLocalizer
@@ -122,9 +124,16 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getYButton():
             self.coral_placer_component.place()
 
+        if self.gamepad.getRightBumper():
+            self.climber.pullRope()
+        if self.gamepad.getRightTriggerAxis() >= 0.3:
+            self.climber.loosenRope()
+
         self.coral_placer_component.execute()
 
         self.chassis.execute()
+
+        self.climber.execute()
 
         self.chassis.update_odometry()
 
