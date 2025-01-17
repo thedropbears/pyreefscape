@@ -21,10 +21,10 @@ class ClimberComponent:
             SparkMax.PersistMode.kPersistParameters,
         )
 
-    def pullRope(self):
+    def pull_rope(self):
         self.voltage_set_point = self.winch_voltage
 
-    def loosenRope(self):
+    def loosen_rope(self):
         self.voltage_set_point = -self.winch_voltage
 
     def execute(self):

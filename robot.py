@@ -125,10 +125,10 @@ class MyRobot(magicbot.MagicRobot):
             self.coral_placer_component.place()
 
         if self.gamepad.getRightBumper():
-            self.climber.pullRope()
+            self.climber.pull_rope()
 
         if self.gamepad.getRightTriggerAxis() >= 0.3:
-            self.climber.loosenRope()
+            self.climber.loosen_rope()
 
         self.coral_placer_component.execute()
 
