@@ -124,10 +124,7 @@ class VisualLocalizer:
     @feedback
     def desired_turret_rotation(self) -> Rotation2d:
         # Read encoder angle and account for offset
-        return (
-            self.relative_bearing_to_closest_tag()
-            - self.robot_to_turret.rotation().toRotation2d()
-        )
+        return self.relative_bearing_to_closest_tag() - self.chassis.get_rotation()
 
     def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
         return turret - self.servo_offset
