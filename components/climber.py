@@ -1,11 +1,11 @@
-from magicbot import tunable, will_reset_to
+from magicbot import tunable
 from rev import SparkMax, SparkMaxConfig
 
 from ids import SparkId
 
 
 class ClimberComponent:
-    voltage_set_point = will_reset_to(0.0)
+    voltage_set_point = 0.0
     winch_voltage = tunable(12.0)
 
     def __init__(self):
