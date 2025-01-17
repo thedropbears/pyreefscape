@@ -29,3 +29,4 @@ class ClimberComponent:
 
     def execute(self):
         self.motor.setVoltage(self.voltage_set_point)
+        self.voltage_set_point = 0.0

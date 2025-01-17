@@ -126,6 +126,7 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getRightBumper():
             self.climber.pullRope()
+
         if self.gamepad.getRightTriggerAxis() >= 0.3:
             self.climber.loosenRope()
 
