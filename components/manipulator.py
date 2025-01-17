@@ -14,17 +14,17 @@ class ManipulatorComponent:
     def __init__(self) -> None:
         self.injector_1 = SparkMax(5, SparkMax.MotorType.kBrushless)
         self.injector_2 = SparkMax(4, SparkMax.MotorType.kBrushless)
-        motor_config = SparkMaxConfig()
+        injector_config = SparkMaxConfig()
 
-        motor_config.inverted(False)
+        injector_config.inverted(False)
         self.injector_1.configure(
-            motor_config,
+            injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        motor_config.follow(5, True)
+        injector_config.follow(5, True)
         self.injector_2.configure(
-            motor_config,
+            injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
@@ -33,12 +33,11 @@ class ManipulatorComponent:
         self.flywheel_2 = TalonFX(10)
         flywheel_1_config = self.flywheel_1.configurator
         flywheel_2_config = self.flywheel_2.configurator
-        motor_config = MotorOutputConfigs()
-        motor_config.neutral_mode = NeutralModeValue.COAST
-        # motor_config.inverted =
+        flywheel_config = MotorOutputConfigs()
+        flywheel_config.neutral_mode = NeutralModeValue.COAST
 
-        flywheel_1_config.apply(motor_config)
-        flywheel_2_config.apply(motor_config)
+        flywheel_1_config.apply(flywheel_config)
+        flywheel_2_config.apply(flywheel_config)
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.25
