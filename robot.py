@@ -57,9 +57,9 @@ class MyRobot(magicbot.MagicRobot):
         self.vision_pos = Translation3d(0.22, 0, 0.295)
         self.vision_rot = Rotation3d(0, -math.radians(20), 0)
         self.vision_servo_id = PwmChannel.VISION_SERVO
-        self.vision_servo_offset = Rotation2d(0.1)
+        self.vision_servo_offset = Rotation2d(3.38)
         self.vision_encoder_id = DioChannel.VISION_ENCODER
-        self.vision_encoder_offset = Rotation2d(0.2)
+        self.vision_encoder_offset = Rotation2d(4.06)
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
