@@ -146,6 +146,9 @@ class MyRobot(magicbot.MagicRobot):
 
         self.manipulator_component.execute()
 
+        if self.gamepad.getLeftBumper():
+            self.manipulator_component.zero_tilter()
+
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
         self.chassis.update_odometry()
