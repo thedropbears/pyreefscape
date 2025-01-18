@@ -11,6 +11,8 @@ from components.chassis import ChassisComponent
 from components.coral_placer import CoralPlacerComponent
 from components.manipulator import ManipulatorComponent
 from components.vision import VisualLocalizer
+from controllers.algae_intake import AlgaeIntake
+from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
 from ids import DioChannel, PwmChannel
 from utilities.game import is_red
@@ -20,6 +22,8 @@ from utilities.scalers import rescale_js
 class MyRobot(magicbot.MagicRobot):
     # Controllers
     coral_placer: CoralPlacer
+    algae_intake: AlgaeIntake
+    algae_shooter: AlgaeShooter
 
     # Components
     chassis: ChassisComponent
