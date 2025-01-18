@@ -20,7 +20,7 @@ jobs:
           version: "0.5.x"
       - name: Install dependencies
         run: |
-          uv sync
+          uv sync --locked
           uv pip install pytest-github-actions-annotate-failures
       - run: uv run robotpy coverage test
       - run: uv run coverage xml
