@@ -43,11 +43,15 @@ class MyRobot(magicbot.MagicRobot):
         self.data_log = wpilib.DataLogManager.getLog()
 
         # Log deploy info to show in AdvantageScope.
+        meta_table = ntcore.NetworkTableInstance.getDefault().getTable("Metadata")
         deploy_info = wpilib.deployinfo.getDeployData()
         if deploy_info is not None:
-            meta_table = ntcore.NetworkTableInstance.getDefault().getTable("Metadata")
             for k, v in deploy_info.items():
                 meta_table.putString(k, v)
+
+        # Also log roboRIO metadata.
+        meta_table.putString("runtime_type", self.getRuntimeType().name[1:])
+        meta_table.putString("rio_serial", wpilib.RobotController.getSerialNumber())
 
         self.gamepad = wpilib.XboxController(0)
 
