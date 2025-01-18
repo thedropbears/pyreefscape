@@ -3,7 +3,7 @@ from magicbot import StateMachine, timed_state
 from components.manipulator import ManipulatorComponent
 
 
-class ManipulatorIntake(StateMachine):
+class AlgaeIntake(StateMachine):
     manipulator_component: ManipulatorComponent
 
     def __init__(self):
