@@ -75,6 +75,10 @@ class MyRobot(magicbot.MagicRobot):
     def teleopPeriodic(self) -> None:
         if self.gamepad.getYButton():
             self.coral_placer.place()
+        self.manipulator_component.flywheel_1.set(1)
+        
+        if self.manipulator_component.flywheels_up_to_speed() == True:
+            print("gaming")
 
         # Set max speed
         max_speed = self.max_speed
