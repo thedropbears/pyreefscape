@@ -6,7 +6,7 @@ from components.manipulator import ManipulatorComponent
 
 class AlgaeShooter(StateMachine):
     manipulator_component: ManipulatorComponent
-    chassis_component: ChassisComponent
+    chassis: ChassisComponent
 
     def __init__(self) -> None:
         pass
