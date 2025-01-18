@@ -127,7 +127,7 @@ class VisualLocalizer:
         return self.relative_bearing_to_closest_tag() - self.chassis.get_rotation()
 
     def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
-        return turret - self.servo_offset
+        return turret - (self.servo_offset - self.encoder_offset)
 
     @property
     def turret_rotation(self) -> Rotation2d:
