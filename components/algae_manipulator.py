@@ -42,8 +42,19 @@ class AlgaeManipulatorComponent:
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.25
 
+        self.
+
     def spin_flywheels(self) -> None:
         self.desired_flywheel_speed = self.flywheel_shoot_speed
+
+    def flywheels_up_to_speed(self) -> bool:
+            if abs(self.flywheel_1.get() - self.flywheel_setpoint_1) <= 5 and abs(self.flywheel_2.get() - self.flywheel_setpoint_1) <= 5:
+                return True
+                print("Flywheels are up to speed")
+
+            else:
+                return False
+                print("Flywheels are not up to speed")
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
