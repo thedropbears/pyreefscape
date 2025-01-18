@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --locked
-          uv pip install coverage pytest-github-actions-annotate-failures
+          uv pip install pytest-github-actions-annotate-failures
       - run: uv run robotpy coverage test
       - run: uv run coverage xml
       - uses: actions/upload-artifact@v4
