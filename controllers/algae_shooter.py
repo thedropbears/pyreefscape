@@ -4,7 +4,7 @@ from components.chassis import ChassisComponent
 from components.manipulator import ManipulatorComponent
 
 
-class ManipulatorInject(StateMachine):
+class AlgaeShooter(StateMachine):
     manipulator_component: ManipulatorComponent
     chassis_component: ChassisComponent
 
