@@ -34,10 +34,10 @@ class MyRobot(magicbot.MagicRobot):
     vision: VisualLocalizer
     tilter: TilterComponent
 
-    max_speed = magicbot.tunable(5)  # m/s
-    lower_max_speed = magicbot.tunable(2)  # m/s
-    max_spin_rate = magicbot.tunable(4)  # m/s
-    lower_max_spin_rate = magicbot.tunable(2)  # m/s
+    max_speed = tunable(5)  # m/s
+    lower_max_speed = tunable(2)  # m/s
+    max_spin_rate = tunable(4)  # m/s
+    lower_max_spin_rate = tunable(2)  # m/s
     inclination_angle = tunable(0.0)
 
     START_POS_TOLERANCE = 1
@@ -206,6 +206,7 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getLeftBumper():
             self.tilter.zero_tilter()
+        self.tilter.execute()
 
         if self.gamepad.getLeftBumper():
             self.tilter.zero_tilter()
