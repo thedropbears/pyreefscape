@@ -4,7 +4,7 @@ from rev import SparkMax, SparkMaxConfig
 from ids import SparkId
 
 
-class Climber:
+class ClimberComponent:
     target_speed = will_reset_to(0.0)
     winch_voltage = tunable(12.0)
 
