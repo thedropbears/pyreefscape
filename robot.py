@@ -150,7 +150,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getYButton():
             self.algae_manipulator_component.inject()
         if self.gamepad.getAButton():
-            self.algae_manipulator_component.intake()
+            self.algae_intake.intake()
+
+        self.algae_intake.execute()
 
         self.algae_manipulator_component.execute()
 

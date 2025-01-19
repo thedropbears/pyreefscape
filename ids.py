@@ -47,6 +47,8 @@ class DioChannel(enum.IntEnum):
 
     VISION_ENCODER = 1
 
+    ALGAE_INTAKE_SWITCH = 2
+
 
 @enum.unique
 class PwmChannel(enum.IntEnum):
