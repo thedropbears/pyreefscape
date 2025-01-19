@@ -7,9 +7,9 @@ import wpilib.event
 from magicbot import tunable
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
+from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
 from components.coral_placer import CoralPlacerComponent
-from components.manipulator import AlgaeManipulatorComponent
 from components.vision import VisualLocalizer
 from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter

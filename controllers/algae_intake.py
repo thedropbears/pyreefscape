@@ -1,6 +1,6 @@
 from magicbot import StateMachine, timed_state
 
-from components.manipulator import AlgaeManipulatorComponent
+from components.algae_manipulator import AlgaeManipulatorComponent
 
 
 class AlgaeIntake(StateMachine):

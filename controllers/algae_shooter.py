@@ -1,7 +1,7 @@
 from magicbot import StateMachine, state, timed_state
 
+from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
-from components.manipulator import AlgaeManipulatorComponent
 
 
 class AlgaeShooter(StateMachine):
