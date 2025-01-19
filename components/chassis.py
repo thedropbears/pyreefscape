@@ -235,46 +235,51 @@ class ChassisComponent:
 
         self.on_red_alliance = False
 
+        # Front Left
+        self.module_fl = SwerveModule(
+            self.WHEEL_BASE / 2,
+            self.TRACK_WIDTH / 2,
+            TalonId.DRIVE_FL,
+            TalonId.STEER_FL,
+            CancoderId.SWERVE_FL,
+        )
+        # Rear Left
+        self.module_rl = SwerveModule(
+            -self.WHEEL_BASE / 2,
+            self.TRACK_WIDTH / 2,
+            TalonId.DRIVE_RL,
+            TalonId.STEER_RL,
+            CancoderId.SWERVE_RL,
+        )
+        # Rear Right
+        self.module_rr = SwerveModule(
+            -self.WHEEL_BASE / 2,
+            -self.TRACK_WIDTH / 2,
+            TalonId.DRIVE_RR,
+            TalonId.STEER_RR,
+            CancoderId.SWERVE_RR,
+        )
+        # Front Right
+        self.module_fr = SwerveModule(
+            self.WHEEL_BASE / 2,
+            -self.TRACK_WIDTH / 2,
+            TalonId.DRIVE_FR,
+            TalonId.STEER_FR,
+            CancoderId.SWERVE_FR,
+        )
+
         self.modules = (
-            # Front Left
-            SwerveModule(
-                self.WHEEL_BASE / 2,
-                self.TRACK_WIDTH / 2,
-                TalonId.DRIVE_FL,
-                TalonId.STEER_FL,
-                CancoderId.SWERVE_FL,
-            ),
-            # Rear Left
-            SwerveModule(
-                -self.WHEEL_BASE / 2,
-                self.TRACK_WIDTH / 2,
-                TalonId.DRIVE_RL,
-                TalonId.STEER_RL,
-                CancoderId.SWERVE_RL,
-            ),
-            # Rear Right
-            SwerveModule(
-                -self.WHEEL_BASE / 2,
-                -self.TRACK_WIDTH / 2,
-                TalonId.DRIVE_RR,
-                TalonId.STEER_RR,
-                CancoderId.SWERVE_RR,
-            ),
-            # Front Right
-            SwerveModule(
-                self.WHEEL_BASE / 2,
-                -self.TRACK_WIDTH / 2,
-                TalonId.DRIVE_FR,
-                TalonId.STEER_FR,
-                CancoderId.SWERVE_FR,
-            ),
+            self.module_fl,
+            self.module_rl,
+            self.module_rr,
+            self.module_fr,
         )
 
         self.kinematics = SwerveDrive4Kinematics(
-            self.modules[0].translation,
-            self.modules[1].translation,
-            self.modules[2].translation,
-            self.modules[3].translation,
+            self.module_fl.translation,
+            self.module_rl.translation,
+            self.module_rr.translation,
+            self.module_fr.translation,
         )
         self.sync_all()
         self.imu.reset()
@@ -304,10 +309,10 @@ class ChassisComponent:
         SwerveModuleState, SwerveModuleState, SwerveModuleState, SwerveModuleState
     ]:
         return (
-            self.modules[0].get(),
-            self.modules[1].get(),
-            self.modules[2].get(),
-            self.modules[3].get(),
+            self.module_fl.get(),
+            self.module_rl.get(),
+            self.module_rr.get(),
+            self.module_fr.get(),
         )
 
     def setup(self) -> None:
@@ -465,10 +470,10 @@ class ChassisComponent:
         SwerveModulePosition,
     ]:
         return (
-            self.modules[0].get_position(),
-            self.modules[1].get_position(),
-            self.modules[2].get_position(),
-            self.modules[3].get_position(),
+            self.module_fl.get_position(),
+            self.module_rl.get_position(),
+            self.module_rr.get_position(),
+            self.module_fr.get_position(),
         )
 
     def get_pose(self) -> Pose2d:
