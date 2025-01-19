@@ -1,4 +1,4 @@
-from magicbot import tunable
+from magicbot import feedback, tunable
 from phoenix6.configs import MotorOutputConfigs
 from phoenix6.controls import Follower, VoltageOut
 from phoenix6.hardware import TalonFX
@@ -10,6 +10,8 @@ class AlgaeManipulatorComponent:
     flywheel_shoot_speed = tunable(-6.0)
     flywheel_intake_speed = tunable(2.0)
     injector_inject_speed = tunable(-6.0)
+
+    FLYWHEEL_RPS_TOLERENCE = 0.1
 
     def __init__(self) -> None:
         self.injector_1 = SparkMax(5, SparkMax.MotorType.kBrushless)
@@ -44,6 +46,15 @@ class AlgaeManipulatorComponent:
 
     def spin_flywheels(self) -> None:
         self.desired_flywheel_speed = self.flywheel_shoot_speed
+
+    @feedback
+    def flywheels_up_to_speed(self) -> bool:
+        return (
+            abs(self.flywheel_1.get_velocity().value - self.desired_flywheel_speed)
+            <= self.FLYWHEEL_RPS_TOLERENCE
+            and abs(self.flywheel_2.get_velocity().value - self.desired_flywheel_speed)
+            <= self.FLYWHEEL_RPS_TOLERENCE
+        )
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
