@@ -1,4 +1,4 @@
-from magicbot import tunable, feedback
+from magicbot import feedback, tunable
 from phoenix6.configs import MotorOutputConfigs
 from phoenix6.controls import Follower, VoltageOut
 from phoenix6.hardware import TalonFX
@@ -49,7 +49,12 @@ class AlgaeManipulatorComponent:
 
     @feedback
     def flywheels_up_to_speed(self) -> bool:
-            return abs(self.flywheel_1.get_velocity().value - self.desired_flywheel_speed) <= self.FLYWHEEL_RPS_TOLERENCE and abs(self.flywheel_2.get_velocity().value - self.desired_flywheel_speed) <= self.FLYWHEEL_RPS_TOLERENCE
+        return (
+            abs(self.flywheel_1.get_velocity().value - self.desired_flywheel_speed)
+            <= self.FLYWHEEL_RPS_TOLERENCE
+            and abs(self.flywheel_2.get_velocity().value - self.desired_flywheel_speed)
+            <= self.FLYWHEEL_RPS_TOLERENCE
+        )
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
