@@ -9,8 +9,9 @@ from phoenix6.controls import Follower, NeutralOut, VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
+from wpilib import DigitalInput
 
-from ids import SparkId, TalonId
+from ids import DioChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
@@ -27,6 +28,8 @@ class AlgaeManipulatorComponent:
         self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
         self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
         injector_config = SparkMaxConfig()
+
+        self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
         injector_config.inverted(True)
         self.injector_1.configure(
@@ -103,6 +106,10 @@ class AlgaeManipulatorComponent:
     def intake(self) -> None:
         self.desired_flywheel_speed = self.flywheel_intake_speed
         self.desired_injector_speed = self.injector_intake_speed
+
+    @feedback
+    def has_algae(self) -> bool:
+        return not self.algae_limit_switch.get()
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
