@@ -8,7 +8,7 @@ from ids import SparkId
 class TilterComponent:
     switch = DigitalInput(1)
     tilter_gear_ratio = 20 * 66 / 26
-    tilt_speed = tunable(2.0)
+    tilt_volts = tunable(2.0)
     desired_angle = 0
 
     def __init__(self):
@@ -24,8 +24,10 @@ class TilterComponent:
         )  # THIS MUST BE OPPOSITE TO tilter_2 OR MOTORS WILL STALL
         tilter_1_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
-        tilter_1_config.closedLoop.P(0.0)  # TODO write correct values here
-        tilter_1_config.closedLoop.I(0.0)  # TODO write correct values here
+        tilter_1_config.closedLoop.P(
+            self.tilt_volts / 73
+        )  # TODO write correct values here
+        tilter_1_config.closedLoop.I(0.01)  # TODO write correct values here
         tilter_1_config.closedLoop.D(0.0)  # TODO write correct values here
         tilter_1_config.closedLoop.outputRange(
             -1.0, 1.0
