@@ -10,6 +10,8 @@ from phoenix6.hardware import TalonFX
 from phoenix6.signals import NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
 
+from ids import SparkId, TalonId
+
 
 class AlgaeManipulatorComponent:
     flywheel_shoot_speed = tunable(-6.0)
@@ -21,8 +23,8 @@ class AlgaeManipulatorComponent:
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
     def __init__(self) -> None:
-        self.injector_1 = SparkMax(5, SparkMax.MotorType.kBrushless)
-        self.injector_2 = SparkMax(4, SparkMax.MotorType.kBrushless)
+        self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
+        self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
         injector_config = SparkMaxConfig()
 
         injector_config.inverted(False)
@@ -31,15 +33,15 @@ class AlgaeManipulatorComponent:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        injector_config.follow(5, True)
+        injector_config.follow(SparkId.INJECTOR_1, True)
         self.injector_2.configure(
             injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
 
-        self.flywheel_1 = TalonFX(9)
-        self.flywheel_2 = TalonFX(10)
+        self.flywheel_1 = TalonFX(TalonId.FLYWHEEL_1)
+        self.flywheel_2 = TalonFX(TalonId.FLYWHEEL_2)
         flywheel_1_config = self.flywheel_1.configurator
         flywheel_2_config = self.flywheel_2.configurator
         flywheel_config = MotorOutputConfigs()

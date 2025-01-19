@@ -17,6 +17,9 @@ class TalonId(enum.IntEnum):
     DRIVE_FR = 4
     STEER_FR = 8
 
+    FLYWHEEL_1 = 9
+    FLYWHEEL_2 = 10
+
 
 @enum.unique
 class CancoderId(enum.IntEnum):
@@ -33,6 +36,9 @@ class SparkId(enum.IntEnum):
     """CAN ID for REV SPARK motor controllers (Spark Max, Spark Flex)."""
 
     CORAL_PLACER = 20
+
+    INJECTOR_1 = 10
+    INJECTOR_2 = 11
 
 
 @enum.unique
