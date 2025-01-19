@@ -1,11 +1,11 @@
-from magicbot import tunable, will_reset_to
+from magicbot import tunable
 from rev import SparkMax, SparkMaxConfig
 
 from ids import SparkId
 
 
 class ClimberComponent:
-    target_speed = will_reset_to(0.0)
+    target_speed = 0.0
     winch_voltage = tunable(12.0)
 
     def __init__(self) -> None:
@@ -50,3 +50,4 @@ class ClimberComponent:
             # stop motor if we're already there
 
         self.motor.setVoltage(self.target_speed)
+        self.target_speed = 0.0
