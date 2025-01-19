@@ -1,3 +1,4 @@
+import numpy as np
 from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
@@ -22,6 +23,9 @@ class AlgaeManipulatorComponent:
     FLYWHEEL_RPS_TOLERENCE = 0.1
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
+
+    FLYWHEEL_DISTANCE_LOOKUP = [0, 1, 2, 3, 4, 5]
+    FLYWHEEL_SPEED_LOOKUP = [60, 60, 60, 60, 60, 60]
 
     def __init__(self) -> None:
         self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
@@ -103,6 +107,16 @@ class AlgaeManipulatorComponent:
     def intake(self) -> None:
         self.desired_flywheel_speed = self.flywheel_intake_speed
         self.desired_injector_speed = self.injector_intake_speed
+
+    def set_range(self, distance: float) -> None:
+        self.desired_flywheel_speed = float(
+            np.interp(
+                distance,
+                self.FLYWHEEL_DISTANCE_LOOKUP,
+                self.FLYWHEEL_SPEED_LOOKUP,
+                right=0.0,
+            )
+        )
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
