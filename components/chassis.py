@@ -242,6 +242,7 @@ class ChassisComponent:
             TalonId.DRIVE_FL,
             TalonId.STEER_FL,
             CancoderId.SWERVE_FL,
+            drive_reversed=True,
         )
         # Rear Left
         self.module_rl = SwerveModule(
@@ -250,6 +251,7 @@ class ChassisComponent:
             TalonId.DRIVE_RL,
             TalonId.STEER_RL,
             CancoderId.SWERVE_RL,
+            drive_reversed=True,
         )
         # Rear Right
         self.module_rr = SwerveModule(
@@ -258,6 +260,7 @@ class ChassisComponent:
             TalonId.DRIVE_RR,
             TalonId.STEER_RR,
             CancoderId.SWERVE_RR,
+            drive_reversed=True,
         )
         # Front Right
         self.module_fr = SwerveModule(
@@ -266,6 +269,7 @@ class ChassisComponent:
             TalonId.DRIVE_FR,
             TalonId.STEER_FR,
             CancoderId.SWERVE_FR,
+            drive_reversed=True,
         )
 
         self.modules = (
