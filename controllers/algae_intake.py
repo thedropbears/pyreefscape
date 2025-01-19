@@ -1,4 +1,4 @@
-from magicbot import StateMachine, timed_state
+from magicbot import StateMachine, state
 
 from components.algae_manipulator import AlgaeManipulatorComponent
 
@@ -9,8 +9,12 @@ class AlgaeIntake(StateMachine):
     def __init__(self):
         pass
 
-    @timed_state(duration=3.0, first=True, must_finish=True)
+    @state(first=True)
     def intaking(self):
+        if self.algae_manipulator_component.has_algae():
+            self.done()
+            return
+
         self.algae_manipulator_component.intake()
 
     def intake(self):
