@@ -7,7 +7,7 @@ from phoenix6.configs import (
 )
 from phoenix6.controls import Follower, NeutralOut, VelocityVoltage
 from phoenix6.hardware import TalonFX
-from phoenix6.signals import NeutralModeValue
+from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
 
 from ids import SparkId, TalonId
@@ -27,7 +27,7 @@ class AlgaeManipulatorComponent:
         self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
         injector_config = SparkMaxConfig()
 
-        injector_config.inverted(False)
+        injector_config.inverted(True)
         self.injector_1.configure(
             injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
@@ -46,6 +46,7 @@ class AlgaeManipulatorComponent:
         flywheel_2_config = self.flywheel_2.configurator
         flywheel_config = MotorOutputConfigs()
         flywheel_config.neutral_mode = NeutralModeValue.COAST
+        flywheel_config.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
 
         flywheel_pid = (
             Slot0Configs()
