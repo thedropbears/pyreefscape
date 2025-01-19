@@ -9,7 +9,7 @@ from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from components.chassis import ChassisComponent
 from components.coral_placer import CoralPlacerComponent
-from components.manipulator import ManipulatorComponent
+from components.manipulator import AlgaeManipulatorComponent
 from components.vision import VisualLocalizer
 from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
@@ -28,7 +28,7 @@ class MyRobot(magicbot.MagicRobot):
     # Components
     chassis: ChassisComponent
     coral_placer_component: CoralPlacerComponent
-    manipulator_component: ManipulatorComponent
+    manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
 
     max_speed = magicbot.tunable(5)  # m/s

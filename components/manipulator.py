@@ -6,7 +6,7 @@ from phoenix6.signals import NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
 
 
-class ManipulatorComponent:
+class AlgaeManipulatorComponent:
     flywheel_shoot_speed = tunable(-6.0)
     flywheel_intake_speed = tunable(2.0)
     injector_inject_speed = tunable(-6.0)

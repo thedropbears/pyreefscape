@@ -1,10 +1,10 @@
 from magicbot import StateMachine, timed_state
 
-from components.manipulator import ManipulatorComponent
+from components.manipulator import AlgaeManipulatorComponent
 
 
 class AlgaeIntake(StateMachine):
-    manipulator_component: ManipulatorComponent
+    manipulator_component: AlgaeManipulatorComponent
 
     def __init__(self):
         pass

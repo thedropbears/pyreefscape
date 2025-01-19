@@ -1,11 +1,11 @@
 from magicbot import StateMachine, state, timed_state
 
 from components.chassis import ChassisComponent
-from components.manipulator import ManipulatorComponent
+from components.manipulator import AlgaeManipulatorComponent
 
 
 class AlgaeShooter(StateMachine):
-    manipulator_component: ManipulatorComponent
+    manipulator_component: AlgaeManipulatorComponent
     chassis: ChassisComponent
 
     def __init__(self) -> None:
