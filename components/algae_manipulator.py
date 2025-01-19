@@ -91,6 +91,10 @@ class AlgaeManipulatorComponent:
             <= self.FLYWHEEL_RPS_TOLERENCE
         )
 
+    @feedback
+    def flywheel_speed(self) -> float:
+        return self.flywheel_1.get_velocity().value
+
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
 
