@@ -109,11 +109,11 @@ class AlgaeManipulatorComponent:
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
-            self.flywheel_2.set_control(Follower(9, False))
+            self.flywheel_2.set_control(Follower(TalonId.FLYWHEEL_1, False))
 
         else:
             self.flywheel_1.set_control(VelocityVoltage(self.desired_flywheel_speed))
-            self.flywheel_2.set_control(Follower(9, False))
+            self.flywheel_2.set_control(Follower(TalonId.FLYWHEEL_1, False))
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.0
