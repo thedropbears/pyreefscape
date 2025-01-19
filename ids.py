@@ -39,6 +39,9 @@ class SparkId(enum.IntEnum):
 
     INJECTOR_1 = 10
     INJECTOR_2 = 11
+    
+    TILTER_LEFT = 4
+    TILTER_RIGHT = 5
 
 
 @enum.unique
