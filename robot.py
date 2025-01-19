@@ -11,6 +11,7 @@ from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
+from components.climber import ClimberComponent
 from components.coral_placer import CoralPlacerComponent
 from components.feeler import FeelerComponent
 from components.intake import IntakeComponent
@@ -38,6 +39,7 @@ class MyRobot(magicbot.MagicRobot):
 
     # Components
     chassis: ChassisComponent
+    climber: ClimberComponent
     coral_placer_component: CoralPlacerComponent
     algae_manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
@@ -231,12 +233,20 @@ class MyRobot(magicbot.MagicRobot):
         self.coral_placer_component.execute()
         self.status_lights.execute()
 
+        if self.gamepad.getRightBumper():
+            self.climber.retract()
+
+        if self.gamepad.getRightTriggerAxis() >= 0.3:
+            self.climber.deploy()
+
         if self.gamepad.getBButton():
             self.vision.zero_servo_()
         else:
             self.vision.execute()
 
         self.chassis.execute()
+
+        self.climber.execute()
 
         self.chassis.update_odometry()
 
