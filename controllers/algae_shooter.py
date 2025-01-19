@@ -1,11 +1,11 @@
 from magicbot import StateMachine, state, timed_state
 
+from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
-from components.manipulator import ManipulatorComponent
 
 
 class AlgaeShooter(StateMachine):
-    manipulator_component: ManipulatorComponent
+    algae_manipulator_component: AlgaeManipulatorComponent
     chassis: ChassisComponent
 
     def __init__(self) -> None:
@@ -16,12 +16,12 @@ class AlgaeShooter(StateMachine):
 
     @state(first=True)
     def spinning_up(self) -> None:
-        # self.manipulator.set_range(self.calculate_range_to_barge())
-        # if self.manipulator_component.flywheels_at_speed():
+        # self.algae_manipulator_component.set_range(self.calculate_range_to_barge())
+        # if self.algae_manipulator_component.flywheels_at_speed():
         self.next_state("shooting")
 
     @timed_state(duration=1, must_finish=True)
     def shooting(self) -> None:
-        self.manipulator_component.inject()
+        self.algae_manipulator_component.inject()
 
-        # self.manipulator.set_range(self.calculate_range_to_barge())
+        # self.algae_manipulator_component.set_range(self.calculate_range_to_barge())
