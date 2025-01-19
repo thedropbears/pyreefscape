@@ -14,9 +14,10 @@ from ids import SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
-    flywheel_shoot_speed = tunable(-6.0)
-    flywheel_intake_speed = tunable(2.0)
-    injector_inject_speed = tunable(-6.0)
+    flywheel_shoot_speed = tunable(60)
+    flywheel_intake_speed = tunable(-10)
+    injector_inject_speed = tunable(6.0)
+    injector_intake_speed = tunable(-0.5)
 
     FLYWHEEL_RPS_TOLERENCE = 0.1
     FLYWHEEL_RAMP_TIME = 1
@@ -101,6 +102,7 @@ class AlgaeManipulatorComponent:
 
     def intake(self) -> None:
         self.desired_flywheel_speed = self.flywheel_intake_speed
+        self.desired_injector_speed = self.injector_intake_speed
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
@@ -114,4 +116,4 @@ class AlgaeManipulatorComponent:
             self.flywheel_2.set_control(Follower(9, False))
 
         self.desired_flywheel_speed = 0.0
-        self.desired_injector_speed = 0.25
+        self.desired_injector_speed = 0.0
