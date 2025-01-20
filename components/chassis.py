@@ -11,7 +11,7 @@ from phoenix6.configs import (
     MotorOutputConfigs,
     Slot0Configs,
 )
-from phoenix6.controls import PositionDutyCycle, VelocityVoltage, VoltageOut
+from phoenix6.controls import PositionVoltage, VelocityVoltage, VoltageOut
 from phoenix6.hardware import CANcoder, Pigeon2, TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from wpimath.controller import (
@@ -92,7 +92,16 @@ class SwerveModule:
         )
 
         # configuration for motor pid
-        steer_pid = Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654)
+        # pos error 0.01 rad
+        # vel error 0.5 rad/s
+        # control effort 5V
+        steer_pid = (
+            Slot0Configs()
+            .with_k_p(50.288)
+            .with_k_i(0)
+            .with_k_d(0.84149)
+            .with_k_s(0.067779)
+        )
         steer_closed_loop_config = ClosedLoopGeneralConfigs()
         steer_closed_loop_config.continuous_wrap = True
 
@@ -117,8 +126,10 @@ class SwerveModule:
         )
 
         # configuration for motor pid and feedforward
-        self.drive_pid = Slot0Configs().with_k_p(1.0868).with_k_i(0).with_k_d(0)
-        self.drive_ff = SimpleMotorFeedforwardMeters(kS=0.15172, kV=2.8305, kA=0.082659)
+        # Vel error 0.2m/s
+        # control effort 4 V
+        self.drive_pid = Slot0Configs().with_k_p(0.15039).with_k_i(0).with_k_d(0)
+        self.drive_ff = SimpleMotorFeedforwardMeters(kS=0.21723, kV=2.8697, kA=0.048638)
 
         drive_config.apply(drive_motor_config)
         drive_config.apply(self.drive_pid, 0.01)
@@ -172,7 +183,7 @@ class SwerveModule:
 
         target_displacement = self.state.angle - current_angle
         target_angle = self.state.angle.radians()
-        self.steer_request = PositionDutyCycle(target_angle / math.tau)
+        self.steer_request = PositionVoltage(target_angle / math.tau)
         self.steer.set_control(self.steer_request)
 
         # rescale the speed target based on how close we are to being correctly aligned
