@@ -191,12 +191,12 @@ class MyRobot(magicbot.MagicRobot):
 
         self.chassis.update_odometry()
 
-        if self.gamepad.getXButton():
-            self.algae_manipulator_component.spin_flywheels()
-        if self.gamepad.getYButton():
-            self.algae_manipulator_component.inject()
+        if self.gamepad.getRightTriggerAxis() > 0.5:
+            self.algae_shooter.shoot()
         if self.gamepad.getAButton():
             self.algae_intake.intake()
+
+        self.algae_shooter.execute()
 
         self.algae_intake.execute()
 
