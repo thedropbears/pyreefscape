@@ -38,49 +38,12 @@ from utilities.position import TeamPoses
 
 @dataclass
 class SwerveConfig:
-    position: Translation2d
-    drive_id: int
     drive_ratio: float
-    drive_gains: Slot0Configs  # <- kP, kI, kD, kA, kV, kS? we have no feedforward on our steer at the moment
-    steer_id: int
+    drive_gains: Slot0Configs
     steer_ratio: float
     steer_gains: Slot0Configs
-    encoder_id: int
     reverse_drive: bool
-    wheel_circumference: float
-
-
-@dataclass
-class CompBotSwerveConfig(SwerveConfig):  # TODO make one for the "testbot" too :)
-    def __init__(
-        self,
-        position: Translation2d,
-        drive_id: int,
-        steer_id: int,
-        encoder_id: int,
-        reverse_drive: bool,
-    ):
-        self.drive_ratio = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
-        self.drive_gains = (
-            Slot0Configs()
-            .with_k_p(1.0868)
-            .with_k_i(0)
-            .with_k_d(0)
-            .with_k_s(0.15172)
-            .with_k_v(2.8305)
-            .with_k_a(0.082659)
-        )
-        self.steer_ratio = (14 / 50) * (10 / 60)
-        self.steer_gains = (
-            Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654)
-        )
-        self.wheel_circumference = 4 * 2.54 / 100 * math.pi
-
-        self.position = position
-        self.drive_id = drive_id
-        self.steer_id = steer_id
-        self.encoder_id = encoder_id
-        self.reverse_drive = reverse_drive
+    wheel_circumference: float = 4 * 2.54 / 100 * math.pi
 
 
 class SwerveModule:
@@ -88,19 +51,26 @@ class SwerveModule:
     # achiveable without the wheels slipping. This is done to improve odometry
     accel_limit = 15  # m/s^2
 
-    def __init__(self, config: SwerveConfig):
+    def __init__(
+        self,
+        config: SwerveConfig,
+        position: Translation2d,
+        drive_id: int,
+        steer_id: int,
+        encoder_id: int,
+    ):
         """
         x, y: where the module is relative to the center of the robot
         *_id: can ids of steer and drive motors and absolute encoder
         """
-        self.translation = config.position
+        self.translation = position
         self.state = SwerveModuleState(0, Rotation2d(0))
         self.do_smooth = True
 
         # Create Motor and encoder objects
-        self.steer = TalonFX(config.steer_id)
-        self.drive = TalonFX(config.drive_id)
-        self.encoder = CANcoder(config.encoder_id)
+        self.steer = TalonFX(steer_id)
+        self.drive = TalonFX(drive_id)
+        self.encoder = CANcoder(encoder_id)
 
         # Reduce CAN status frame rates before configuring
         self.steer.get_fault_field().set_update_frequency(
@@ -173,7 +143,7 @@ class SwerveModule:
         drive_config.apply(self.drive_pid, 0.01)
         drive_config.apply(drive_gear_ratio_config)
 
-        self.central_angle = Rotation2d(config.position.x, config.position.y)
+        self.central_angle = Rotation2d(position.x, position.y)
         self.module_locked = False
 
         self.sync_steer_encoder()
@@ -258,12 +228,7 @@ class ChassisComponent:
     HEADING_TOLERANCE = math.radians(1)
 
     # maxiumum speed for any wheel
-    # max_wheel_speed = FALCON_FREE_RPS * SwerveModule.DRIVE_MOTOR_REV_TO_METRES
-    max_wheel_speed = (
-        FALCON_FREE_RPS
-        * CompBotSwerveConfig.wheel_circumference
-        * CompBotSwerveConfig.drive_ratio
-    )  # TODO i dont think thats how its supposed to be done
+    max_wheel_speed = FALCON_FREE_RPS * SwerveModule.DRIVE_MOTOR_REV_TO_METRES
 
     control_loop_wait_time: float
 
@@ -289,45 +254,71 @@ class ChassisComponent:
 
         self.on_red_alliance = False
 
+        # if wpilib.RobotController.getSerialNumber() == "[testbot]":
+        # swerve_config = SwerveConfig(
+        #     drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
+        #     drive_gains=Slot0Configs()
+        #     .with_k_p(1.0868)
+        #     .with_k_i(0)
+        #     .with_k_d(0)
+        #     .with_k_s(0.15172)
+        #     .with_k_v(2.8305)
+        #     .with_k_a(0.082659),
+        #     steer_ratio=(14 / 50) * (10 / 60),
+        #     steer_gains=Slot0Configs()
+        #     .with_k_p(2.4206)
+        #     .with_k_i(0)
+        #     .with_k_d(0.060654),
+        #     reverse_drive=False,
+        # )
+        # else:
+        # if wpilib.RobotController.getSerialNumber != "[compbot]":
+        #     self.logger.warning("unknown roboRIO serial number, continuing with compbot config")
+        swerve_config = SwerveConfig(
+            drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            drive_gains=Slot0Configs()
+            .with_k_p(1.0868)
+            .with_k_i(0)
+            .with_k_d(0)
+            .with_k_s(0.15172)
+            .with_k_v(2.8305)
+            .with_k_a(0.082659),
+            steer_ratio=(14 / 50) * (10 / 60),
+            steer_gains=Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654),
+            reverse_drive=True,
+        )
+
         # Front Left
         self.module_fl = SwerveModule(
-            CompBotSwerveConfig(
-                position=Translation2d(self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
-                drive_id=TalonId.DRIVE_FL,
-                steer_id=TalonId.STEER_FL,
-                encoder_id=CancoderId.SWERVE_FL,
-                reverse_drive=True,
-            )
+            config=swerve_config,
+            position=Translation2d(self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_FL,
+            steer_id=TalonId.STEER_FL,
+            encoder_id=CancoderId.SWERVE_FL,
         )
         # Rear Left
         self.module_rl = SwerveModule(
-            CompBotSwerveConfig(
-                position=Translation2d(-self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
-                drive_id=TalonId.DRIVE_RL,
-                steer_id=TalonId.STEER_RL,
-                encoder_id=CancoderId.SWERVE_RL,
-                reverse_drive=True,
-            )
+            config=swerve_config,
+            position=Translation2d(-self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_RL,
+            steer_id=TalonId.STEER_RL,
+            encoder_id=CancoderId.SWERVE_RL,
         )
         # Rear Right
         self.module_rr = SwerveModule(
-            CompBotSwerveConfig(
-                position=Translation2d(-self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
-                drive_id=TalonId.DRIVE_RR,
-                steer_id=TalonId.STEER_RR,
-                encoder_id=CancoderId.SWERVE_RR,
-                reverse_drive=True,
-            )
+            config=swerve_config,
+            position=Translation2d(-self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_RR,
+            steer_id=TalonId.STEER_RR,
+            encoder_id=CancoderId.SWERVE_RR,
         )
         # Front Right
         self.module_fr = SwerveModule(
-            CompBotSwerveConfig(
-                position=Translation2d(self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
-                drive_id=TalonId.DRIVE_FL,
-                steer_id=TalonId.STEER_FL,
-                encoder_id=CancoderId.SWERVE_FL,
-                reverse_drive=True,
-            )
+            config=swerve_config,
+            position=Translation2d(self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_FL,
+            steer_id=TalonId.STEER_FL,
+            encoder_id=CancoderId.SWERVE_FL,
         )
 
         self.modules = (
