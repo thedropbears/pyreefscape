@@ -12,7 +12,7 @@ from phoenix6.configs import (
     MotorOutputConfigs,
     Slot0Configs,
 )
-from phoenix6.controls import PositionDutyCycle, VelocityVoltage, VoltageOut
+from phoenix6.controls import PositionVoltage, VelocityVoltage, VoltageOut
 from phoenix6.hardware import CANcoder, Pigeon2, TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from wpimath.controller import (
@@ -98,12 +98,6 @@ class SwerveModule:
 
         # configuration for motor pid
         steer_pid = config.steer_gains
-        # steer_pid = (
-        #     Slot0Configs()
-        #     .with_k_p(config.steer_gains.k_p)
-        #     .with_k_i(config.steer_gains.k_i)
-        #     .with_k_d(config.steer_gains.k_d)
-        # ) TODO would this be better?
         steer_closed_loop_config = ClosedLoopGeneralConfigs()
         steer_closed_loop_config.continuous_wrap = True
 
@@ -192,7 +186,7 @@ class SwerveModule:
 
         target_displacement = self.state.angle - current_angle
         target_angle = self.state.angle.radians()
-        self.steer_request = PositionDutyCycle(target_angle / math.tau)
+        self.steer_request = PositionVoltage(target_angle / math.tau)
         self.steer.set_control(self.steer_request)
 
         # rescale the speed target based on how close we are to being correctly aligned
@@ -277,15 +271,24 @@ class ChassisComponent:
         #     self.logger.warning("unknown roboRIO serial number, continuing with compbot config")
         self.swerve_config = SwerveConfig(
             drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
+            # Vel error 0.2m/s
+            # control effort 4 V
             drive_gains=Slot0Configs()
-            .with_k_p(1.0868)
+            .with_k_p(0.15039)
             .with_k_i(0)
             .with_k_d(0)
-            .with_k_s(0.15172)
-            .with_k_v(2.8305)
-            .with_k_a(0.082659),
+            .with_k_s(0.21723)
+            .with_k_v(2.8697)
+            .with_k_a(0.048638),
             steer_ratio=(14 / 50) * (10 / 60),
-            steer_gains=Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654),
+            # pos error 0.01 rad
+            # vel error 0.5 rad/s
+            # control effort 5V
+            steer_gains=Slot0Configs()
+            .with_k_p(50.288)
+            .with_k_i(0)
+            .with_k_d(0.84149)
+            .with_k_s(0.067779),
             reverse_drive=True,
         )
 
