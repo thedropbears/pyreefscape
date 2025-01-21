@@ -51,6 +51,8 @@ class SwerveModule:
     # achiveable without the wheels slipping. This is done to improve odometry
     accel_limit = 15  # m/s^2
 
+    config: SwerveConfig
+
     def __init__(
         self,
         config: SwerveConfig,
@@ -59,6 +61,8 @@ class SwerveModule:
         steer_id: int,
         encoder_id: int,
     ):
+        self.config = config
+
         """
         x, y: where the module is relative to the center of the robot
         *_id: can ids of steer and drive motors and absolute encoder
@@ -79,9 +83,6 @@ class SwerveModule:
         self.drive.get_fault_field().set_update_frequency(
             frequency_hz=4, timeout_seconds=0.01
         )
-
-        drive_motor_rev_to_meters = config.wheel_circumference * config.drive_ratio
-        # steer_motor_rev_to_rad = math.tau * config.steer_ratio
 
         # Configure steer motor
         steer_config = self.steer.configurator
@@ -123,7 +124,7 @@ class SwerveModule:
         )
 
         drive_gear_ratio_config = FeedbackConfigs().with_sensor_to_mechanism_ratio(
-            1 / drive_motor_rev_to_meters
+            1 / (config.wheel_circumference * config.drive_ratio)
         )
 
         # configuration for motor pid and feedforward
@@ -227,8 +228,8 @@ class ChassisComponent:
 
     HEADING_TOLERANCE = math.radians(1)
 
-    # maxiumum speed for any wheel
-    max_wheel_speed = FALCON_FREE_RPS * SwerveModule.DRIVE_MOTOR_REV_TO_METRES
+    swerve_config: SwerveConfig
+    drive_motor_rev_to_meters: float
 
     control_loop_wait_time: float
 
@@ -255,7 +256,7 @@ class ChassisComponent:
         self.on_red_alliance = False
 
         # if wpilib.RobotController.getSerialNumber() == "[testbot]":
-        # swerve_config = SwerveConfig(
+        # self.swerve_config = SwerveConfig(
         #     drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
         #     drive_gains=Slot0Configs()
         #     .with_k_p(1.0868)
@@ -274,7 +275,7 @@ class ChassisComponent:
         # else:
         # if wpilib.RobotController.getSerialNumber != "[compbot]":
         #     self.logger.warning("unknown roboRIO serial number, continuing with compbot config")
-        swerve_config = SwerveConfig(
+        self.swerve_config = SwerveConfig(
             drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
             drive_gains=Slot0Configs()
             .with_k_p(1.0868)
@@ -288,9 +289,16 @@ class ChassisComponent:
             reverse_drive=True,
         )
 
+        self.drive_motor_rev_to_meters = (
+            self.swerve_config.wheel_circumference * self.swerve_config.drive_ratio
+        )
+
+        # maxiumum speed for any wheel
+        self.max_wheel_speed = FALCON_FREE_RPS * self.drive_motor_rev_to_meters
+
         # Front Left
         self.module_fl = SwerveModule(
-            config=swerve_config,
+            config=self.swerve_config,
             position=Translation2d(self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
             drive_id=TalonId.DRIVE_FL,
             steer_id=TalonId.STEER_FL,
@@ -298,7 +306,7 @@ class ChassisComponent:
         )
         # Rear Left
         self.module_rl = SwerveModule(
-            config=swerve_config,
+            config=self.swerve_config,
             position=Translation2d(-self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
             drive_id=TalonId.DRIVE_RL,
             steer_id=TalonId.STEER_RL,
@@ -306,7 +314,7 @@ class ChassisComponent:
         )
         # Rear Right
         self.module_rr = SwerveModule(
-            config=swerve_config,
+            config=self.swerve_config,
             position=Translation2d(-self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
             drive_id=TalonId.DRIVE_RR,
             steer_id=TalonId.STEER_RR,
@@ -314,7 +322,7 @@ class ChassisComponent:
         )
         # Front Right
         self.module_fr = SwerveModule(
-            config=swerve_config,
+            config=self.swerve_config,
             position=Translation2d(self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
             drive_id=TalonId.DRIVE_FL,
             steer_id=TalonId.STEER_FL,
