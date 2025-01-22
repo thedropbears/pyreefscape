@@ -51,8 +51,6 @@ class SwerveModule:
     # achiveable without the wheels slipping. This is done to improve odometry
     accel_limit = 15  # m/s^2
 
-    config: SwerveConfig
-
     def __init__(
         self,
         config: SwerveConfig,
@@ -61,8 +59,6 @@ class SwerveModule:
         steer_id: int,
         encoder_id: int,
     ):
-        self.config = config
-
         """
         x, y: where the module is relative to the center of the robot
         *_id: can ids of steer and drive motors and absolute encoder
@@ -148,7 +144,7 @@ class SwerveModule:
         self.module_locked = False
 
         self.sync_steer_encoder()
-
+        self.central_angle = position.angle()
         self.drive_request = VelocityVoltage(0)
         self.stop_request = VoltageOut(0)
 
