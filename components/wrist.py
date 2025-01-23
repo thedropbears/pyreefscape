@@ -8,7 +8,7 @@ from ids import DioChannel, SparkId
 class WristComponent:
     angle_change_rate_while_zeroing = tunable(3.0)
     wrist_gear_ratio = 20 * 66 / 26
-    desired_angle = 0
+    desired_angle = 0.0
 
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
@@ -33,14 +33,14 @@ class WristComponent:
 
         self.encoder = self.wrist.getEncoder()
 
-        self.encoder.setPosition(0)
+        self.encoder.setPosition(0.0)
 
     def zero_wrist(self) -> None:
         if not self.wrist_at_top_limit():
             self.desired_angle += self.angle_change_rate_while_zeroing
         else:
-            self.encoder.setPosition(73)
-            self.desired_angle = 73
+            self.encoder.setPosition(73.0)
+            self.desired_angle = 73.0
 
     @feedback
     def wrist_at_top_limit(self) -> bool:
