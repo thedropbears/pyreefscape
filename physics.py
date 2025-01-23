@@ -91,7 +91,7 @@ class PhysicsEngine:
         self.wheels = [
             SimpleTalonFXMotorSim(
                 module.drive,
-                units_per_rev=1 / module.DRIVE_MOTOR_REV_TO_METRES,
+                units_per_rev=1 / robot.chassis.drive_motor_rev_to_meters,
                 kV=2.7,
             )
             for module in robot.chassis.modules
@@ -99,7 +99,7 @@ class PhysicsEngine:
         self.steer = [
             Falcon500MotorSim(
                 module.steer,
-                gearing=1 / module.STEER_GEAR_RATIO,
+                gearing=1 / robot.chassis.swerve_config.steer_ratio,
                 # measured from MKCad CAD
                 moi=0.0009972,
             )

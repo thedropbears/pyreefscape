@@ -1,4 +1,5 @@
 import math
+from dataclasses import dataclass
 from logging import Logger
 
 import magicbot
@@ -35,40 +36,40 @@ from utilities.game import is_red
 from utilities.position import TeamPoses
 
 
+@dataclass
+class SwerveConfig:
+    drive_ratio: float
+    drive_gains: Slot0Configs
+    steer_ratio: float
+    steer_gains: Slot0Configs
+    reverse_drive: bool
+    wheel_circumference: float = 4 * 2.54 / 100 * math.pi
+
+
 class SwerveModule:
-    DRIVE_GEAR_RATIO = (14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0)
-    STEER_GEAR_RATIO = (14 / 50) * (10 / 60)
-    WHEEL_CIRCUMFERENCE = 4 * 2.54 / 100 * math.pi
-
-    DRIVE_MOTOR_REV_TO_METRES = WHEEL_CIRCUMFERENCE * DRIVE_GEAR_RATIO
-    STEER_MOTOR_REV_TO_RAD = math.tau * STEER_GEAR_RATIO
-
     # limit the acceleration of the commanded speeds of the robot to what is actually
     # achiveable without the wheels slipping. This is done to improve odometry
     accel_limit = 15  # m/s^2
 
     def __init__(
         self,
-        x: float,
-        y: float,
+        config: SwerveConfig,
+        position: Translation2d,
         drive_id: int,
         steer_id: int,
         encoder_id: int,
-        *,
-        drive_reversed: bool = False,
     ):
         """
         x, y: where the module is relative to the center of the robot
         *_id: can ids of steer and drive motors and absolute encoder
         """
-        self.translation = Translation2d(x, y)
+        self.translation = position
         self.state = SwerveModuleState(0, Rotation2d(0))
         self.do_smooth = True
 
         # Create Motor and encoder objects
         self.steer = TalonFX(steer_id)
         self.drive = TalonFX(drive_id)
-        self.drive_id = drive_id
         self.encoder = CANcoder(encoder_id)
 
         # Reduce CAN status frame rates before configuring
@@ -88,11 +89,11 @@ class SwerveModule:
         steer_motor_config.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
         steer_gear_ratio_config = FeedbackConfigs().with_sensor_to_mechanism_ratio(
-            1 / self.STEER_GEAR_RATIO
+            1 / config.steer_ratio
         )
 
         # configuration for motor pid
-        steer_pid = Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654)
+        steer_pid = config.steer_gains
         steer_closed_loop_config = ClosedLoopGeneralConfigs()
         steer_closed_loop_config.continuous_wrap = True
 
@@ -108,27 +109,36 @@ class SwerveModule:
         drive_motor_config.neutral_mode = NeutralModeValue.BRAKE
         drive_motor_config.inverted = (
             InvertedValue.CLOCKWISE_POSITIVE
-            if drive_reversed
+            if config.reverse_drive
             else InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         )
 
         drive_gear_ratio_config = FeedbackConfigs().with_sensor_to_mechanism_ratio(
-            1 / self.DRIVE_MOTOR_REV_TO_METRES
+            1 / (config.wheel_circumference * config.drive_ratio)
         )
 
         # configuration for motor pid and feedforward
-        self.drive_pid = Slot0Configs().with_k_p(1.0868).with_k_i(0).with_k_d(0)
-        self.drive_ff = SimpleMotorFeedforwardMeters(kS=0.15172, kV=2.8305, kA=0.082659)
+        self.drive_pid = (
+            Slot0Configs()
+            .with_k_p(config.drive_gains.k_p)
+            .with_k_i(config.drive_gains.k_i)
+            .with_k_d(config.drive_gains.k_d)
+        )
+        self.drive_ff = SimpleMotorFeedforwardMeters(
+            kS=config.drive_gains.k_s,
+            kV=config.drive_gains.k_v,
+            kA=config.drive_gains.k_a,
+        )
 
         drive_config.apply(drive_motor_config)
         drive_config.apply(self.drive_pid, 0.01)
         drive_config.apply(drive_gear_ratio_config)
 
-        self.central_angle = Rotation2d(x, y)
+        self.central_angle = Rotation2d(position.x, position.y)
         self.module_locked = False
 
         self.sync_steer_encoder()
-
+        self.central_angle = position.angle()
         self.drive_request = VelocityVoltage(0)
         self.stop_request = VoltageOut(0)
 
@@ -208,8 +218,8 @@ class ChassisComponent:
 
     HEADING_TOLERANCE = math.radians(1)
 
-    # maxiumum speed for any wheel
-    max_wheel_speed = FALCON_FREE_RPS * SwerveModule.DRIVE_MOTOR_REV_TO_METRES
+    swerve_config: SwerveConfig
+    drive_motor_rev_to_meters: float
 
     control_loop_wait_time: float
 
@@ -224,7 +234,7 @@ class ChassisComponent:
 
     # TODO: Read from positions.py once autonomous is finished
 
-    def __init__(self) -> None:
+    def __init__(self, swerve_config: SwerveConfig) -> None:
         self.imu = Pigeon2(0)
         self.heading_controller = ProfiledPIDControllerRadians(
             3, 0, 0, TrapezoidProfileRadians.Constraints(100, 100)
@@ -235,37 +245,46 @@ class ChassisComponent:
 
         self.on_red_alliance = False
 
+        self.swerve_config = swerve_config
+
+        self.drive_motor_rev_to_meters = (
+            self.swerve_config.wheel_circumference * self.swerve_config.drive_ratio
+        )
+
+        # maxiumum speed for any wheel
+        self.max_wheel_speed = FALCON_FREE_RPS * self.drive_motor_rev_to_meters
+
         # Front Left
         self.module_fl = SwerveModule(
-            self.WHEEL_BASE / 2,
-            self.TRACK_WIDTH / 2,
-            TalonId.DRIVE_FL,
-            TalonId.STEER_FL,
-            CancoderId.SWERVE_FL,
+            config=self.swerve_config,
+            position=Translation2d(self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_FL,
+            steer_id=TalonId.STEER_FL,
+            encoder_id=CancoderId.SWERVE_FL,
         )
         # Rear Left
         self.module_rl = SwerveModule(
-            -self.WHEEL_BASE / 2,
-            self.TRACK_WIDTH / 2,
-            TalonId.DRIVE_RL,
-            TalonId.STEER_RL,
-            CancoderId.SWERVE_RL,
+            config=self.swerve_config,
+            position=Translation2d(-self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_RL,
+            steer_id=TalonId.STEER_RL,
+            encoder_id=CancoderId.SWERVE_RL,
         )
         # Rear Right
         self.module_rr = SwerveModule(
-            -self.WHEEL_BASE / 2,
-            -self.TRACK_WIDTH / 2,
-            TalonId.DRIVE_RR,
-            TalonId.STEER_RR,
-            CancoderId.SWERVE_RR,
+            config=self.swerve_config,
+            position=Translation2d(-self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_RR,
+            steer_id=TalonId.STEER_RR,
+            encoder_id=CancoderId.SWERVE_RR,
         )
         # Front Right
         self.module_fr = SwerveModule(
-            self.WHEEL_BASE / 2,
-            -self.TRACK_WIDTH / 2,
-            TalonId.DRIVE_FR,
-            TalonId.STEER_FR,
-            CancoderId.SWERVE_FR,
+            config=self.swerve_config,
+            position=Translation2d(self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
+            drive_id=TalonId.DRIVE_FR,
+            steer_id=TalonId.STEER_FR,
+            encoder_id=CancoderId.SWERVE_FR,
         )
 
         self.modules = (
