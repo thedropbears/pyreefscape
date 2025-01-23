@@ -55,3 +55,11 @@ class PwmChannel(enum.IntEnum):
     """roboRIO PWM output channel number."""
 
     VISION_SERVO = 0
+
+
+@enum.unique
+class RioSerialNumber(enum.StrEnum):
+    """roboRIO serial number"""
+
+    TEST_BOT = "0305cc42"
+    COMP_BOT = "03062898"
