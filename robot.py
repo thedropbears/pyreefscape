@@ -82,9 +82,10 @@ class MyRobot(magicbot.MagicRobot):
                 .with_k_a(0.082659),
                 steer_ratio=(14 / 50) * (10 / 60),
                 steer_gains=Slot0Configs()
-                .with_k_p(2.4206)
+                .with_k_p(30.234)
                 .with_k_i(0)
-                .with_k_d(0.060654),
+                .with_k_d(0.62183)
+                .with_k_s(0.1645),
                 reverse_drive=False,
             )
         else:

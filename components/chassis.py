@@ -12,7 +12,7 @@ from phoenix6.configs import (
     MotorOutputConfigs,
     Slot0Configs,
 )
-from phoenix6.controls import PositionDutyCycle, VelocityVoltage, VoltageOut
+from phoenix6.controls import PositionVoltage, VelocityVoltage, VoltageOut
 from phoenix6.hardware import CANcoder, Pigeon2, TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from wpimath.controller import (
@@ -182,7 +182,7 @@ class SwerveModule:
 
         target_displacement = self.state.angle - current_angle
         target_angle = self.state.angle.radians()
-        self.steer_request = PositionDutyCycle(target_angle / math.tau)
+        self.steer_request = PositionVoltage(target_angle / math.tau)
         self.steer.set_control(self.steer_request)
 
         # rescale the speed target based on how close we are to being correctly aligned
