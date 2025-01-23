@@ -205,11 +205,6 @@ class SwerveModule:
 
 
 class ChassisComponent:
-    # metres between centre of left and right wheels
-    TRACK_WIDTH = 0.467
-    # metres between centre of front and back wheels
-    WHEEL_BASE = 0.467
-
     # size including bumpers
     LENGTH = 0.600 + 2 * 0.09
     WIDTH = LENGTH
@@ -234,7 +229,9 @@ class ChassisComponent:
 
     # TODO: Read from positions.py once autonomous is finished
 
-    def __init__(self, swerve_config: SwerveConfig) -> None:
+    def __init__(
+        self, track_width: float, wheel_base: float, swerve_config: SwerveConfig
+    ) -> None:
         self.imu = Pigeon2(0)
         self.heading_controller = ProfiledPIDControllerRadians(
             3, 0, 0, TrapezoidProfileRadians.Constraints(100, 100)
@@ -246,6 +243,8 @@ class ChassisComponent:
         self.on_red_alliance = False
 
         self.swerve_config = swerve_config
+        self.track_width = track_width
+        self.wheel_base = wheel_base
 
         self.drive_motor_rev_to_meters = (
             self.swerve_config.wheel_circumference * self.swerve_config.drive_ratio
@@ -257,7 +256,7 @@ class ChassisComponent:
         # Front Left
         self.module_fl = SwerveModule(
             config=self.swerve_config,
-            position=Translation2d(self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
+            position=Translation2d(self.wheel_base / 2, self.track_width / 2),
             drive_id=TalonId.DRIVE_FL,
             steer_id=TalonId.STEER_FL,
             encoder_id=CancoderId.SWERVE_FL,
@@ -265,7 +264,7 @@ class ChassisComponent:
         # Rear Left
         self.module_rl = SwerveModule(
             config=self.swerve_config,
-            position=Translation2d(-self.WHEEL_BASE / 2, self.TRACK_WIDTH / 2),
+            position=Translation2d(-self.wheel_base / 2, self.track_width / 2),
             drive_id=TalonId.DRIVE_RL,
             steer_id=TalonId.STEER_RL,
             encoder_id=CancoderId.SWERVE_RL,
@@ -273,7 +272,7 @@ class ChassisComponent:
         # Rear Right
         self.module_rr = SwerveModule(
             config=self.swerve_config,
-            position=Translation2d(-self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
+            position=Translation2d(-self.wheel_base / 2, -self.track_width / 2),
             drive_id=TalonId.DRIVE_RR,
             steer_id=TalonId.STEER_RR,
             encoder_id=CancoderId.SWERVE_RR,
@@ -281,7 +280,7 @@ class ChassisComponent:
         # Front Right
         self.module_fr = SwerveModule(
             config=self.swerve_config,
-            position=Translation2d(self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
+            position=Translation2d(self.wheel_base / 2, -self.track_width / 2),
             drive_id=TalonId.DRIVE_FR,
             steer_id=TalonId.STEER_FR,
             encoder_id=CancoderId.SWERVE_FR,
