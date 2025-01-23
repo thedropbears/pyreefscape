@@ -88,6 +88,10 @@ class MyRobot(magicbot.MagicRobot):
                 .with_k_s(0.1645),
                 reverse_drive=False,
             )
+            # metres between centre of left and right wheels
+            self.chassis_track_width = 0.467
+            # metres between centre of front and back wheels
+            self.chassis_wheel_base = 0.467
         else:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
@@ -106,6 +110,10 @@ class MyRobot(magicbot.MagicRobot):
                 .with_k_s(0.067779),
                 reverse_drive=True,
             )
+            # metres between centre of left and right wheels
+            self.chassis_track_width = 0.517
+            # metres between centre of front and back wheels
+            self.chassis_wheel_base = 0.517
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
