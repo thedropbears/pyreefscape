@@ -282,9 +282,9 @@ class ChassisComponent:
         self.module_fr = SwerveModule(
             config=self.swerve_config,
             position=Translation2d(self.WHEEL_BASE / 2, -self.TRACK_WIDTH / 2),
-            drive_id=TalonId.DRIVE_FL,
-            steer_id=TalonId.STEER_FL,
-            encoder_id=CancoderId.SWERVE_FL,
+            drive_id=TalonId.DRIVE_FR,
+            steer_id=TalonId.STEER_FR,
+            encoder_id=CancoderId.SWERVE_FR,
         )
 
         self.modules = (
