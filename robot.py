@@ -12,6 +12,7 @@ from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
 from components.vision import VisualLocalizer
+from components.wrist import WristComponent
 from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
@@ -31,11 +32,12 @@ class MyRobot(magicbot.MagicRobot):
     coral_placer_component: CoralPlacerComponent
     algae_manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
+    wrist: WristComponent
 
-    max_speed = magicbot.tunable(5)  # m/s
-    lower_max_speed = magicbot.tunable(2)  # m/s
-    max_spin_rate = magicbot.tunable(4)  # m/s
-    lower_max_spin_rate = magicbot.tunable(2)  # m/s
+    max_speed = tunable(5)  # m/s
+    lower_max_speed = tunable(2)  # m/s
+    max_spin_rate = tunable(4)  # m/s
+    lower_max_spin_rate = tunable(2)  # m/s
     inclination_angle = tunable(0.0)
 
     START_POS_TOLERANCE = 1
@@ -201,6 +203,12 @@ class MyRobot(magicbot.MagicRobot):
         self.algae_intake.execute()
 
         self.algae_manipulator_component.execute()
+
+        if self.gamepad.getLeftBumper():
+            self.wrist.zero_wrist()
+        if self.gamepad.getLeftTriggerAxis() > 0.3:
+            self.wrist.tilt_to(0)
+        self.wrist.execute()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()

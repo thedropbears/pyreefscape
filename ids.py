@@ -40,6 +40,8 @@ class SparkId(enum.IntEnum):
     INJECTOR_1 = 10
     INJECTOR_2 = 11
 
+    WRIST = 5
+
 
 @enum.unique
 class DioChannel(enum.IntEnum):
@@ -48,6 +50,8 @@ class DioChannel(enum.IntEnum):
     VISION_ENCODER = 1
 
     ALGAE_INTAKE_SWITCH = 2
+
+    WRIST_LIMIT_SWITCH = 3
 
 
 @enum.unique
