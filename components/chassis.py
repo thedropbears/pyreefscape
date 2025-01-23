@@ -234,7 +234,7 @@ class ChassisComponent:
 
     # TODO: Read from positions.py once autonomous is finished
 
-    def __init__(self) -> None:
+    def __init__(self, swerve_config: SwerveConfig) -> None:
         self.imu = Pigeon2(0)
         self.heading_controller = ProfiledPIDControllerRadians(
             3, 0, 0, TrapezoidProfileRadians.Constraints(100, 100)
@@ -245,19 +245,7 @@ class ChassisComponent:
 
         self.on_red_alliance = False
 
-        self.swerve_config = SwerveConfig(
-            drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
-            drive_gains=Slot0Configs()
-            .with_k_p(1.0868)
-            .with_k_i(0)
-            .with_k_d(0)
-            .with_k_s(0.15172)
-            .with_k_v(2.8305)
-            .with_k_a(0.082659),
-            steer_ratio=(14 / 50) * (10 / 60),
-            steer_gains=Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654),
-            reverse_drive=False,
-        )
+        self.swerve_config = swerve_config
 
         self.drive_motor_rev_to_meters = (
             self.swerve_config.wheel_circumference * self.swerve_config.drive_ratio

@@ -5,10 +5,11 @@ import ntcore
 import wpilib
 import wpilib.event
 from magicbot import tunable
+from phoenix6.configs import Slot0Configs
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from components.algae_manipulator import AlgaeManipulatorComponent
-from components.chassis import ChassisComponent
+from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
 from components.vision import VisualLocalizer
 from controllers.algae_intake import AlgaeIntake
@@ -68,6 +69,20 @@ class MyRobot(magicbot.MagicRobot):
         self.vision_servo_offset = Rotation2d(3.107)
         self.vision_encoder_id = DioChannel.VISION_ENCODER
         self.vision_encoder_offset = Rotation2d(3.052)
+
+        self.chassis_swerve_config = SwerveConfig(
+            drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
+            drive_gains=Slot0Configs()
+            .with_k_p(1.0868)
+            .with_k_i(0)
+            .with_k_d(0)
+            .with_k_s(0.15172)
+            .with_k_v(2.8305)
+            .with_k_a(0.082659),
+            steer_ratio=(14 / 50) * (10 / 60),
+            steer_gains=Slot0Configs().with_k_p(2.4206).with_k_i(0).with_k_d(0.060654),
+            reverse_drive=False,
+        )
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
