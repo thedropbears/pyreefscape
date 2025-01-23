@@ -48,6 +48,9 @@ class DioChannel(enum.IntEnum):
     """roboRIO Digital I/O channel number."""
 
     VISION_ENCODER = 1
+
+    ALGAE_INTAKE_SWITCH = 2
+
     WRIST_LIMIT_SWITCH = 3
 
     ALGAE_INTAKE_SWITCH = 2
