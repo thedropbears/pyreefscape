@@ -53,8 +53,6 @@ class DioChannel(enum.IntEnum):
 
     WRIST_LIMIT_SWITCH = 3
 
-    ALGAE_INTAKE_SWITCH = 2
-
 
 @enum.unique
 class PwmChannel(enum.IntEnum):
