@@ -94,12 +94,6 @@ class SwerveModule:
 
         # configuration for motor pid
         steer_pid = config.steer_gains
-        # steer_pid = (
-        #     Slot0Configs()
-        #     .with_k_p(config.steer_gains.k_p)
-        #     .with_k_i(config.steer_gains.k_i)
-        #     .with_k_d(config.steer_gains.k_d)
-        # ) TODO would this be better?
         steer_closed_loop_config = ClosedLoopGeneralConfigs()
         steer_closed_loop_config.continuous_wrap = True
 
