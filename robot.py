@@ -11,8 +11,8 @@ from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
+from components.tilter_component import TilterComponent
 from components.vision import VisualLocalizer
-from components.wrist_component import WristComponent
 from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
@@ -32,7 +32,7 @@ class MyRobot(magicbot.MagicRobot):
     coral_placer_component: CoralPlacerComponent
     algae_manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
-    wrist: WristComponent
+    tilter: TilterComponent
 
     max_speed = tunable(5)  # m/s
     lower_max_speed = tunable(2)  # m/s
@@ -205,8 +205,8 @@ class MyRobot(magicbot.MagicRobot):
         self.algae_manipulator_component.execute()
 
         if self.gamepad.getLeftBumper():
-            self.wrist.zero_wrist()
-        self.wrist.execute()
+            self.tilter.zero_tilter()
+        self.tilter.execute()
 
         if self.gamepad.getLeftBumper():
             self.tilter.zero_tilter()
