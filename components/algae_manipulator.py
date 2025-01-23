@@ -24,6 +24,7 @@ class AlgaeManipulatorComponent:
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
+    FLYWHEEL_INCLINATION_LOOKUP = [0, 1, 2, 3, 4, 5]
     FLYWHEEL_DISTANCE_LOOKUP = [0, 1, 2, 3, 4, 5]
     FLYWHEEL_SPEED_LOOKUP = [60, 60, 60, 60, 60, 60]
 
@@ -82,6 +83,7 @@ class AlgaeManipulatorComponent:
         flywheel_2_config.apply(flywheel_pid)
         flywheel_2_config.apply(flywheel_gear_ratio)
 
+        self.desired_inclinator_angle = tunable(40)
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.25
 
@@ -115,6 +117,12 @@ class AlgaeManipulatorComponent:
                 self.FLYWHEEL_DISTANCE_LOOKUP,
                 self.FLYWHEEL_SPEED_LOOKUP,
                 right=0.0,
+            )
+        )
+
+        self.desired_inclinator_angle = float(
+            np.interp(
+                range, self.FLYWHEEL_DISTANCE_LOOKUP, self.FLYWHEEL_INCLINATION_LOOKUP
             )
         )
 
