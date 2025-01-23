@@ -12,7 +12,7 @@ from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
 from components.vision import VisualLocalizer
-from components.wrist_component import WristComponent
+from components.wrist import WristComponent
 from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
