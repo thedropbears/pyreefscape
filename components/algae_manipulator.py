@@ -27,22 +27,25 @@ class AlgaeManipulatorComponent:
     def __init__(self) -> None:
         self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
         self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
-        self.injector_config = SparkMaxConfig()
+        injector_config = SparkMaxConfig()
 
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
-        self.injector_config.inverted(True)
+        injector_config.inverted(True)
         self.injector_1.configure(
-            self.injector_config,
+            injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        self.injector_config.follow(SparkId.INJECTOR_1, True)
+
+        injector_config.follow(SparkId.INJECTOR_1, True)
         self.injector_2.configure(
-            self.injector_config,
+            injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
+
+        injector_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
 
         self.flywheel_1 = TalonFX(TalonId.FLYWHEEL_1)
         self.flywheel_2 = TalonFX(TalonId.FLYWHEEL_2)
@@ -118,9 +121,6 @@ class AlgaeManipulatorComponent:
     @feedback
     def has_algae(self) -> bool:
         return not self.algae_limit_switch.get()
-
-    def on_enable(self) -> None:
-        self.injector_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
 
     def execute(self) -> None:
         if self.desired_flywheel_speed == 0:
