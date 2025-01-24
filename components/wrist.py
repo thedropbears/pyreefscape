@@ -24,7 +24,7 @@ class WristComponent:
         self.wrist_controller = self.wrist.getClosedLoopController()
 
         wrist_config = SparkMaxConfig()
-        wrist_config.inverted(False)
+        wrist_config.inverted(True)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
         wrist_config.closedLoop.P(
             1.0 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
