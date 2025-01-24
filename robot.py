@@ -17,6 +17,7 @@ from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
 from ids import DioChannel, PwmChannel, RioSerialNumber
+from utilities.functions import clamp
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -166,6 +167,22 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getBButton():
             self.algae_intake.intake()
+
+        if dpad in (0, 45, 315):
+            self.inclination_angle += 2.0
+
+        if dpad in (180, 135, 225):
+            self.inclination_angle += 2.0
+
+        self.inclination_angle = clamp(
+            self.inclination_angle, 0, self.wrist.maximum_angle
+        )
+
+        if self.gamepad.getAButton():
+            self.wrist.tilt_to(self.inclination_angle)
+
+        if self.gamepad.getRightTriggerAxis() > 0.5:
+            self.algae_shooter.shoot()
 
         # Set current robot direction to forward
         if self.gamepad.getBackButton():
