@@ -122,9 +122,6 @@ class MyRobot(magicbot.MagicRobot):
         self.field.getObject("Intended start pos").setPoses([])
 
     def teleopPeriodic(self) -> None:
-        if self.gamepad.getYButton():
-            self.coral_placer.place()
-
         # Set max speed
         max_speed = self.max_speed
         max_spin_rate = self.max_spin_rate
@@ -159,18 +156,20 @@ class MyRobot(magicbot.MagicRobot):
         # elif dpad in (135, 180, 235):
         # self.climber.retract()
 
-        if self.gamepad.getBButton():
-            self.algae_intake.intake_L3()
+        if self.gamepad.getLeftTriggerAxis() > 0.5:
+            self.coral_placer.place()
 
+        if self.gamepad.getYButton():
+            self.algae_intake.intake_L3()
         if self.gamepad.getAButton():
             self.algae_intake.intake_L2()
+        if self.gamepad.getBButton():
+            self.algae_intake.done()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += 2.0
-
         if dpad in (180, 135, 225):
             self.inclination_angle += 2.0
-
         self.inclination_angle = clamp(
             self.inclination_angle,
             self.wrist.MAXIMUM_DEPRESSION,
@@ -184,7 +183,6 @@ class MyRobot(magicbot.MagicRobot):
         # Set current robot direction to forward
         if self.gamepad.getBackButton():
             self.chassis.reset_yaw()
-
         # Reset Odometry
         if self.gamepad.getStartButton():
             self.chassis.reset_odometry()

@@ -14,7 +14,7 @@ class AlgaeIntake(StateMachine):
     def __init__(self):
         pass
 
-    @state(first=True)
+    @state(first=True, must_finish=True)
     def raising_to_L2(self):
         if self.algae_manipulator_component.has_algae():
             self.done()
@@ -25,7 +25,7 @@ class AlgaeIntake(StateMachine):
         if self.wrist.at_setpoint():
             self.next_state("intaking")
 
-    @state()
+    @state(must_finish=True)
     def raising_to_L3(self):
         if self.algae_manipulator_component.has_algae():
             self.done()
@@ -36,7 +36,7 @@ class AlgaeIntake(StateMachine):
         if self.wrist.at_setpoint():
             self.next_state("intaking")
 
-    @state
+    @state(must_finish=True)
     def intaking(self):
         if self.algae_manipulator_component.has_algae():
             self.done()
