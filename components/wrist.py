@@ -3,6 +3,7 @@ from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
 from wpilib import DigitalInput
 
 from ids import DioChannel, SparkId
+from utilities.functions import clamp
 
 
 class WristComponent:
@@ -63,7 +64,7 @@ class WristComponent:
         return abs(self.desired_angle - self.inclination()) < WristComponent.TOLERANCE
 
     def tilt_to(self, pos: float) -> None:
-        self.desired_angle = pos
+        self.desired_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 
     def go_to_neutral(self) -> None:
         self.desired_angle = WristComponent.NEUTRAL_ANGLE
