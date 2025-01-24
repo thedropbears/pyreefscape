@@ -71,6 +71,9 @@ class CoralAutoBase(AutonomousStateMachine):
         # get next leg on entry
         current_pose = self.chassis.get_pose()
         final_pose = self.trajectory.get_final_pose(game.is_red())
+        if final_pose is None:
+            self.next_state("scoring_coral")
+            return
 
         distance = (current_pose.translation() - final_pose.translation()).norm()
 
