@@ -70,6 +70,9 @@ class WristComponent:
         self.desired_angle = WristComponent.NEUTRAL_ANGLE
 
     def execute(self) -> None:
+        if self.wrist_at_bottom_limit():
+            self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
+
         self.wrist_controller.setReference(
             self.desired_angle, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0
         )
