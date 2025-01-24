@@ -46,7 +46,7 @@ class WristComponent:
 
     def zero_wrist(self) -> None:
         if not self.wrist_at_bottom_limit():
-            self.desired_angle += self.angle_change_rate_while_zeroing
+            self.tilt_to(self.desired_angle - self.angle_change_rate_while_zeroing)
         else:
             self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
             self.desired_angle = self.MAXIMUM_DEPRESSION
