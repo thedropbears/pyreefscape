@@ -160,10 +160,10 @@ class MyRobot(magicbot.MagicRobot):
         # self.climber.retract()
 
         if self.gamepad.getBButton():
-            self.algae_intake.intake_l3()
+            self.algae_intake.intake_L3()
 
         if self.gamepad.getAButton():
-            self.algae_intake.intake_l2()
+            self.algae_intake.intake_L2()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += 2.0
