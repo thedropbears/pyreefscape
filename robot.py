@@ -123,26 +123,26 @@ class MyRobot(magicbot.MagicRobot):
         self.field.getObject("Intended start pos").setPoses([])
 
     def teleopPeriodic(self) -> None:
-        if self.gamepad.getRightTriggerAxis() > 0.5:
+        if self.gamepad.getLeftBumperPressed():
             self.algae_shooter.shoot()
 
-        if self.gamepad.getLeftBumper():
+        if self.gamepad.getBButtonPressed():
             self.wrist.zero_wrist()
             self.wrist_desired_angle = self.wrist.get_encoder()
         
-        if self.gamepad.getLeftBumper():
+        if self.gamepad.getRightBumperPressed():
             self.wrist_desired_angle += 0.6
             self.wrist.tilt_to(self.wrist_desired_angle)
             
-        if self.gamepad.getLeftTriggerAxis() > 0.2:
+        if self.gamepad.getRightTriggerAxis() > 0.2:
             self.wrist_desired_angle -= 0.6
             self.wrist.tilt_to(self.wrist_desired_angle)
 
-        if self.gamepad.getXButtonPressed():
+        if self.gamepad.getAButtonPressed():
             self.wrist.intake_L2()
             self.algae_manipulator_component.intake()
 
-        if self.gamepad.getBButtonPressed():
+        if self.gamepad.getYButtonPressed():
             self.wrist.intake_L3()
             self.algae_manipulator_component.intake()
 
