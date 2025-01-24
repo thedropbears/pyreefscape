@@ -51,6 +51,10 @@ class WristComponent:
     def get_encoder(self) -> float:
         return self.encoder.getPosition()
 
+    @feedback
+    def at_setpoint(self) -> bool:
+        return abs(self.desired_angle - self.get_encoder()) < WristComponent.TOLERANCE
+
     def tilt_to(self, pos: float) -> None:
         self.desired_angle = pos
 
