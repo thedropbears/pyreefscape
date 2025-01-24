@@ -10,9 +10,11 @@ class WristComponent:
     intake_L2_angle = tunable(30.0)
     intake_L3_angle = tunable(60.0)
 
-    maximum_angle = 73.0
+    maximum_angle = 80.0
+    minimum_angle = -23.0
+
     angle_change_rate_while_zeroing = tunable(1.0)
-    wrist_gear_ratio = 20 * 66 / 26
+    wrist_gear_ratio = 20 * 150 / 15  # 200 / 1
     desired_angle = 0.0
 
     def __init__(self):
@@ -25,7 +27,7 @@ class WristComponent:
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        wrist_config.closedLoop.P(3.0 / self.maximum_angle, ClosedLoopSlot.kSlot0)
+        wrist_config.closedLoop.P(3.0 / self.maximum_angle / 10, ClosedLoopSlot.kSlot0)
         wrist_config.closedLoop.D(0.1, ClosedLoopSlot.kSlot0)
 
         wrist_config.encoder.positionConversionFactor(360 * (1 / self.wrist_gear_ratio))
@@ -41,14 +43,14 @@ class WristComponent:
         self.encoder.setPosition(0.0)
 
     def zero_wrist(self) -> None:
-        if not self.wrist_at_top_limit():
+        if not self.wrist_at_bottom_limit():
             self.desired_angle += self.angle_change_rate_while_zeroing
         else:
-            self.encoder.setPosition(self.maximum_angle)
-            self.desired_angle = self.maximum_angle
+            self.encoder.setPosition(self.minimum_angle)
+            self.desired_angle = self.minimum_angle
 
     @feedback
-    def wrist_at_top_limit(self) -> bool:
+    def wrist_at_bottom_limit(self) -> bool:
         return not self.switch.get()
 
     @feedback
@@ -56,7 +58,7 @@ class WristComponent:
         return self.encoder.getPosition()
 
     def tilt_to(self, pos) -> None:
-        self.desired_angle = clamp(pos, -self.maximum_angle, self.maximum_angle)
+        self.desired_angle = clamp(pos, self.minimum_angle, self.maximum_angle)
 
     def intake_L2(self) -> None:
         self.tilt_to(self.intake_L2_angle)
