@@ -159,14 +159,11 @@ class MyRobot(magicbot.MagicRobot):
         # elif dpad in (135, 180, 235):
         # self.climber.retract()
 
-        if dpad in (45, 90, 135):
-            self.algae_intake.prefer_l2()
-
-        if dpad in (225, 270, 315):
-            self.algae_intake.prefer_l3()
-
         if self.gamepad.getBButton():
-            self.algae_intake.intake()
+            self.algae_intake.intake_l3()
+
+        if self.gamepad.getAButton():
+            self.algae_intake.intake_l2()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += 2.0
@@ -179,9 +176,7 @@ class MyRobot(magicbot.MagicRobot):
             self.wrist.MAXIMUM_DEPRESSION,
             self.wrist.MAXIMUM_ELEVATION,
         )
-
-        if self.gamepad.getAButton():
-            self.wrist.tilt_to(self.inclination_angle)
+        self.wrist.tilt_to(self.inclination_angle)
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()

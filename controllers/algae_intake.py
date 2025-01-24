@@ -36,13 +36,12 @@ class AlgaeIntake(StateMachine):
 
         self.algae_manipulator_component.intake()
 
-    def prefer_l2(self) -> None:
+    def intake_l2(self) -> None:
         self.preferred_intake_angle = self.L2_INTAKE_ANGLE
+        self.engage()
 
-    def prefer_l3(self) -> None:
+    def intake_l3(self) -> None:
         self.preferred_intake_angle = self.L3_INTAKE_ANGLE
-
-    def intake(self):
         self.engage()
 
     def done(self) -> None:
