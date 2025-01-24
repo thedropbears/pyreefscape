@@ -168,11 +168,11 @@ class MyRobot(magicbot.MagicRobot):
             self.algae_intake.intake()
 
         # Set current robot direction to forward
-        if dpad in (135, 180, 235):
+        if self.gamepad.getBackButton():
             self.chassis.reset_yaw()
 
         # Reset Odometry
-        if dpad in (0, 45, 315):
+        if self.gamepad.getStartButton():
             self.chassis.reset_odometry()
 
     def testInit(self) -> None:
