@@ -11,7 +11,7 @@ class WristComponent:
     MAXIMUM_ELEVATION = 90.0
     NEUTRAL_ANGLE = 0.0
 
-    angle_change_rate_while_zeroing = tunable(3.0)
+    angle_change_rate_while_zeroing = tunable(0.05)
     wrist_gear_ratio = (150.0 / 15) * 20
     desired_angle = 0.0
     TOLERANCE = 3.0
