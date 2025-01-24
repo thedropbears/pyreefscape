@@ -1,5 +1,4 @@
 import choreo
-import wpilib
 from choreo.trajectory import SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
 from wpilib import RobotBase
@@ -26,11 +25,7 @@ class CoralAutoBase(AutonomousStateMachine):
         self.y_controller = PIDController(1.0, 0.0, 0.0)
 
         try:
-            # TODO: Stop passing deploy path after the next Choreo release
-            # https://github.com/SleipnirGroup/Choreo/pull/1139
-            self.trajectory = choreo.load_swerve_trajectory(
-                f"{wpilib.getDeployDirectory()}/choreo/{trajectory_name}"
-            )
+            self.trajectory = choreo.load_swerve_trajectory(trajectory_name)
             self.starting_pose = self.trajectory.get_initial_pose(game.is_red())
         except ValueError:
             # If the trajectory is not found, ChoreoLib already prints to DriverStation
@@ -71,6 +66,9 @@ class CoralAutoBase(AutonomousStateMachine):
         # get next leg on entry
         current_pose = self.chassis.get_pose()
         final_pose = self.trajectory.get_final_pose(game.is_red())
+        if final_pose is None:
+            self.next_state("scoring_coral")
+            return
 
         distance = (current_pose.translation() - final_pose.translation()).norm()
 
