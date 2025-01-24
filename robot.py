@@ -40,6 +40,8 @@ class MyRobot(magicbot.MagicRobot):
     lower_max_spin_rate = tunable(2)  # m/s
     inclination_angle = tunable(0.0)
 
+    wrist_desired_angle = 0.0
+
     START_POS_TOLERANCE = 1
 
     def createObjects(self) -> None:
@@ -121,8 +123,30 @@ class MyRobot(magicbot.MagicRobot):
         self.field.getObject("Intended start pos").setPoses([])
 
     def teleopPeriodic(self) -> None:
-        if self.gamepad.getYButton():
-            self.coral_placer.place()
+        if self.gamepad.getRightTriggerAxis() > 0.5:
+            self.algae_shooter.shoot()
+
+        if self.gamepad.getLeftBumper():
+            self.wrist.zero_wrist()
+            self.wrist_desired_angle = self.wrist.get_encoder()
+        
+        if self.gamepad.getLeftBumper():
+            self.wrist_desired_angle += 0.6
+            self.wrist.tilt_to(self.wrist_desired_angle)
+            
+        if self.gamepad.getLeftTriggerAxis() > 0.2:
+            self.wrist_desired_angle -= 0.6
+            self.wrist.tilt_to(self.wrist_desired_angle)
+
+        if self.gamepad.getXButtonPressed():
+            self.wrist.intake_L2()
+            self.algae_manipulator_component.intake()
+
+        if self.gamepad.getBButtonPressed():
+            self.wrist.intake_L3()
+            self.algae_manipulator_component.intake()
+
+        self.wrist.execute()
 
         # Set max speed
         max_speed = self.max_speed
