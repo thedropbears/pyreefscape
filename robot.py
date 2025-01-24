@@ -175,7 +175,9 @@ class MyRobot(magicbot.MagicRobot):
             self.inclination_angle += 2.0
 
         self.inclination_angle = clamp(
-            self.inclination_angle, 0, self.wrist.maximum_angle
+            self.inclination_angle,
+            self.wrist.MAXIMUM_DEPRESSION,
+            self.wrist.MAXIMUM_ELEVATION,
         )
 
         if self.gamepad.getAButton():
