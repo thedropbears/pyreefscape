@@ -17,10 +17,6 @@ warn_unused_ignores = true
 warn_unreachable = true
 strict_equality = true
 
-[[tool.mypy.overrides]]
-module = "choreo.*"
-ignore_missing_imports = true
-
 [tool.pyright]
 exclude = [
     "ctre_sim",
@@ -92,7 +88,7 @@ dependencies = [
     "robotpy-rev~=2025.0.1",
     "robotpy-wpilib-utilities==2025.0.0",
     "photonlibpy==2025.1.1rc1",
-    "sleipnirgroup-choreolib",
+    "sleipnirgroup-choreolib>=2025.0.2",
 ]
 
 [tool.robotpy]
@@ -102,7 +98,7 @@ requires = [
     "robotpy-rev~=2025.0.1",
     "robotpy-wpilib-utilities==2025.0.0",
     "photonlibpy==2025.1.1rc1",
-    "sleipnirgroup-choreolib",
+    "sleipnirgroup-choreolib>=2025.0.2",
 ]
 robotpy_version = "2025.2.1.0"
 robotpy_extras = ["apriltag"]
