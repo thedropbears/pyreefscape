@@ -25,9 +25,9 @@ class WristComponent:
         self.wrist_controller = self.wrist.getClosedLoopController()
 
         wrist_config = SparkMaxConfig()
-        wrist_config.inverted(False)
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        wrist_config.closedLoop.P(3.0 / self.maximum_angle / 10, ClosedLoopSlot.kSlot0)
+        wrist_config.inverted(True)
+        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
+        wrist_config.closedLoop.P(3.0 / self.maximum_angle, ClosedLoopSlot.kSlot0)
         wrist_config.closedLoop.D(0.1, ClosedLoopSlot.kSlot0)
 
         wrist_config.encoder.positionConversionFactor(360 * (1 / self.wrist_gear_ratio))
@@ -44,8 +44,12 @@ class WristComponent:
 
     def zero_wrist(self) -> None:
         if not self.wrist_at_bottom_limit():
-            self.desired_angle += self.angle_change_rate_while_zeroing
-        else:
+            self.desired_angle -= self.angle_change_rate_while_zeroing
+            self.desired_angle = clamp(
+                self.desired_angle, self.minimum_angle, self.maximum_angle
+            )
+
+        if self.wrist_at_bottom_limit():
             self.encoder.setPosition(self.minimum_angle)
             self.desired_angle = self.minimum_angle
 
@@ -66,6 +70,12 @@ class WristComponent:
         )
 
     def execute(self) -> None:
+        if self.wrist_at_bottom_limit():
+            self.encoder.setPosition(self.minimum_angle)
+
+        self.desired_angle = clamp(
+            self.desired_angle, self.minimum_angle, self.maximum_angle
+        )
         self.wrist_controller.setReference(
             self.desired_angle, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0
         )

@@ -17,6 +17,7 @@ from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
 from ids import DioChannel, PwmChannel, RioSerialNumber
+from utilities.functions import clamp
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -131,10 +132,22 @@ class MyRobot(magicbot.MagicRobot):
             self.wrist_desired_angle = self.wrist.get_encoder()
 
         if self.gamepad.getLeftBumper():
-            self.wrist_desired_angle += 0.6
+            self.wrist_desired_angle += 0.5
+            self.wrist_desired_angle = clamp(
+                self.wrist_desired_angle,
+                self.wrist.minimum_angle,
+                self.wrist.maximum_angle,
+            )
+            self.wrist.tilt_to(self.wrist_desired_angle)
+
         if self.gamepad.getLeftTriggerAxis() > 0.2:
-            self.wrist_desired_angle -= 0.6
-        self.wrist.tilt_to(self.wrist_desired_angle)
+            self.wrist_desired_angle -= 0.5
+            self.wrist_desired_angle = clamp(
+                self.wrist_desired_angle,
+                self.wrist.minimum_angle,
+                self.wrist.maximum_angle,
+            )
+            self.wrist.tilt_to(self.wrist_desired_angle)
 
         if self.gamepad.getYButton():
             self.algae_intake.intake_L3()
@@ -197,38 +210,54 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.stop_snapping()
             self.chassis.drive_local(0, 0, 0)
 
-        if self.gamepad.getYButton():
-            self.coral_placer_component.place()
-        self.coral_placer_component.execute()
+        # if self.gamepad.getYButton():
+        # self.coral_placer_component.place()
+        # self.coral_placer_component.execute()
 
-        if self.gamepad.getBButton():
+        if self.gamepad.getXButton():
             self.vision.zero_servo_()
         else:
             self.vision.execute()
 
-        self.chassis.execute()
-
-        self.chassis.update_odometry()
-
-        if self.gamepad.getRightTriggerAxis() > 0.5:
+        if self.gamepad.getRightTriggerAxis() > 0.2:
             self.algae_shooter.shoot()
-        if self.gamepad.getAButton():
-            self.algae_intake.intake()
 
-        self.algae_shooter.execute()
-
-        self.algae_intake.execute()
-
-        self.algae_manipulator_component.execute()
+        if self.gamepad.getBButton():
+            self.wrist.zero_wrist()
+            self.wrist_desired_angle = self.wrist.get_encoder()
 
         if self.gamepad.getLeftBumper():
-            self.wrist.zero_wrist()
-        if self.gamepad.getLeftTriggerAxis() > 0.3:
-            self.wrist.tilt_to(0)
+            self.wrist_desired_angle += 0.5
+            self.wrist_desired_angle = clamp(
+                self.wrist_desired_angle,
+                self.wrist.minimum_angle,
+                self.wrist.maximum_angle,
+            )
+            self.wrist.tilt_to(self.wrist_desired_angle)
+
+        if self.gamepad.getLeftTriggerAxis() > 0.2:
+            self.wrist_desired_angle -= 0.5
+            self.wrist_desired_angle = clamp(
+                self.wrist_desired_angle,
+                self.wrist.minimum_angle,
+                self.wrist.maximum_angle,
+            )
+            self.wrist.tilt_to(self.wrist_desired_angle)
+
+        if self.gamepad.getYButton():
+            self.algae_intake.intake_L3()
+        if self.gamepad.getAButton():
+            self.algae_intake.intake_L2()
+
         self.wrist.execute()
+
+        # self.chassis.execute()
+
+        self.chassis.update_odometry()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
+        self.wrist.execute()
         self.vision.execute()
