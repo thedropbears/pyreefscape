@@ -31,6 +31,8 @@ class AlgaeManipulatorComponent:
 
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
+        injector_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
+
         injector_config.inverted(True)
         self.injector_1.configure(
             injector_config,
@@ -44,8 +46,6 @@ class AlgaeManipulatorComponent:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-
-        injector_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
 
         self.flywheel_1 = TalonFX(TalonId.FLYWHEEL_1)
         self.flywheel_2 = TalonFX(TalonId.FLYWHEEL_2)
