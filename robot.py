@@ -158,6 +158,15 @@ class MyRobot(magicbot.MagicRobot):
         # elif dpad in (135, 180, 235):
         # self.climber.retract()
 
+        if dpad in (45, 90, 135):
+            self.algae_intake.prefer_l2()
+
+        if dpad in (225, 270, 315):
+            self.algae_intake.prefer_l3()
+
+        if self.gamepad.getBButton():
+            self.algae_intake.intake()
+
         # Set current robot direction to forward
         if dpad in (135, 180, 235):
             self.chassis.reset_yaw()
