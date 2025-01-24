@@ -1,3 +1,5 @@
+import math
+
 from magicbot import feedback, tunable
 from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
 from wpilib import DigitalInput
@@ -7,11 +9,9 @@ from utilities.functions import clamp
 
 
 class WristComponent:
-    intake_L2_angle = tunable(30.0)
-    intake_L3_angle = tunable(60.0)
-
     maximum_angle = 80.0
     minimum_angle = -23.0
+    angle_tolerance = 3.0
 
     angle_change_rate_while_zeroing = tunable(1.0)
     wrist_gear_ratio = 20 * 150 / 15  # 200 / 1
@@ -60,11 +60,10 @@ class WristComponent:
     def tilt_to(self, pos) -> None:
         self.desired_angle = clamp(pos, self.minimum_angle, self.maximum_angle)
 
-    def intake_L2(self) -> None:
-        self.tilt_to(self.intake_L2_angle)
-
-    def intake_L3(self) -> None:
-        self.tilt_to(self.intake_L3_angle)
+    def at_desired_angle(self) -> bool:
+        return math.isclose(
+            self.desired_angle, self.get_encoder(), abs_tol=self.angle_tolerance
+        )
 
     def execute(self) -> None:
         self.wrist_controller.setReference(
