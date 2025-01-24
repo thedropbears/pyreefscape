@@ -44,3 +44,7 @@ class AlgaeIntake(StateMachine):
 
     def intake(self):
         self.engage()
+
+    def done(self) -> None:
+        super().done()
+        self.wrist.go_to_neutral()

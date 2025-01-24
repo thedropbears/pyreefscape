@@ -11,6 +11,7 @@ class WristComponent:
     wrist_gear_ratio = 20 * 66 / 26
     desired_angle = 0.0
     TOLERANCE = 3.0
+    NEUTRAL_ANGLE = 0.0
 
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
@@ -58,6 +59,9 @@ class WristComponent:
 
     def tilt_to(self, pos: float) -> None:
         self.desired_angle = pos
+
+    def go_to_neutral(self) -> None:
+        self.desired_angle = WristComponent.NEUTRAL_ANGLE
 
     def execute(self) -> None:
         self.wrist_controller.setReference(
