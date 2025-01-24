@@ -168,14 +168,20 @@ class MyRobot(magicbot.MagicRobot):
 
         if dpad in (0, 45, 315):
             self.inclination_angle += 2.0
+            self.inclination_angle = clamp(
+                self.inclination_angle,
+                self.wrist.MAXIMUM_DEPRESSION,
+                self.wrist.MAXIMUM_ELEVATION,
+            )
+            self.wrist.tilt_to(self.inclination_angle)
         if dpad in (180, 135, 225):
             self.inclination_angle += 2.0
-        self.inclination_angle = clamp(
-            self.inclination_angle,
-            self.wrist.MAXIMUM_DEPRESSION,
-            self.wrist.MAXIMUM_ELEVATION,
-        )
-        self.wrist.tilt_to(self.inclination_angle)
+            self.inclination_angle = clamp(
+                self.inclination_angle,
+                self.wrist.MAXIMUM_DEPRESSION,
+                self.wrist.MAXIMUM_ELEVATION,
+            )
+            self.wrist.tilt_to(self.inclination_angle)
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
