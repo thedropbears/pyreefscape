@@ -20,7 +20,7 @@ class WristComponent:
 
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
         wrist_config.closedLoop.P(6.0 / self.maximum_angle, ClosedLoopSlot.kSlot0)
         wrist_config.closedLoop.D(0.1, ClosedLoopSlot.kSlot0)
 
