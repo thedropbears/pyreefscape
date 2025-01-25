@@ -25,6 +25,8 @@ class WristComponent:
 
     zeroing_voltage = tunable(-1.0)
 
+    has_indexed = tunable(False)
+
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
 
@@ -61,8 +63,6 @@ class WristComponent:
         self.encoder = self.wrist.getEncoder()
 
         self.desired_angle = self.inclination()
-
-        self.has_indexed = False
 
     def on_enable(self):
         self.tilt_to(self.inclination())
