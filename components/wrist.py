@@ -46,6 +46,9 @@ class WristComponent:
 
         self.encoder.setPosition(0.0)
 
+    def on_enable(self):
+        self.tilt_to(self.inclination())
+
     def zero_wrist(self) -> None:
         if not self.wrist_at_bottom_limit():
             self.tilt_to(self.desired_angle - self.angle_change_rate_while_zeroing)
