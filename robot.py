@@ -66,12 +66,8 @@ class MyRobot(magicbot.MagicRobot):
         self.status_lights_strip_length = (28 * 3) * 2 + (30 * 3) - 2
 
         self.vision_name = "ardu_cam"
-        self.vision_pos = Translation3d(0.22, 0, 0.295)
-        self.vision_rot = Rotation3d(0, -math.radians(20), 0)
-        self.vision_servo_id = PwmChannel.VISION_SERVO
-        self.vision_servo_offset = Rotation2d(3.107)
         self.vision_encoder_id = DioChannel.VISION_ENCODER
-        self.vision_encoder_offset = Rotation2d(3.052)
+        self.vision_servo_id = PwmChannel.VISION_SERVO
 
         if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
             self.chassis_swerve_config = SwerveConfig(
@@ -95,6 +91,11 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis_track_width = 0.467
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.467
+
+            self.vision_pos = Translation3d(0.22, 0, 0.295)
+            self.vision_rot = Rotation3d(0, -math.radians(20), 0)
+            self.vision_servo_offset = Rotation2d(3.107)
+            self.vision_encoder_offset = Rotation2d(3.052)
         else:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
@@ -117,6 +118,11 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis_track_width = 0.517
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
+
+            self.vision_pos = Translation3d(0.290, -0.195, 0.235)
+            self.vision_rot = Rotation3d(0, 0, 0)
+            self.vision_servo_offset = Rotation2d(0.563)
+            self.vision_encoder_offset = Rotation2d(0.975)
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
