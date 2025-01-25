@@ -27,7 +27,7 @@ class WristComponent:
 
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(True)
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
+        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         wrist_config.closedLoop.P(
             3 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
             ClosedLoopSlot.kSlot0,
@@ -48,6 +48,22 @@ class WristComponent:
 
     def on_enable(self):
         self.tilt_to(self.inclination())
+        wrist_config = SparkMaxConfig()
+        wrist_config.setIdleMode(SparkMaxConfig.setIdleMode.kBrake)
+        self.wrist.configure(
+            wrist_config,
+            SparkMax.ResetMode.kNoResetSafeParameters,
+            SparkMax.PersistMode.kNoPersistParameters,
+        )
+
+    def on_disable(self):
+        wrist_config = SparkMaxConfig()
+        wrist_config.setIdleMode(SparkMaxConfig.setIdleMode.kCoast)
+        self.wrist.configure(
+            wrist_config,
+            SparkMax.ResetMode.kNoResetSafeParameters,
+            SparkMax.PersistMode.kNoPersistParameters,
+        )
 
     def zero_wrist(self) -> None:
         if not self.wrist_at_bottom_limit():
