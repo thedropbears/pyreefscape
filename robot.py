@@ -223,7 +223,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
-            self.algae_intake.intake()
+            self.algae_intake.intake_L2()
 
         self.algae_shooter.execute()
 
