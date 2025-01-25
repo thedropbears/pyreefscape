@@ -65,6 +65,7 @@ class VisualLocalizer:
     ) -> None:
         self.camera = PhotonCamera(name)
         self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
+        self.encoder.setAssumedFrequency(975.6)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
         # This has nothing to do with the servo - do it by hand!!
