@@ -49,7 +49,7 @@ class DioChannel(enum.IntEnum):
 
     VISION_ENCODER = 1
 
-    ALGAE_INTAKE_SWITCH = 2
+    ALGAE_INTAKE_SWITCH = 5
 
     WRIST_LIMIT_SWITCH = 3
 
