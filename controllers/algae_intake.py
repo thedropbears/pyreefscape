@@ -1,3 +1,5 @@
+import math
+
 from magicbot import StateMachine, state, tunable
 
 from components.algae_manipulator import AlgaeManipulatorComponent
@@ -8,8 +10,8 @@ class AlgaeIntake(StateMachine):
     algae_manipulator_component: AlgaeManipulatorComponent
     wrist: WristComponent
 
-    L2_INTAKE_ANGLE = tunable(40.0)
-    L3_INTAKE_ANGLE = tunable(40.0)
+    L2_INTAKE_ANGLE = tunable(math.radians(40.0))
+    L3_INTAKE_ANGLE = tunable(math.radians(40.0))
 
     def __init__(self):
         pass
