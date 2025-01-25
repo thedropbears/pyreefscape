@@ -49,7 +49,7 @@ class WristComponent:
     def on_enable(self):
         self.tilt_to(self.inclination())
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.setIdleMode.kBrake)
+        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         self.wrist.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,
@@ -58,7 +58,7 @@ class WristComponent:
 
     def on_disable(self):
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.setIdleMode.kCoast)
+        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
         self.wrist.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,
