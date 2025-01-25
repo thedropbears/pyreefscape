@@ -75,7 +75,7 @@ class WristComponent:
         self.desired_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 
     def go_to_neutral(self) -> None:
-        self.desired_angle = WristComponent.NEUTRAL_ANGLE
+        self.tilt_to(WristComponent.NEUTRAL_ANGLE)
 
     def execute(self) -> None:
         if self.wrist_at_bottom_limit():
