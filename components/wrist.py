@@ -1,3 +1,5 @@
+import math
+
 from magicbot import feedback, tunable
 from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
 from wpilib import DigitalInput
@@ -47,9 +49,12 @@ class WristComponent:
     def zero_wrist(self) -> None:
         if not self.wrist_at_bottom_limit():
             self.tilt_to(self.desired_angle - self.angle_change_rate_while_zeroing)
-        else:
-            self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
-            self.desired_angle = self.MAXIMUM_DEPRESSION
+            if math.isclose(
+                self.desired_angle, self.MAXIMUM_DEPRESSION, abs_tol=1.0
+            ) and math.isclose(
+                self.inclination(), self.MAXIMUM_DEPRESSION, abs_tol=1.0
+            ):
+                self.encoder.setPosition(self.inclination() + 1)
 
     @feedback
     def wrist_at_bottom_limit(self) -> bool:
