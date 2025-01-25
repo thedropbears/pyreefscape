@@ -28,6 +28,9 @@ class WristComponent:
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(True)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        wrist_config.closedLoop.maxMotion.maxAcceleration(15)
+        wrist_config.closedLoop.maxMotion.maxVelocity(30)
+        wrist_config.closedLoop.maxMotion.allowedClosedLoopError(1)
         wrist_config.closedLoop.P(
             3 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
             ClosedLoopSlot.kSlot0,
@@ -35,6 +38,9 @@ class WristComponent:
         wrist_config.closedLoop.D(0.0, ClosedLoopSlot.kSlot0)
 
         wrist_config.encoder.positionConversionFactor(360 * (1 / self.wrist_gear_ratio))
+        wrist_config.encoder.velocityConversionFactor(
+            1 / 60 * 360 * (1 / self.wrist_gear_ratio)
+        )
 
         self.wrist.configure(
             wrist_config,
