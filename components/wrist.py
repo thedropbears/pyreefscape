@@ -1,8 +1,10 @@
 import math
+import time
 
 from magicbot import feedback, tunable
 from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
 from wpilib import DigitalInput
+from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId
 from utilities.functions import clamp
@@ -12,6 +14,9 @@ class WristComponent:
     MAXIMUM_DEPRESSION = -23.0
     MAXIMUM_ELEVATION = 80.0
     NEUTRAL_ANGLE = 0.0
+
+    WRIST_MAX_VEL = 30.0
+    WRIST_MAX_ACC = 15.0
 
     angle_change_rate_while_zeroing = tunable(0.1)
     wrist_gear_ratio = (150.0 / 15) * 20
@@ -28,14 +33,14 @@ class WristComponent:
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(True)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        wrist_config.closedLoop.maxMotion.maxAcceleration(15)
-        wrist_config.closedLoop.maxMotion.maxVelocity(30)
-        wrist_config.closedLoop.maxMotion.allowedClosedLoopError(1)
         wrist_config.closedLoop.P(
             3 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
             ClosedLoopSlot.kSlot0,
         )
         wrist_config.closedLoop.D(0.0, ClosedLoopSlot.kSlot0)
+        self.wrist_profile = TrapezoidProfile(
+            TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
+        )
 
         wrist_config.encoder.positionConversionFactor(360 * (1 / self.wrist_gear_ratio))
         wrist_config.encoder.velocityConversionFactor(
@@ -90,11 +95,16 @@ class WristComponent:
         return self.encoder.getPosition()
 
     @feedback
+    def current_velocity(self) -> float:
+        return self.encoder.getVelocity()
+
+    @feedback
     def at_setpoint(self) -> bool:
         return abs(self.desired_angle - self.inclination()) < WristComponent.TOLERANCE
 
     def tilt_to(self, pos: float) -> None:
         self.desired_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
+        self.last_setpoint_update_time = time.monotonic()
 
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
@@ -102,7 +112,11 @@ class WristComponent:
     def execute(self) -> None:
         if self.wrist_at_bottom_limit():
             self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
-
+        self.wrist_profile.calculate(
+            time.monotonic() - self.last_setpoint_update_time,
+            TrapezoidProfile.State(self.inclination(), self.current_velocity()),
+            TrapezoidProfile.State(self.desired_angle, 0.0),
+        )
         self.wrist_controller.setReference(
             self.desired_angle, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0
         )
