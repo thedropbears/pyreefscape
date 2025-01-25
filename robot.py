@@ -241,4 +241,6 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
+        self.wrist.execute()
+
         self.vision.execute()
