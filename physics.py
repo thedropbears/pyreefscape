@@ -115,6 +115,7 @@ class PhysicsEngine:
         self.camera.setMaxSightRange(5.0)
         self.visual_localiser = robot.vision
         self.vision_sim.addCamera(self.camera, self.visual_localiser.robot_to_camera)
+        self.vision_sim_counter = 0
 
         self.servo_sim = PWMSim(self.visual_localiser.servo)
         self.encoder_sim = DutyCycleEncoderSim(self.visual_localiser.encoder)
@@ -154,5 +155,11 @@ class PhysicsEngine:
             )
         )
 
-        self.vision_sim.adjustCamera(self.camera, self.visual_localiser.robot_to_camera)
-        self.vision_sim.update(self.physics_controller.get_pose())
+        # Simulate slow vision updates.
+        self.vision_sim_counter += 1
+        if self.vision_sim_counter == 10:
+            self.vision_sim.adjustCamera(
+                self.camera, self.visual_localiser.robot_to_camera
+            )
+            self.vision_sim.update(self.physics_controller.get_pose())
+            self.vision_sim_counter = 0
