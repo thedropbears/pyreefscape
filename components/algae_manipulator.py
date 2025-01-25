@@ -15,7 +15,6 @@ from ids import DioChannel, PwmChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
-    flywheel_shoot_speed = tunable(60)
     flywheel_intake_speed = tunable(-10)
     injector_inject_speed = tunable(6.0)
     injector_intake_speed = tunable(-0.5)
@@ -90,8 +89,8 @@ class AlgaeManipulatorComponent:
         self.algae_size = 0.0
         self.desired_feeler_angle = 90.0
 
-    def spin_flywheels(self) -> None:
-        self.desired_flywheel_speed = self.flywheel_shoot_speed
+    def spin_flywheels(self, flywheel_shoot_speed) -> None:
+        self.desired_flywheel_speed = flywheel_shoot_speed
 
     @feedback
     def flywheels_up_to_speed(self) -> bool:

@@ -10,33 +10,24 @@ class AlgaeShooter(StateMachine):
     chassis: ChassisComponent
     wrist: WristComponent
 
-    L2_SHOOT_ANGLE = tunable(40.0)
-    L3_SHOOT_ANGLE = tunable(40.0)
+    SHOOT_ANGLE = tunable(40.0)
+    SHOOT_SPEED = tunable(60.0)
 
     def __init__(self) -> None:
         pass
 
-    def shoot_L2(self) -> None:
-        self.engage("raising_to_L2")
-
-    def shoot_L3(self) -> None:
-        self.engage("raising_to_L3")
+    def shoot(self) -> None:
+        self.engage("tilting")
 
     @state(first=True, must_finish=True)
-    def raising_to_L2(self):
-        self.wrist.tilt_to(self.L2_SHOOT_ANGLE)
-        if self.wrist.at_setpoint():
-            self.next_state("spinning_up")
-
-    @state(must_finish=True)
-    def raising_to_L3(self):
-        self.wrist.tilt_to(self.L3_SHOOT_ANGLE)
+    def tilting(self):
+        self.wrist.tilt_to(self.SHOOT_ANGLE)
         if self.wrist.at_setpoint():
             self.next_state("spinning_up")
 
     @state()
     def spinning_up(self) -> None:
-        self.algae_manipulator_component.spin_flywheels()
+        self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
 
         # self.algae_manipulator_component.set_range(self.calculate_range_to_barge()
 
@@ -45,7 +36,7 @@ class AlgaeShooter(StateMachine):
 
     @timed_state(duration=1, must_finish=True)
     def shooting(self) -> None:
-        self.algae_manipulator_component.spin_flywheels()
+        self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
         self.algae_manipulator_component.inject()
 
         # self.algae_manipulator_component.set_range(self.calculate_range_to_barge())
