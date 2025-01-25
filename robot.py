@@ -234,7 +234,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftBumper():
             self.wrist.zero_wrist()
         if self.gamepad.getLeftTriggerAxis() > 0.3:
-            self.wrist.tilt_to(0)
+            self.wrist.tilt_to(self.inclination_angle)
         self.wrist.execute()
 
     def disabledPeriodic(self) -> None:
