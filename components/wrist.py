@@ -10,7 +10,7 @@ from utilities.functions import clamp
 
 class WristComponent:
     MAXIMUM_DEPRESSION = -23.0
-    MAXIMUM_ELEVATION = 90.0
+    MAXIMUM_ELEVATION = 80.0
     NEUTRAL_ANGLE = 0.0
 
     angle_change_rate_while_zeroing = tunable(0.05)
