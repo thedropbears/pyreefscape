@@ -23,6 +23,8 @@ class WristComponent:
     wrist_gear_ratio = (150.0 / 15) * 20
     TOLERANCE = math.radians(3.0)
 
+    zeroing_voltage = tunable(-1.0)
+
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
 
@@ -60,6 +62,8 @@ class WristComponent:
 
         self.desired_angle = self.inclination()
 
+        self.has_indexed = False
+
     def on_enable(self):
         self.tilt_to(self.inclination())
         wrist_config = SparkMaxConfig()
@@ -80,14 +84,7 @@ class WristComponent:
         )
 
     def zero_wrist(self) -> None:
-        if not self.wrist_at_bottom_limit():
-            self.tilt_to(self.desired_angle - self.angle_change_rate_while_zeroing)
-            if math.isclose(
-                self.desired_angle, self.MAXIMUM_DEPRESSION, abs_tol=math.radians(1.0)
-            ) and math.isclose(
-                self.inclination(), self.MAXIMUM_DEPRESSION, abs_tol=math.radians(1.0)
-            ):
-                self.encoder.setPosition(self.inclination() + math.radians(1.0))
+        self.has_indexed = False
 
     @feedback
     def wrist_at_bottom_limit(self) -> bool:
@@ -115,6 +112,12 @@ class WristComponent:
     def execute(self) -> None:
         if self.wrist_at_bottom_limit():
             self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
+            self.has_indexed = True
+
+        if not self.has_indexed:
+            self.wrist.setVoltage(self.zeroing_voltage)
+            return
+
         desired_state = self.wrist_profile.calculate(
             time.monotonic() - self.last_setpoint_update_time,
             TrapezoidProfile.State(self.inclination(), self.current_velocity()),
