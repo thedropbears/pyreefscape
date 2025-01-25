@@ -29,10 +29,10 @@ class WristComponent:
         wrist_config.inverted(True)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
         wrist_config.closedLoop.P(
-            1.0 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
+            7 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
             ClosedLoopSlot.kSlot0,
         )
-        wrist_config.closedLoop.D(0.1, ClosedLoopSlot.kSlot0)
+        wrist_config.closedLoop.D(0.0, ClosedLoopSlot.kSlot0)
 
         wrist_config.encoder.positionConversionFactor(360 * (1 / self.wrist_gear_ratio))
 
