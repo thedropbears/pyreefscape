@@ -12,9 +12,9 @@ from utilities.functions import clamp
 
 
 class WristComponent:
-    MAXIMUM_DEPRESSION = math.radians(-23.0)
-    MAXIMUM_ELEVATION = math.radians(80.0)
-    NEUTRAL_ANGLE = math.radians(0.0)
+    MAXIMUM_DEPRESSION = math.radians(-113.0)
+    MAXIMUM_ELEVATION = math.radians(-10.0)
+    NEUTRAL_ANGLE = math.radians(-90.0)
 
     WRIST_MAX_VEL = math.radians(30.0)
     WRIST_MAX_ACC = math.radians(15.0)
@@ -120,9 +120,7 @@ class WristComponent:
             TrapezoidProfile.State(self.inclination(), self.current_velocity()),
             TrapezoidProfile.State(self.desired_angle, 0.0),
         )
-        ff = self.wrist_ff.calculate(
-            desired_state.position - (math.pi / 2), desired_state.velocity
-        )
+        ff = self.wrist_ff.calculate(desired_state.position, desired_state.velocity)
         self.wrist_controller.setReference(
             desired_state.position,
             SparkMax.ControlType.kPosition,
