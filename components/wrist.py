@@ -1,21 +1,26 @@
 import math
+import time
 
 from magicbot import feedback, tunable
 from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
 from wpilib import DigitalInput
+from wpimath.controller import ArmFeedforward
+from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId
 from utilities.functions import clamp
 
 
 class WristComponent:
-    MAXIMUM_DEPRESSION = -23.0
-    MAXIMUM_ELEVATION = 80.0
-    NEUTRAL_ANGLE = 0.0
+    MAXIMUM_DEPRESSION = math.radians(-23.0)
+    MAXIMUM_ELEVATION = math.radians(80.0)
+    NEUTRAL_ANGLE = math.radians(0.0)
 
-    angle_change_rate_while_zeroing = tunable(0.1)
+    WRIST_MAX_VEL = math.radians(30.0)
+    WRIST_MAX_ACC = math.radians(15.0)
+
+    angle_change_rate_while_zeroing = tunable(math.radians(0.1))
     wrist_gear_ratio = (150.0 / 15) * 20
-    desired_angle = 0.0
     TOLERANCE = 3.0
 
     def __init__(self):
@@ -33,8 +38,17 @@ class WristComponent:
             ClosedLoopSlot.kSlot0,
         )
         wrist_config.closedLoop.D(0.0, ClosedLoopSlot.kSlot0)
+        self.wrist_profile = TrapezoidProfile(
+            TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
+        )
+        self.wrist_ff = ArmFeedforward(kS=0.0, kG=0.76, kV=0.02, kA=0.0)
 
-        wrist_config.encoder.positionConversionFactor(360 * (1 / self.wrist_gear_ratio))
+        wrist_config.encoder.positionConversionFactor(
+            math.tau * (1 / self.wrist_gear_ratio)
+        )
+        wrist_config.encoder.velocityConversionFactor(
+            (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
+        )
 
         self.wrist.configure(
             wrist_config,
@@ -44,7 +58,7 @@ class WristComponent:
 
         self.encoder = self.wrist.getEncoder()
 
-        self.encoder.setPosition(0.0)
+        self.desired_angle = self.inclination()
 
     def on_enable(self):
         self.tilt_to(self.inclination())
@@ -69,11 +83,11 @@ class WristComponent:
         if not self.wrist_at_bottom_limit():
             self.tilt_to(self.desired_angle - self.angle_change_rate_while_zeroing)
             if math.isclose(
-                self.desired_angle, self.MAXIMUM_DEPRESSION, abs_tol=1.0
+                self.desired_angle, self.MAXIMUM_DEPRESSION, abs_tol=math.radians(1.0)
             ) and math.isclose(
-                self.inclination(), self.MAXIMUM_DEPRESSION, abs_tol=1.0
+                self.inclination(), self.MAXIMUM_DEPRESSION, abs_tol=math.radians(1.0)
             ):
-                self.encoder.setPosition(self.inclination() + 1)
+                self.encoder.setPosition(self.inclination() + math.radians(1.0))
 
     @feedback
     def wrist_at_bottom_limit(self) -> bool:
@@ -84,11 +98,16 @@ class WristComponent:
         return self.encoder.getPosition()
 
     @feedback
+    def current_velocity(self) -> float:
+        return self.encoder.getVelocity()
+
+    @feedback
     def at_setpoint(self) -> bool:
         return abs(self.desired_angle - self.inclination()) < WristComponent.TOLERANCE
 
     def tilt_to(self, pos: float) -> None:
         self.desired_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
+        self.last_setpoint_update_time = time.monotonic()
 
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
@@ -96,7 +115,17 @@ class WristComponent:
     def execute(self) -> None:
         if self.wrist_at_bottom_limit():
             self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
-
+        desired_state = self.wrist_profile.calculate(
+            time.monotonic() - self.last_setpoint_update_time,
+            TrapezoidProfile.State(self.inclination(), self.current_velocity()),
+            TrapezoidProfile.State(self.desired_angle, 0.0),
+        )
+        ff = self.wrist_ff.calculate(
+            desired_state.position - (math.pi / 2), desired_state.velocity
+        )
         self.wrist_controller.setReference(
-            self.desired_angle, SparkMax.ControlType.kPosition, ClosedLoopSlot.kSlot0
+            desired_state.position,
+            SparkMax.ControlType.kPosition,
+            slot=ClosedLoopSlot.kSlot0,
+            arbFeedforward=ff,
         )
