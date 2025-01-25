@@ -17,8 +17,8 @@ apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
 
 APRILTAGS = apriltag_layout.getTags()
 
-L3_TAGS = [7,9,11,18,20,22]
-L2_TAGS = [6,8,10,17,19,21]
+L3_TAGS = [7, 9, 11, 18, 20, 22]
+L2_TAGS = [6, 8, 10, 17, 19, 21]
 
 FIELD_WIDTH = apriltag_layout.getFieldWidth()
 FIELD_LENGTH = apriltag_layout.getFieldLength()
@@ -54,7 +54,8 @@ def field_flip_translation2d(t: Translation2d):
 def is_red() -> bool:
     return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
-def nearest_reef_tag(pose :Pose2d) -> int:
+
+def nearest_reef_tag(pose: Pose2d) -> int:
     distance = math.inf
     closest_tag_id = 0
 
@@ -70,5 +71,6 @@ def nearest_reef_tag(pose :Pose2d) -> int:
 
     return closest_tag_id
 
-def is_L3(tag_id :int) -> bool:
+
+def is_L3(tag_id: int) -> bool:
     return tag_id in L3_TAGS
