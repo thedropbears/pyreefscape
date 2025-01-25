@@ -21,7 +21,7 @@ class WristComponent:
 
     angle_change_rate_while_zeroing = tunable(math.radians(0.1))
     wrist_gear_ratio = (150.0 / 15) * 20
-    TOLERANCE = 3.0
+    TOLERANCE = math.radians(3.0)
 
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
