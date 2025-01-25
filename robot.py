@@ -165,10 +165,8 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.coral_placer.place()
 
-        if self.gamepad.getYButton():
-            self.algae_intake.intake_L3()
         if self.gamepad.getAButton():
-            self.algae_intake.intake_L2()
+            self.algae_intake.intake()
         if self.gamepad.getBButton():
             self.algae_intake.done()
 
