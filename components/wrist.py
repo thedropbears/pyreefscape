@@ -19,7 +19,7 @@ class WristComponent:
     WRIST_MAX_VEL = math.radians(30.0)
     WRIST_MAX_ACC = math.radians(15.0)
 
-    angle_change_rate_while_zeroing = tunable(0.1)
+    angle_change_rate_while_zeroing = tunable(math.radians(0.1))
     wrist_gear_ratio = (150.0 / 15) * 20
     TOLERANCE = 3.0
 
