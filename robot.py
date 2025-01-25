@@ -17,6 +17,7 @@ from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
 from ids import DioChannel, PwmChannel, RioSerialNumber
+from utilities.functions import clamp
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -121,9 +122,6 @@ class MyRobot(magicbot.MagicRobot):
         self.field.getObject("Intended start pos").setPoses([])
 
     def teleopPeriodic(self) -> None:
-        if self.gamepad.getYButton():
-            self.coral_placer.place()
-
         # Set max speed
         max_speed = self.max_speed
         max_spin_rate = self.max_spin_rate
@@ -158,12 +156,41 @@ class MyRobot(magicbot.MagicRobot):
         # elif dpad in (135, 180, 235):
         # self.climber.retract()
 
-        # Set current robot direction to forward
-        if dpad in (135, 180, 235):
-            self.chassis.reset_yaw()
+        if self.gamepad.getLeftTriggerAxis() > 0.5:
+            self.coral_placer.place()
 
-        # Reset Odometry
+        if self.gamepad.getYButton():
+            self.algae_intake.intake_L3()
+        if self.gamepad.getAButton():
+            self.algae_intake.intake_L2()
+        if self.gamepad.getBButton():
+            self.algae_intake.done()
+
         if dpad in (0, 45, 315):
+            self.inclination_angle += 0.05
+            self.inclination_angle = clamp(
+                self.inclination_angle,
+                self.wrist.MAXIMUM_DEPRESSION,
+                self.wrist.MAXIMUM_ELEVATION,
+            )
+            self.wrist.tilt_to(self.inclination_angle)
+        if dpad in (180, 135, 225):
+            self.inclination_angle -= 0.05
+            self.inclination_angle = clamp(
+                self.inclination_angle,
+                self.wrist.MAXIMUM_DEPRESSION,
+                self.wrist.MAXIMUM_ELEVATION,
+            )
+            self.wrist.tilt_to(self.inclination_angle)
+
+        if self.gamepad.getRightTriggerAxis() > 0.5:
+            self.algae_shooter.shoot()
+
+        # Set current robot direction to forward
+        if self.gamepad.getBackButton():
+            self.chassis.reset_yaw()
+        # Reset Odometry
+        if self.gamepad.getStartButton():
             self.chassis.reset_odometry()
 
     def testInit(self) -> None:
@@ -196,7 +223,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
-            self.algae_intake.intake()
+            self.algae_intake.intake_L2()
 
         self.algae_shooter.execute()
 
@@ -213,5 +240,7 @@ class MyRobot(magicbot.MagicRobot):
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
         self.chassis.update_odometry()
+
+        self.wrist.execute()
 
         self.vision.execute()
