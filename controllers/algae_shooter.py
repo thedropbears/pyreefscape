@@ -17,13 +17,12 @@ class AlgaeShooter(StateMachine):
         pass
 
     def shoot(self) -> None:
-        self.engage("tilting")
+        self.engage("preparing")
 
     @state(first=True, must_finish=True)
     def preparing(self):
         self.wrist.tilt_to(self.SHOOT_ANGLE)
         self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
-        # self.algae_manipulator_component.set_range(self.calculate_range_to_barge()
 
         if (
             self.wrist.at_setpoint()
@@ -35,5 +34,3 @@ class AlgaeShooter(StateMachine):
     def shooting(self) -> None:
         self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
         self.algae_manipulator_component.inject()
-
-        # self.algae_manipulator_component.set_range(self.calculate_range_to_barge())
