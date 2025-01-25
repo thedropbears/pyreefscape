@@ -105,6 +105,13 @@ class PhysicsEngine:
             )
             for module in robot.chassis.modules
         ]
+        self.flywheels = [
+            Falcon500MotorSim(motor, gearing=1 / 1, moi=0.000412752224)
+            for motor in (
+                robot.algae_manipulator_component.flywheel_1,
+                robot.algae_manipulator_component.flywheel_2,
+            )
+        ]
 
         self.imu = robot.chassis.imu.sim_state
 
@@ -130,6 +137,8 @@ class PhysicsEngine:
             wheel.update(tm_diff)
         for steer in self.steer:
             steer.update(tm_diff)
+        for flywheel in self.flywheels:
+            flywheel.update(tm_diff)
 
         speeds = self.kinematics.toChassisSpeeds(
             (
