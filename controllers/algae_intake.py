@@ -13,8 +13,8 @@ class AlgaeIntake(StateMachine):
     wrist: WristComponent
     chassis: ChassisComponent
 
-    L2_INTAKE_ANGLE = tunable(math.radians(-50.0))
-    L3_INTAKE_ANGLE = tunable(math.radians(-10.0))
+    L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
+    L3_INTAKE_ANGLE = tunable(math.radians(-5.0))
 
     def __init__(self):
         self.last_l3 = False
