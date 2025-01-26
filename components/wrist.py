@@ -38,14 +38,14 @@ class WristComponent:
         wrist_config.inverted(True)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         wrist_config.closedLoop.P(
-            3 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
+            1 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
             ClosedLoopSlot.kSlot0,
         )
         wrist_config.closedLoop.D(0.0, ClosedLoopSlot.kSlot0)
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
-        self.wrist_ff = ArmFeedforward(kS=0.0, kG=0.76, kV=0.02, kA=0.0)
+        self.wrist_ff = ArmFeedforward(kS=0.0, kG=0.39, kV=3.90, kA=0.01)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
