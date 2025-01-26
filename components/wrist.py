@@ -20,7 +20,7 @@ class WristComponent:
     WRIST_MAX_ACC = math.radians(15.0)
 
     angle_change_rate_while_zeroing = tunable(math.radians(0.1))
-    wrist_gear_ratio = (150.0 / 15) * 20
+    wrist_gear_ratio = (150.0 / 15) * 20 * (50 / 26)
     TOLERANCE = math.radians(3.0)
 
     zeroing_voltage = tunable(-1.0)
@@ -35,7 +35,7 @@ class WristComponent:
         self.wrist_controller = self.wrist.getClosedLoopController()
 
         wrist_config = SparkMaxConfig()
-        wrist_config.inverted(True)
+        wrist_config.inverted(False)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         wrist_config.closedLoop.P(
             0.64571,
@@ -45,7 +45,8 @@ class WristComponent:
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
-        self.wrist_ff = ArmFeedforward(kS=0.0, kG=0.39, kV=3.90, kA=0.01)
+
+        self.wrist_ff = ArmFeedforward(kS=0.0, kG=0.1, kV=7.5, kA=0.00)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
