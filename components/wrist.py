@@ -13,7 +13,7 @@ from utilities.functions import clamp
 
 class WristComponent:
     MAXIMUM_DEPRESSION = math.radians(-113.0)
-    MAXIMUM_ELEVATION = math.radians(-10.0)
+    MAXIMUM_ELEVATION = math.radians(-5.0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
     WRIST_MAX_VEL = math.radians(30.0)
