@@ -23,14 +23,14 @@ class AlgaeIntake(StateMachine):
         self.engage()
 
     @state(first=True, must_finish=True)
-    def intaking(self):
+    def intaking(self, initial_call: bool):
         if self.algae_manipulator_component.has_algae():
             self.done()
             return
 
         current_is_L3 = self.is_L3()
-    
-        if self.last_l3 != current_is_L3:
+
+        if self.last_l3 != current_is_L3 or initial_call:
             if current_is_L3:
                 self.wrist.tilt_to(self.L3_INTAKE_ANGLE)
             else:
