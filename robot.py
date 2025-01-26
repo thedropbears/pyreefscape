@@ -11,10 +11,12 @@ from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
+from components.intake import IntakeComponent
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
+from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
 from utilities.functions import clamp
@@ -27,6 +29,7 @@ class MyRobot(magicbot.MagicRobot):
     coral_placer: CoralPlacer
     reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
+    floor_intake: FloorIntake
 
     # Components
     chassis: ChassisComponent
@@ -34,6 +37,7 @@ class MyRobot(magicbot.MagicRobot):
     algae_manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
     wrist: WristComponent
+    intake_component: IntakeComponent
 
     max_speed = tunable(5)  # m/s
     lower_max_speed = tunable(2)  # m/s
@@ -169,6 +173,10 @@ class MyRobot(magicbot.MagicRobot):
             self.reef_intake.intake()
         if self.gamepad.getBButton():
             self.reef_intake.done()
+            self.floor_intake.done()
+
+        if self.gamepad.getYButton():
+            self.floor_intake.intake()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += math.radians(0.05)
