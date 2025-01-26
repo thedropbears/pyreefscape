@@ -38,10 +38,10 @@ class WristComponent:
         wrist_config.inverted(True)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         wrist_config.closedLoop.P(
-            1 / (self.MAXIMUM_ELEVATION - self.MAXIMUM_DEPRESSION),
+            0.64571,
             ClosedLoopSlot.kSlot0,
         )
-        wrist_config.closedLoop.D(0.0, ClosedLoopSlot.kSlot0)
+        wrist_config.closedLoop.D(0.33791, ClosedLoopSlot.kSlot0)
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
