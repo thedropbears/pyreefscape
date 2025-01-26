@@ -13,9 +13,9 @@ from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
-from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
+from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
 from utilities.functions import clamp
 from utilities.game import is_red
@@ -25,7 +25,7 @@ from utilities.scalers import rescale_js
 class MyRobot(magicbot.MagicRobot):
     # Controllers
     coral_placer: CoralPlacer
-    algae_intake: AlgaeIntake
+    reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
 
     # Components
@@ -166,9 +166,9 @@ class MyRobot(magicbot.MagicRobot):
             self.coral_placer.place()
 
         if self.gamepad.getAButton():
-            self.algae_intake.intake()
+            self.reef_intake.intake()
         if self.gamepad.getBButton():
-            self.algae_intake.done()
+            self.reef_intake.done()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += math.radians(0.05)
@@ -227,11 +227,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
-            self.algae_intake.intake()
+            self.reef_intake.intake()
 
         self.algae_shooter.execute()
 
-        self.algae_intake.execute()
+        self.reef_intake.execute()
 
         self.algae_manipulator_component.execute()
 
