@@ -6,6 +6,7 @@ import wpiutil.log
 from magicbot import feedback, tunable
 from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
+from robotpy_apriltag import AprilTag
 from wpimath import objectToRobotPose
 from wpimath.geometry import (
     Pose2d,
@@ -38,6 +39,10 @@ class VisualLocalizer:
     # Calibration constants for servo and encoder
     # range between +/-135 deg
     SERVO_HALF_ANGLE = math.radians(135)
+
+    CAMERA_FOV = math.radians(
+        65
+    )  # photon vision says 69.8, but we are being conservative
 
     add_to_estimator = tunable(True)
     should_log = tunable(True)
@@ -108,20 +113,41 @@ class VisualLocalizer:
     def relative_bearing_to_closest_tag(self) -> Rotation2d:
         # initialise default variables
         # closest tag, distance, robot position
-        distance = math.inf
-        closest_bearing = Rotation2d()
+        relative_bearings: list[Rotation2d] = []
 
-        for tag in APRILTAGS:
+        for tag in self.visible_tags():
             robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
             relative_bearing = robot_to_tag.translation().angle()
-            if (
-                robot_to_tag.translation().norm() < distance
-                and abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
-            ):
-                distance = robot_to_tag.translation().norm()
-                closest_bearing = relative_bearing
+            relative_bearings.append(relative_bearing)
+        relative_bearings.sort(key=Rotation2d.radians)
+        for offset in range(len(relative_bearings) - 1, -1, -1):
+            bearing_pairs = zip(relative_bearings, relative_bearings[offset:-1])
+            for pair in bearing_pairs:
+                if abs((pair[0] - pair[1]).radians()) < self.CAMERA_FOV:
+                    return (pair[0] + pair[1]) * 0.5
 
-        return closest_bearing
+        return Rotation2d(0.0)
+
+    def visible_tags(self) -> list[AprilTag]:
+        tags_in_view = []
+
+        robot_pose = self.chassis.get_pose()
+
+        for tag in APRILTAGS:
+            robot_to_tag = tag.pose.toPose2d() - robot_pose
+            relative_bearing = robot_to_tag.translation().angle()
+            relative_facing = tag.pose.toPose2d().rotation() - robot_pose.rotation()
+            if (
+                abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
+                and abs(relative_facing.degrees()) > 90
+            ):
+                tags_in_view.append(tag)
+
+        return tags_in_view
+
+    @feedback
+    def visible_tag_ids(self) -> list[int]:
+        return [tag.ID for tag in self.visible_tags()]
 
     @feedback
     def desired_turret_rotation(self) -> Rotation2d:
