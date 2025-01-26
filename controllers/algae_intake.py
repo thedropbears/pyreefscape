@@ -17,23 +17,25 @@ class AlgaeIntake(StateMachine):
         pass
 
     @state(first=True, must_finish=True)
-    def raising_to_L2(self):
+    def raising_to_L2(self, initial_call: bool):
         if self.algae_manipulator_component.has_algae():
             self.done()
             return
 
-        self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
+        if initial_call:
+            self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
 
         if self.wrist.at_setpoint():
             self.next_state("intaking")
 
     @state(must_finish=True)
-    def raising_to_L3(self):
+    def raising_to_L3(self, initial_call: bool):
         if self.algae_manipulator_component.has_algae():
             self.done()
             return
 
-        self.wrist.tilt_to(self.L3_INTAKE_ANGLE)
+        if initial_call:
+            self.wrist.tilt_to(self.L3_INTAKE_ANGLE)
 
         if self.wrist.at_setpoint():
             self.next_state("intaking")
