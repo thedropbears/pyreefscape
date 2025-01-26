@@ -143,10 +143,10 @@ class VisualLocalizer:
             robot_to_tag = tag.pose.toPose2d().translation() - robot_pose.translation()
             relative_bearing = robot_to_tag.angle() - robot_pose.rotation()
             distance = robot_to_tag.norm()
-            relative_facing = tag.pose.toPose2d().rotation() - relative_bearing
+            relative_facing = tag.pose.toPose2d().rotation() - robot_to_tag.angle()
             if (
                 abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
-                and abs(relative_facing.degrees()) < 90
+                and abs(relative_facing.degrees()) > 90
                 and distance < self.CAMERA_MAX_RANGE
             ):
                 tags_in_view.append(VisibleTag(tag.ID, relative_bearing, distance))
