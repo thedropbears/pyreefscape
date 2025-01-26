@@ -17,7 +17,7 @@ class AlgaeShooter(StateMachine):
         pass
 
     def shoot(self) -> None:
-        self.engage("preparing")
+        self.engage()
 
     @state(first=True, must_finish=True)
     def preparing(self):
