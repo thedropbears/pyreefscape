@@ -160,7 +160,6 @@ class PhysicsEngine:
                     * self.visual_localiser.SERVO_HALF_ANGLE
                 )
                 + self.visual_localiser.servo_offset.radians()
-                + self.visual_localiser.encoder_offset.radians()
             )
         )
 
