@@ -1,6 +1,7 @@
 import math
 import time
 from dataclasses import dataclass
+from typing import ClassVar
 
 import wpilib
 import wpiutil.log
@@ -26,6 +27,8 @@ from utilities.scalers import scale_value
 @wpiutil.wpistruct.make_wpistruct
 @dataclass
 class VisibleTag:
+    WPIStruct: ClassVar
+
     tag_id: int
     relative_bearing: Rotation2d
     range: float
