@@ -13,14 +13,15 @@ from utilities.functions import clamp
 
 class WristComponent:
     MAXIMUM_DEPRESSION = math.radians(-113.0)
-    MAXIMUM_ELEVATION = math.radians(-5.0)
+    MAXIMUM_ELEVATION = math.radians(-10.0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
     WRIST_MAX_VEL = math.radians(30.0)
     WRIST_MAX_ACC = math.radians(15.0)
 
     angle_change_rate_while_zeroing = tunable(math.radians(0.1))
-    wrist_gear_ratio = (150.0 / 15) * 20 * (50 / 26)
+    # wrist_gear_ratio = (150.0 / 15) * 20 * (50 / 26)
+    wrist_gear_ratio = 432
     TOLERANCE = math.radians(3.0)
 
     zeroing_voltage = tunable(-1.0)
@@ -38,15 +39,15 @@ class WristComponent:
         wrist_config.inverted(False)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         wrist_config.closedLoop.P(
-            0.64571,
+            7.6813,
             ClosedLoopSlot.kSlot0,
         )
-        wrist_config.closedLoop.D(0.33791, ClosedLoopSlot.kSlot0)
+        wrist_config.closedLoop.D(69.887, ClosedLoopSlot.kSlot0)
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
 
-        self.wrist_ff = ArmFeedforward(kS=0.0, kG=0.1, kV=7.5, kA=0.00)
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.31303, kV=7.984, kA=0.69063)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
@@ -94,6 +95,14 @@ class WristComponent:
     @feedback
     def inclination(self) -> float:
         return self.encoder.getPosition()
+
+    @feedback
+    def inclination_deg(self) -> float:
+        return math.degrees(self.encoder.getPosition())
+
+    @feedback
+    def shoot_angle_deg(self) -> float:
+        return self.inclination_deg() + 90
 
     @feedback
     def current_velocity(self) -> float:
