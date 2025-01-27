@@ -39,10 +39,10 @@ class MyRobot(magicbot.MagicRobot):
     wrist: WristComponent
     intake_component: IntakeComponent
 
-    max_speed = tunable(5)  # m/s
-    lower_max_speed = tunable(2)  # m/s
-    max_spin_rate = tunable(4)  # m/s
-    lower_max_spin_rate = tunable(2)  # m/s
+    max_speed = tunable(5.0)  # m/s
+    lower_max_speed = tunable(2.0)  # m/s
+    max_spin_rate = tunable(4.0)  # m/s
+    lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
 
     START_POS_TOLERANCE = 1
