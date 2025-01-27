@@ -11,11 +11,13 @@ from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
+from components.intake import IntakeComponent
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
-from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
+from controllers.floor_intake import FloorIntake
+from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
 from utilities.functions import clamp
 from utilities.game import is_red
@@ -25,8 +27,9 @@ from utilities.scalers import rescale_js
 class MyRobot(magicbot.MagicRobot):
     # Controllers
     coral_placer: CoralPlacer
-    algae_intake: AlgaeIntake
+    reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
+    floor_intake: FloorIntake
 
     # Components
     chassis: ChassisComponent
@@ -34,6 +37,7 @@ class MyRobot(magicbot.MagicRobot):
     algae_manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
     wrist: WristComponent
+    intake_component: IntakeComponent
 
     max_speed = tunable(5)  # m/s
     lower_max_speed = tunable(2)  # m/s
@@ -165,10 +169,13 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.coral_placer.place()
 
+        if self.gamepad.getYButton():
+            self.reef_intake.intake()
         if self.gamepad.getAButton():
-            self.algae_intake.intake()
+            self.floor_intake.intake()
         if self.gamepad.getBButton():
-            self.algae_intake.done()
+            self.reef_intake.done()
+            self.floor_intake.done()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += math.radians(0.05)
@@ -227,11 +234,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
-            self.algae_intake.intake()
+            self.reef_intake.intake()
 
         self.algae_shooter.execute()
 
-        self.algae_intake.execute()
+        self.reef_intake.execute()
 
         self.algae_manipulator_component.execute()
 
@@ -245,6 +252,7 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
+        self.wrist.reset_windup()
         self.wrist.execute()
 
         self.vision.execute()

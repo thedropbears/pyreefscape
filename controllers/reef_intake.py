@@ -8,7 +8,7 @@ from components.wrist import WristComponent
 from utilities import game
 
 
-class AlgaeIntake(StateMachine):
+class ReefIntake(StateMachine):
     algae_manipulator_component: AlgaeManipulatorComponent
     wrist: WristComponent
     chassis: ChassisComponent

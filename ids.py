@@ -20,6 +20,8 @@ class TalonId(enum.IntEnum):
     FLYWHEEL_1 = 9
     FLYWHEEL_2 = 10
 
+    INTAKE = 15
+
 
 @enum.unique
 class CancoderId(enum.IntEnum):
