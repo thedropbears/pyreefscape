@@ -3,15 +3,16 @@ import time
 
 from magicbot import feedback, tunable
 from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
-from wpilib import DigitalInput
+from wpilib import AnalogEncoder, DigitalInput
 from wpimath.controller import ArmFeedforward
 from wpimath.trajectory import TrapezoidProfile
 
-from ids import DioChannel, SparkId
+from ids import AnalogChannel, DioChannel, SparkId
 from utilities.functions import clamp
 
 
 class WristComponent:
+    ENCODER_ZERO_OFFSET = math.tau / 10
     MAXIMUM_DEPRESSION = math.radians(-113.0)
     MAXIMUM_ELEVATION = math.radians(-10.0)
     NEUTRAL_ANGLE = math.radians(-90.0)
@@ -29,6 +30,10 @@ class WristComponent:
 
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
+
+        self.wrist_encoder = AnalogEncoder(
+            AnalogChannel.WRIST_ENCODER, math.tau, self.ENCODER_ZERO_OFFSET
+        )
 
         self.wrist = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
