@@ -1,8 +1,11 @@
 import math
 import time
+from dataclasses import dataclass
+from typing import ClassVar
 
 import wpilib
 import wpiutil.log
+import wpiutil.wpistruct
 from magicbot import feedback, tunable
 from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
@@ -21,6 +24,16 @@ from utilities.game import APRILTAGS, apriltag_layout
 from utilities.scalers import scale_value
 
 
+@wpiutil.wpistruct.make_wpistruct
+@dataclass
+class VisibleTag:
+    WPIStruct: ClassVar
+
+    tag_id: int
+    relative_bearing: Rotation2d
+    range: float
+
+
 class VisualLocalizer:
     """
     This localizes the robot from AprilTags on the field,
@@ -33,11 +46,14 @@ class VisualLocalizer:
     # Time since the last target sighting we allow before informing drivers
     TIMEOUT = 1.0  # s
 
-    CAMERA_PITCH = -math.radians(20)
-
     # Calibration constants for servo and encoder
     # range between +/-135 deg
     SERVO_HALF_ANGLE = math.radians(135)
+
+    CAMERA_FOV = math.radians(
+        65
+    )  # photon vision says 69.8, but we are being conservative
+    CAMERA_MAX_RANGE = 3.0  # m
 
     add_to_estimator = tunable(True)
     should_log = tunable(True)
@@ -105,28 +121,45 @@ class VisualLocalizer:
         return Rotation2d(self.encoder.get())
 
     @feedback
-    def relative_bearing_to_closest_tag(self) -> Rotation2d:
-        # initialise default variables
-        # closest tag, distance, robot position
-        distance = math.inf
-        closest_bearing = Rotation2d()
+    def relative_bearing_to_best_cluster(self) -> Rotation2d:
+        tags = self.visible_tags()
+        if len(tags) == 0:
+            return Rotation2d(0.0)
+        relative_bearings = [tag.relative_bearing for tag in tags]
+        relative_bearings.sort(key=Rotation2d.radians)
+        for offset in range(len(relative_bearings) - 1, 0, -1):
+            bearing_pairs = zip(relative_bearings, relative_bearings[offset:-1])
+            for pair in bearing_pairs:
+                if abs((pair[0] - pair[1]).radians()) < self.CAMERA_FOV:
+                    return (pair[1] - pair[0]) * 0.5 + pair[0]
+        # If we get here there are no pairs, so choose the closest
+        tags.sort(key=lambda v: v.range)
+        return tags[0].relative_bearing
+
+    @feedback
+    def visible_tags(self) -> list[VisibleTag]:
+        tags_in_view = []
+
+        robot_pose = self.chassis.get_pose()
 
         for tag in APRILTAGS:
-            robot_to_tag = tag.pose.toPose2d() - self.chassis.get_pose()
-            relative_bearing = robot_to_tag.translation().angle()
+            robot_to_tag = tag.pose.toPose2d().translation() - robot_pose.translation()
+            relative_bearing = robot_to_tag.angle() - robot_pose.rotation()
+            distance = robot_to_tag.norm()
+            relative_facing = tag.pose.toPose2d().rotation() - robot_to_tag.angle()
             if (
-                robot_to_tag.translation().norm() < distance
-                and abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
+                abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
+                and abs(relative_facing.degrees()) > 90
+                and distance < self.CAMERA_MAX_RANGE
             ):
-                distance = robot_to_tag.translation().norm()
-                closest_bearing = relative_bearing
+                tags_in_view.append(VisibleTag(tag.ID, relative_bearing, distance))
 
-        return closest_bearing
+        return tags_in_view
 
     @feedback
     def desired_turret_rotation(self) -> Rotation2d:
         # Read encoder angle and account for offset
-        return self.relative_bearing_to_closest_tag() - self.chassis.get_rotation()
+        return self.relative_bearing_to_best_cluster()
 
     def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
         return turret - (self.servo_offset - self.encoder_offset)
