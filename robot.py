@@ -169,14 +169,13 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.coral_placer.place()
 
-        if self.gamepad.getAButton():
+        if self.gamepad.getYButton():
             self.reef_intake.intake()
+        if self.gamepad.getAButton():
+            self.floor_intake.intake()
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
-
-        if self.gamepad.getYButton():
-            self.floor_intake.intake()
 
         if dpad in (0, 45, 315):
             self.inclination_angle += math.radians(0.05)
