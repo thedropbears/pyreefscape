@@ -31,14 +31,9 @@ class ReefIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
-
-        if self.algae_manipulator_component.has_algae() and initial_call:
-            self.done()
-        
-        elif self.algae_manipulator_component.has_algae():
+        if self.algae_manipulator_component.has_algae():
             self.touch_the_algae(initial_call)
             self.next_state("safing")
-            return
 
         current_is_L3 = self.is_L3()
 
@@ -68,7 +63,8 @@ class ReefIntake(StateMachine):
             self.algae_manipulator_component.algae_size = 0.0
 
         if self.current_feeler_angle >= 160:
-            self.done()
+            self.current_feeler_angle = 0.0
+            self.algae_manipulator_component.algae_size = 0.0
 
         self.algae_manipulator_component.set_feeler(self.current_feeler_angle)
 
