@@ -16,6 +16,8 @@ class ReefIntake(StateMachine):
     L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
     L3_INTAKE_ANGLE = tunable(math.radians(-10.0))
 
+    UNSAFE_DISTANCE = tunable(2.0)
+
     def __init__(self):
         self.last_l3 = False
 
@@ -24,9 +26,10 @@ class ReefIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
-        if self.algae_manipulator_component.has_algae():
+        if self.algae_manipulator_component.has_algae() and initial_call:
             self.done()
-            return
+        elif self.algae_manipulator_component.has_algae():
+            self.next_state("safing")
 
         current_is_L3 = self.is_L3()
 
@@ -38,6 +41,17 @@ class ReefIntake(StateMachine):
             self.last_l3 = current_is_L3
 
         self.algae_manipulator_component.intake()
+
+    @state(must_finish=True)
+    def safing(self, initial_call: bool):
+        if initial_call:
+            origin_robot_pose = self.chassis.get_pose()
+        robot_pose = self.chassis.get_pose()
+
+        distance = origin_robot_pose.translation() - robot_pose.translation()
+
+        if distance.norm() >= self.UNSAFE_DISTANCE:
+            self.done()
 
     @feedback
     def is_L3(self) -> bool:
