@@ -46,7 +46,7 @@ class WristComponent:
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
 
-        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.31303, kV=7.984, kA=0.69063)
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.09, kV=8.42, kA=0.0)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)

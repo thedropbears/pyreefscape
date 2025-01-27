@@ -1,4 +1,6 @@
-from magicbot import StateMachine, state
+import math
+
+from magicbot import StateMachine, state, tunable
 
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.intake import IntakeComponent
@@ -9,6 +11,8 @@ class FloorIntake(StateMachine):
     algae_manipulator_component: AlgaeManipulatorComponent
     wrist: WristComponent
     intake_component: IntakeComponent
+
+    HANDOFF_POSITION = tunable(math.radians(-108.0))
 
     def __init__(self):
         pass
@@ -25,7 +29,7 @@ class FloorIntake(StateMachine):
         self.intake_component.intake()
 
         if initial_call:
-            self.wrist.tilt_to(WristComponent.MAXIMUM_DEPRESSION)
+            self.wrist.tilt_to(self.HANDOFF_POSITION)
 
         self.algae_manipulator_component.intake()
 
