@@ -71,6 +71,7 @@ class ReefIntake(StateMachine):
         if self.algae_manipulator_component.feeler_limit_switch:
             self.algae_manipulator_component.algae_size = self.current_feeler_angle
             self.done()
+            return
 
         self.current_feeler_angle += 0.69 # degrees per cycle that the feeler will move 
 
