@@ -39,10 +39,10 @@ class MyRobot(magicbot.MagicRobot):
     wrist: WristComponent
     intake_component: IntakeComponent
 
-    max_speed = tunable(5)  # m/s
-    lower_max_speed = tunable(2)  # m/s
-    max_spin_rate = tunable(4)  # m/s
-    lower_max_spin_rate = tunable(2)  # m/s
+    max_speed = tunable(5.0)  # m/s
+    lower_max_speed = tunable(2.0)  # m/s
+    max_spin_rate = tunable(4.0)  # m/s
+    lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
 
     START_POS_TOLERANCE = 1
@@ -133,11 +133,11 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self) -> None:
         # Set max speed
-        max_speed = self.max_speed
-        max_spin_rate = self.max_spin_rate
+        max_speed = self.lower_max_speed
+        max_spin_rate = self.lower_max_spin_rate
         if self.gamepad.getRightBumper():
-            max_speed = self.lower_max_speed
-            max_spin_rate = self.lower_max_spin_rate
+            max_speed = self.max_speed
+            max_spin_rate = self.max_spin_rate
 
         # Driving
         drive_x = -rescale_js(self.gamepad.getLeftY(), 0.05, 2.5) * max_speed
