@@ -45,10 +45,10 @@ class ReefIntake(StateMachine):
     @state(must_finish=True)
     def safing(self, initial_call: bool):
         if initial_call:
-            origin_robot_pose = self.chassis.get_pose()
+            self.origin_robot_pose = self.chassis.get_pose()
         robot_pose = self.chassis.get_pose()
 
-        distance = origin_robot_pose.translation() - robot_pose.translation()
+        distance = self.origin_robot_pose.translation() - robot_pose.translation()
 
         if distance.norm() >= self.UNSAFE_DISTANCE:
             self.done()
