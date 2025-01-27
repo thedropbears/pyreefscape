@@ -18,6 +18,11 @@ class ReefIntake(StateMachine):
 
     RETREAT_DISTANCE = tunable(0.6)
 
+    FEELER_START_ANGLE = tunable(90)
+    FEELER_START_OFFEST = tunable(17)
+
+    current_feeler_angle = 0.0
+
     def __init__(self):
         self.last_l3 = False
 
@@ -26,10 +31,12 @@ class ReefIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
+
         if self.algae_manipulator_component.has_algae() and initial_call:
             self.done()
-            return
+        
         elif self.algae_manipulator_component.has_algae():
+            self.touch_the_algae(initial_call)
             self.next_state("safing")
             return
 
@@ -55,6 +62,22 @@ class ReefIntake(StateMachine):
         if distance.norm() >= self.RETREAT_DISTANCE:
             self.done()
 
+    def touch_the_algae(self, initial_call: bool):
+        if initial_call:
+            self.current_feeler_algae = self.FEELER_START_ANGLE + self.FEELER_START_OFFEST
+            self.algae_manipulator_component.algae_size = 0.0
+
+        if self.current_feeler_angle >= 160:
+            self.done()
+
+        self.algae_manipulator_component.set_feeler(self.current_feeler_angle)
+
+        if self.algae_manipulator_component.feeler_limit_switch:
+            self.algae_manipulator_component.algae_size = self.current_feeler_angle
+            self.done()
+
+        self.current_feeler_angle += 0.69 # degrees per cycle that the feeler will move 
+
     @feedback
     def is_L3(self) -> bool:
         return game.is_L3(game.nearest_reef_tag(self.chassis.get_pose()))
@@ -62,3 +85,5 @@ class ReefIntake(StateMachine):
     def done(self) -> None:
         super().done()
         self.wrist.go_to_neutral()
+        self.current_feeler_algae = self.FEELER_START_ANGLE
+        self.algae_manipulator_component.set_feeler(self.FEELER_START_ANGLE)

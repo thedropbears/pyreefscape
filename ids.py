@@ -55,12 +55,16 @@ class DioChannel(enum.IntEnum):
 
     WRIST_LIMIT_SWITCH = 3
 
+    FEELER_LIMIT_SWITCH = 8
+
 
 @enum.unique
 class PwmChannel(enum.IntEnum):
     """roboRIO PWM output channel number."""
 
     VISION_SERVO = 0
+
+    FEELER_SERVO = 7
 
 
 @enum.unique

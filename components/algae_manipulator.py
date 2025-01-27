@@ -1,3 +1,5 @@
+import math
+
 from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
@@ -9,9 +11,9 @@ from phoenix6.controls import Follower, NeutralOut, VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
-from wpilib import DigitalInput
+from wpilib import DigitalInput, Servo
 
-from ids import DioChannel, SparkId, TalonId
+from ids import DioChannel, PwmChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
@@ -30,6 +32,9 @@ class AlgaeManipulatorComponent:
         injector_config = SparkMaxConfig()
 
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
+
+        self.feeler_limit_switch = DigitalInput(DioChannel.FEELER_LIMIT_SWITCH)
+        self.FeelerServo = Servo(PwmChannel.FEELER_SERVO)
 
         injector_config.inverted(True)
         self.injector_1.configure(
@@ -84,6 +89,8 @@ class AlgaeManipulatorComponent:
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.25
 
+        self.algae_size = 0.0
+
     def spin_flywheels(self) -> None:
         self.desired_flywheel_speed = self.flywheel_shoot_speed
 
@@ -110,6 +117,13 @@ class AlgaeManipulatorComponent:
     @feedback
     def has_algae(self) -> bool:
         return not self.algae_limit_switch.get()
+
+    @feedback
+    def feeler_touching_algae(self) -> bool:
+        return not self.feeler_limit_switch.get()
+
+    def set_feeler(self, rot: float):
+        self.FeelerServo.setAngle(math.degrees(rot))
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
