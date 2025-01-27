@@ -90,6 +90,7 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = 0.25
 
         self.algae_size = 0.0
+        self.desired_feeler_angle = math.radians(90)
 
     def spin_flywheels(self) -> None:
         self.desired_flywheel_speed = self.flywheel_shoot_speed
@@ -122,11 +123,20 @@ class AlgaeManipulatorComponent:
     def feeler_touching_algae(self) -> bool:
         return not self.feeler_limit_switch.get()
 
-    def set_feeler(self, rot: float):
-        self.FeelerServo.setAngle(math.degrees(rot))
+    def set_feeler(self, rot: float, inverted: bool) -> None:
+        if inverted:
+            self.desired_feeler_angle = math.radians(180) - rot
+        else:
+            self.desired_feeler_angle = rot
+
+    @feedback
+    def get_feeler_set_angle(self) -> float:
+        return self.desired_feeler_angle
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
+
+        self.FeelerServo.setAngle(math.degrees(self.desired_feeler_angle))
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
