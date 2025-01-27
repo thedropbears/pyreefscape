@@ -133,11 +133,11 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self) -> None:
         # Set max speed
-        max_speed = self.max_speed
-        max_spin_rate = self.max_spin_rate
+        max_speed = self.lower_max_speed
+        max_spin_rate = self.lower_max_spin_rate
         if self.gamepad.getRightBumper():
-            max_speed = self.lower_max_speed
-            max_spin_rate = self.lower_max_spin_rate
+            max_speed = self.max_speed
+            max_spin_rate = self.max_spin_rate
 
         # Driving
         drive_x = -rescale_js(self.gamepad.getLeftY(), 0.05, 2.5) * max_speed
