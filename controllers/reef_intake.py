@@ -54,7 +54,6 @@ class ReefIntake(StateMachine):
 
         if distance.norm() >= self.RETREAT_DISTANCE:
             self.done()
-            return
 
     @feedback
     def is_L3(self) -> bool:
