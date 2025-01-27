@@ -98,7 +98,7 @@ class WristComponent:
 
     @feedback
     def inclination(self) -> float:
-        return self.encoder.getPosition()
+        return self.wrist_encoder.get()
 
     @feedback
     def inclination_deg(self) -> float:
