@@ -5,7 +5,7 @@ from ids import TalonId
 
 
 class IntakeComponent:
-    intake_output = tunable(0.5)
+    intake_output = tunable(0.9)
 
     def __init__(self) -> None:
         self.motor = TalonSRX(TalonId.INTAKE)
