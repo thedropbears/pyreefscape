@@ -34,10 +34,11 @@ class WristComponent:
         self.wrist_encoder = AnalogEncoder(
             AnalogChannel.WRIST_ENCODER, math.tau, self.ENCODER_ZERO_OFFSET
         )
+        self.wrist_encoder.setInverted(True)
 
-        self.wrist = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
+        self.wrist_motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
-        self.wrist_controller = self.wrist.getClosedLoopController()
+        self.wrist_motor_controller = self.wrist_motor.getClosedLoopController()
 
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
@@ -60,13 +61,13 @@ class WristComponent:
             (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
         )
 
-        self.wrist.configure(
+        self.wrist_motor.configure(
             wrist_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
 
-        self.encoder = self.wrist.getEncoder()
+        self.motor_encoder = self.wrist_motor.getEncoder()
 
         self.desired_angle = WristComponent.NEUTRAL_ANGLE
 
@@ -74,7 +75,7 @@ class WristComponent:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        self.wrist.configure(
+        self.wrist_motor.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,
             SparkMax.PersistMode.kNoPersistParameters,
@@ -83,7 +84,7 @@ class WristComponent:
     def on_disable(self):
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
-        self.wrist.configure(
+        self.wrist_motor.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,
             SparkMax.PersistMode.kNoPersistParameters,
@@ -102,7 +103,7 @@ class WristComponent:
 
     @feedback
     def inclination_deg(self) -> float:
-        return math.degrees(self.encoder.getPosition())
+        return math.degrees(self.wrist_encoder.get())
 
     @feedback
     def shoot_angle_deg(self) -> float:
@@ -110,7 +111,7 @@ class WristComponent:
 
     @feedback
     def current_velocity(self) -> float:
-        return self.encoder.getVelocity()
+        return self.motor_encoder.getVelocity()
 
     @feedback
     def at_setpoint(self) -> bool:
@@ -128,11 +129,11 @@ class WristComponent:
 
     def execute(self) -> None:
         if self.wrist_at_bottom_limit():
-            self.encoder.setPosition(self.MAXIMUM_DEPRESSION)
+            self.motor_encoder.setPosition(self.MAXIMUM_DEPRESSION)
             self.has_indexed = True
 
         if not self.has_indexed:
-            self.wrist.setVoltage(self.zeroing_voltage)
+            self.wrist_motor.setVoltage(self.zeroing_voltage)
             return
 
         desired_state = self.wrist_profile.calculate(
@@ -141,7 +142,8 @@ class WristComponent:
             TrapezoidProfile.State(self.desired_angle, 0.0),
         )
         ff = self.wrist_ff.calculate(desired_state.position, desired_state.velocity)
-        self.wrist_controller.setReference(
+
+        self.wrist_motor_controller.setReference(
             desired_state.position,
             SparkMax.ControlType.kPosition,
             slot=ClosedLoopSlot.kSlot0,
