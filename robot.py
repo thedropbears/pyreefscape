@@ -261,8 +261,6 @@ class MyRobot(magicbot.MagicRobot):
 
         self.algae_manipulator_component.execute()
 
-        if self.gamepad.getLeftBumper():
-            self.wrist.zero_wrist()
         if self.gamepad.getLeftTriggerAxis() > 0.3:
             self.wrist.tilt_to(self.inclination_angle)
         self.wrist.execute()
