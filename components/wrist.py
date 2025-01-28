@@ -1,7 +1,7 @@
 import math
 import time
 
-from magicbot import feedback, tunable
+from magicbot import feedback
 from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
 from wpilib import AnalogEncoder, DigitalInput
 from wpimath.controller import ArmFeedforward
@@ -23,10 +23,6 @@ class WristComponent:
     angle_change_rate_while_zeroing = tunable(math.radians(0.1))
     wrist_gear_ratio = 432.0
     TOLERANCE = math.radians(3.0)
-
-    zeroing_voltage = tunable(-1.0)
-
-    has_indexed = tunable(False)
 
     def __init__(self):
         self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
@@ -90,9 +86,6 @@ class WristComponent:
             SparkMax.PersistMode.kNoPersistParameters,
         )
 
-    def zero_wrist(self) -> None:
-        self.has_indexed = False
-
     @feedback
     def wrist_at_bottom_limit(self) -> bool:
         return not self.switch.get()
@@ -128,14 +121,6 @@ class WristComponent:
         self.tilt_to(self.inclination())
 
     def execute(self) -> None:
-        if self.wrist_at_bottom_limit():
-            self.motor_encoder.setPosition(self.MAXIMUM_DEPRESSION)
-            self.has_indexed = True
-
-        if not self.has_indexed:
-            self.motor.setVoltage(self.zeroing_voltage)
-            return
-
         desired_state = self.wrist_profile.calculate(
             time.monotonic() - self.last_setpoint_update_time,
             TrapezoidProfile.State(self.inclination(), self.current_velocity()),
