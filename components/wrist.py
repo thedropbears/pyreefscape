@@ -36,9 +36,9 @@ class WristComponent:
         )
         self.wrist_encoder.setInverted(True)
 
-        self.wrist_motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
+        self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
-        self.wrist_motor_controller = self.wrist_motor.getClosedLoopController()
+        self.motor_controller = self.motor.getClosedLoopController()
 
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
@@ -61,13 +61,13 @@ class WristComponent:
             (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
         )
 
-        self.wrist_motor.configure(
+        self.motor.configure(
             wrist_config,
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
 
-        self.motor_encoder = self.wrist_motor.getEncoder()
+        self.motor_encoder = self.motor.getEncoder()
 
         self.desired_angle = WristComponent.NEUTRAL_ANGLE
 
@@ -75,7 +75,7 @@ class WristComponent:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        self.wrist_motor.configure(
+        self.motor.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,
             SparkMax.PersistMode.kNoPersistParameters,
@@ -84,7 +84,7 @@ class WristComponent:
     def on_disable(self):
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
-        self.wrist_motor.configure(
+        self.motor.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,
             SparkMax.PersistMode.kNoPersistParameters,
@@ -133,7 +133,7 @@ class WristComponent:
             self.has_indexed = True
 
         if not self.has_indexed:
-            self.wrist_motor.setVoltage(self.zeroing_voltage)
+            self.motor.setVoltage(self.zeroing_voltage)
             return
 
         desired_state = self.wrist_profile.calculate(
@@ -143,7 +143,7 @@ class WristComponent:
         )
         ff = self.wrist_ff.calculate(desired_state.position, desired_state.velocity)
 
-        self.wrist_motor_controller.setReference(
+        self.motor_controller.setReference(
             desired_state.position,
             SparkMax.ControlType.kPosition,
             slot=ClosedLoopSlot.kSlot0,
