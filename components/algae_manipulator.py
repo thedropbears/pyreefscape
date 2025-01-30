@@ -121,7 +121,11 @@ class AlgaeManipulatorComponent:
 
     @feedback
     def feeler_touching_algae(self) -> bool:
-        return not self.feeler_limit_switch.get()
+        return self.feeler_limit_switch.get()
+
+    @feedback
+    def get_algae_size(self) -> float:
+        return self.algae_size
 
     def set_feeler(self, rot: float = 0.0, inverted: bool = False) -> None:
         if not inverted:

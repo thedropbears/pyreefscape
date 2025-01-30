@@ -66,7 +66,7 @@ class ReefIntake(StateMachine):
             self.current_feeler_angle = 0.0
             self.algae_manipulator_component.algae_size = 0.0
 
-        self.algae_manipulator_component.set_feeler(self.current_feeler_angle, True)
+        self.algae_manipulator_component.set_feeler(self.current_feeler_angle, False)
 
         if self.algae_manipulator_component.feeler_touching_algae():
             self.algae_manipulator_component.algae_size = self.current_feeler_angle
@@ -82,5 +82,5 @@ class ReefIntake(StateMachine):
     def done(self) -> None:
         super().done()
         self.wrist.go_to_neutral()
-        self.current_feeler_algae = self.FEELER_START_ANGLE
-        self.algae_manipulator_component.set_feeler(self.FEELER_START_ANGLE, True)
+        self.current_feeler_angle = self.FEELER_START_ANGLE
+        self.algae_manipulator_component.set_feeler(self.current_feeler_angle, False)

@@ -64,7 +64,7 @@ class PwmChannel(enum.IntEnum):
 
     VISION_SERVO = 0
 
-    FEELER_SERVO = 2
+    FEELER_SERVO = 4
 
 
 @enum.unique
