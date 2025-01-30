@@ -124,10 +124,10 @@ class AlgaeManipulatorComponent:
         return not self.feeler_limit_switch.get()
 
     def set_feeler(self, rot: float = 0.0, inverted: bool = False) -> None:
-        if inverted:
-            self.desired_feeler_angmle = math.radians(180) - rot
-        else:
+        if not inverted:
             self.desired_feeler_angle = rot
+        else:
+            self.desired_feeler_angle = math.radians(180) - rot
 
     @feedback
     def get_feeler_set_angle(self) -> float:
