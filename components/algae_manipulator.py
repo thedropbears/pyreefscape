@@ -34,7 +34,7 @@ class AlgaeManipulatorComponent:
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
         self.feeler_limit_switch = DigitalInput(DioChannel.FEELER_LIMIT_SWITCH)
-        self.FeelerServo = Servo(PwmChannel.FEELER_SERVO)
+        self.feeler_servo = Servo(PwmChannel.FEELER_SERVO)
 
         injector_config.inverted(True)
         self.injector_1.configure(
@@ -123,20 +123,20 @@ class AlgaeManipulatorComponent:
     def feeler_touching_algae(self) -> bool:
         return not self.feeler_limit_switch.get()
 
-    def set_feeler(self, rot: float, inverted: bool) -> None:
+    def set_feeler(self, rot: float = 0.0, inverted: bool = False) -> None:
         if inverted:
-            self.desired_feeler_angle = math.radians(180) - rot
+            self.desired_feeler_angmle = math.radians(180) - rot
         else:
             self.desired_feeler_angle = rot
 
     @feedback
     def get_feeler_set_angle(self) -> float:
-        return self.desired_feeler_angle
+        return math.degrees(self.desired_feeler_angle)
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
 
-        self.FeelerServo.setAngle(math.degrees(self.desired_feeler_angle))
+        self.feeler_servo.setAngle(math.degrees(self.desired_feeler_angle))
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
