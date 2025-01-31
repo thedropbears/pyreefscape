@@ -1,31 +1,38 @@
 import choreo
+import choreo.trajectory
 from choreo.trajectory import SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
-from wpilib import RobotBase
+from wpilib import RobotBase, Timer
 from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
+from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
-from controllers.coral_placer import CoralPlacer
+from controllers.algae_intake import AlgaeIntake
+from controllers.algae_shooter import AlgaeShooter
 from utilities import game
 
 
 class CoralAutoBase(AutonomousStateMachine):
-    coral_placer: CoralPlacer
+    algae_intake: AlgaeIntake
+    algae_shooter: AlgaeShooter
+    algae_manipulator_component: AlgaeManipulatorComponent
 
     chassis: ChassisComponent
 
     DISTANCE_TOLERANCE = 0.05  # metres
 
-    def __init__(self, trajectory_name: str) -> None:
+    def __init__(self, starting_trajectory: str) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
         super().__init__()
         self.x_controller = PIDController(1.0, 0.0, 0.0)
         self.y_controller = PIDController(1.0, 0.0, 0.0)
 
+        self.starting_time: float = 0
+
         try:
-            self.trajectory = choreo.load_swerve_trajectory(trajectory_name)
+            self.trajectory = choreo.load_swerve_trajectory(starting_trajectory)
             self.starting_pose = self.trajectory.get_initial_pose(game.is_red())
         except ValueError:
             # If the trajectory is not found, ChoreoLib already prints to DriverStation
@@ -67,13 +74,13 @@ class CoralAutoBase(AutonomousStateMachine):
         current_pose = self.chassis.get_pose()
         final_pose = self.trajectory.get_final_pose(game.is_red())
         if final_pose is None:
-            self.next_state("scoring_coral")
+            self.next_state("rotate_intake_to_algae")
             return
 
         distance = current_pose.translation().distance(final_pose.translation())
 
         if distance < self.DISTANCE_TOLERANCE:
-            self.next_state("scoring_coral")
+            self.next_state("rotate_intake_to_algae")
 
         sample = self.trajectory.sample_at(state_tm, game.is_red())
 
@@ -100,6 +107,65 @@ class CoralAutoBase(AutonomousStateMachine):
         self.chassis.drive_field(speeds.vx, speeds.vy, speeds.omega)
 
     @state
-    def scoring_coral(self, initial_call: bool) -> None:
+    def rotate_intake_to_algae(self, initial_call: bool, state_tm) -> None:
+        current_pose = self.chassis.get_pose()
+
         if initial_call:
-            self.coral_placer.place()
+            self.trajectory = choreo.load_swerve_trajectory("AlgaeJI180")
+            starting_pose = self.trajectory.get_initial_pose(game.is_red())
+            if starting_pose is not None:
+                self.chassis.set_pose(starting_pose)
+            self.starting_time = Timer.getFPGATimestamp()
+
+        final_pose = self.trajectory.get_final_pose(game.is_red())
+
+        if final_pose is None:
+            self.next_state("intake_algae")
+            return
+
+        current_time = Timer.getFPGATimestamp()
+        distance = (current_pose.translation() - final_pose.translation()).norm()
+
+        if (
+            distance < self.DISTANCE_TOLERANCE
+            and (current_time - self.starting_time) > 1
+        ):
+            self.next_state("intake_algae")
+
+        sample = self.trajectory.sample_at(state_tm, game.is_red())
+        self.follow_trajectory(sample)
+
+    @state
+    def intake_algae(self, initial_call: bool) -> None:
+        if initial_call:
+            self.algae_intake.intake_L3()
+        if True:  # self.algae_manipulator_component.has_algae():
+            self.next_state("go_and_shoot")
+
+    @state
+    def go_and_shoot(self, initial_call: bool, state_tm) -> None:
+        current_pose = self.chassis.get_pose()
+
+        if initial_call:
+            self.trajectory = choreo.load_swerve_trajectory("AlgaeJIToShoot")
+            starting_pose = self.trajectory.get_initial_pose(game.is_red())
+            if starting_pose is not None:
+                self.chassis.set_pose(starting_pose)
+
+        sample = self.trajectory.sample_at(state_tm, game.is_red())
+        self.follow_trajectory(sample)
+
+        final_pose = self.trajectory.get_final_pose(game.is_red())
+
+        if final_pose is None:
+            self.done()
+            return
+
+        distance = (current_pose.translation() - final_pose.translation()).norm()
+
+        if distance < self.DISTANCE_TOLERANCE:
+            self.done()
+
+    def done(self) -> None:
+        super().done()
+        self.algae_shooter.shoot()
