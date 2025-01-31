@@ -11,12 +11,14 @@ from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
+from components.feeler import FeelerComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
+from controllers.feeler import Feeler
 from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
@@ -31,6 +33,7 @@ class MyRobot(magicbot.MagicRobot):
     reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
     floor_intake: FloorIntake
+    feeler: Feeler
 
     # Components
     chassis: ChassisComponent
@@ -39,7 +42,11 @@ class MyRobot(magicbot.MagicRobot):
     vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
+<<<<<<< HEAD
     status_lights: LightStrip
+=======
+    feeler_component: FeelerComponent
+>>>>>>> e466939 (Make new feeler state machine work in sim)
 
     max_speed = tunable(5.0)  # m/s
     lower_max_speed = tunable(2.0)  # m/s

@@ -9,9 +9,9 @@ from phoenix6.controls import NeutralOut, VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
-from wpilib import DigitalInput, Servo
+from wpilib import DigitalInput
 
-from ids import DioChannel, PwmChannel, SparkId, TalonId
+from ids import DioChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
@@ -29,9 +29,6 @@ class AlgaeManipulatorComponent:
         injector_config = SparkMaxConfig()
 
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
-
-        self.feeler_limit_switch = DigitalInput(DioChannel.FEELER_LIMIT_SWITCH)
-        self.feeler_servo = Servo(PwmChannel.FEELER_SERVO)
 
         injector_config.inverted(True)
         self.injector_1.configure(
@@ -121,28 +118,8 @@ class AlgaeManipulatorComponent:
     def has_algae(self) -> bool:
         return not self.algae_limit_switch.get()
 
-    @feedback
-    def feeler_touching_algae(self) -> bool:
-        return self.feeler_limit_switch.get()
-
-    @feedback
-    def get_algae_size(self) -> float:
-        return self.algae_size
-
-    def set_feeler(self, rot: float = 0.0, inverted: bool = False) -> None:
-        if not inverted:
-            self.desired_feeler_angle = rot
-        else:
-            self.desired_feeler_angle = 180 - rot
-
-    @feedback
-    def get_feeler_set_angle(self) -> float:
-        return self.desired_feeler_angle
-
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
-
-        self.feeler_servo.setAngle(self.desired_feeler_angle)
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
