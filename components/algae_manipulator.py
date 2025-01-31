@@ -88,7 +88,7 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = 0.25
 
         self.algae_size = 0.0
-        self.desired_feeler_angle = 90
+        self.desired_feeler_angle = 90.0
 
     def spin_flywheels(self) -> None:
         self.desired_flywheel_speed = self.flywheel_shoot_speed

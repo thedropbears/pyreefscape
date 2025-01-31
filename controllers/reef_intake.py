@@ -57,6 +57,7 @@ class ReefIntake(StateMachine):
             self.current_feeler_algae = (
                 self.FEELER_START_ANGLE + self.FEELER_START_OFFEST
             )
+            self.has_touched_algae = False
             self.algae_manipulator_component.algae_size = 0.0
 
         if self.current_feeler_angle >= 160:
