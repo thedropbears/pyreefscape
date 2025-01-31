@@ -12,6 +12,7 @@ from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
 from components.intake import IntakeComponent
+from components.led_component import LightStrip
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_shooter import AlgaeShooter
@@ -38,6 +39,7 @@ class MyRobot(magicbot.MagicRobot):
     vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
+    status_lights: LightStrip
 
     max_speed = tunable(5.0)  # m/s
     lower_max_speed = tunable(2.0)  # m/s
@@ -66,8 +68,7 @@ class MyRobot(magicbot.MagicRobot):
         self.field = wpilib.Field2d()
         wpilib.SmartDashboard.putData(self.field)
 
-        # side: (28*3)*2 + front: (30*3) - 2 (R.I.P)
-        self.status_lights_strip_length = (28 * 3) * 2 + (30 * 3) - 2
+        self.status_lights_strip_length = 28 * 3
 
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
@@ -219,8 +220,12 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.drive_local(0, 0, 0)
 
         if self.gamepad.getYButton():
-            self.coral_placer_component.place()
-        self.coral_placer_component.execute()
+            self.status_lights.facing_in_range()
+        if self.gamepad.getAButton():
+            self.status_lights.not_facing_in_range()
+        if self.gamepad.getBButton():
+            self.status_lights.not_in_range()
+        self.status_lights.execute()
 
         if self.gamepad.getBButton():
             self.vision.zero_servo_()

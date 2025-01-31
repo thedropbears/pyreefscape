@@ -64,7 +64,10 @@ class PwmChannel(enum.IntEnum):
 
     VISION_SERVO = 0
 
+    LIGHT_STRIP = 2
+    
     FEELER_SERVO = 4
+
 
 
 @enum.unique
