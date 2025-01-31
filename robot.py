@@ -129,18 +129,10 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
-<<<<<<< HEAD
             self.vision_pos = Translation3d(0.290, -0.195, 0.235)
             self.vision_rot = Rotation3d(0, 0, 0)
             self.vision_servo_offset = Rotation2d(0.563)
             self.vision_encoder_offset = Rotation2d(0.975)
-=======
-        # # Load a swerve trajectory
-        # try:
-        #     self.trajectory = choreo.load_swerve_trajectory("StartToAlgaeJI")
-        # except ValueError:
-        #     self.trajectory = None
->>>>>>> be60ea2 (modify the autonomous state machine to move from the starting line to the reef, rotate 180 degrees to intake an algae, and then drive to the shooting spot to shoot the algae.)
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
