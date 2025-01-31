@@ -59,7 +59,7 @@ class LightStrip:
         self.led_data = wpilib.AddressableLED.LEDData()
         self.strip_data = [self.led_data] * strip_length
 
-        self.pattern = Solid(HsvColour.CYAN)
+        self.pattern: Pattern = Solid(HsvColour.CYAN)
 
         self.leds.setData(self.strip_data)
         self.leds.start()
