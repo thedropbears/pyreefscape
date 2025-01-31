@@ -23,6 +23,7 @@ class ReefIntake(StateMachine):
     FEELER_START_OFFEST = tunable(17)
 
     current_feeler_angle = 0.0
+    has_touched_algae = False
 
     FEELER_START_OFFSET = tunable(17)
 
@@ -50,7 +51,6 @@ class ReefIntake(StateMachine):
 
     @state(must_finish=True)
     def safing(self, initial_call: bool):
-        has_touched_algae = False
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
 
@@ -73,23 +73,28 @@ class ReefIntake(StateMachine):
             self.algae_manipulator_component.algae_size = self.current_feeler_angle
             self.algae_manipulator_component.set_feeler(self.FEELER_START_ANGLE)
             self.current_feeler_angle = self.FEELER_START_ANGLE
-            has_touched_algae = True
+            self.has_touched_algae = True
 
         if distance.norm() >= self.RETREAT_DISTANCE and (
             self.algae_manipulator_component.feeler_touching_algae()
-            or has_touched_algae
+            or self.has_touched_algae
         ):
+            self.has_touched_algae = False
             self.done()
 
         if (
             not self.algae_manipulator_component.feeler_touching_algae()
-            and not has_touched_algae
+            and not self.has_touched_algae
         ):
             self.current_feeler_angle += self.FEELER_DETECT_SPEED
 
     @feedback
     def is_L3(self) -> bool:
         return game.is_L3(game.nearest_reef_tag(self.chassis.get_pose()))
+
+    @feedback
+    def get_has_touched_algae(self) -> bool:
+        return self.has_touched_algae
 
     def done(self) -> None:
         super().done()

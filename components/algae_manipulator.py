@@ -1,5 +1,3 @@
-import math
-
 from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
@@ -90,7 +88,7 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = 0.25
 
         self.algae_size = 0.0
-        self.desired_feeler_angle = math.radians(90)
+        self.desired_feeler_angle = 90
 
     def spin_flywheels(self) -> None:
         self.desired_flywheel_speed = self.flywheel_shoot_speed
@@ -131,16 +129,16 @@ class AlgaeManipulatorComponent:
         if not inverted:
             self.desired_feeler_angle = rot
         else:
-            self.desired_feeler_angle = math.radians(180) - rot
+            self.desired_feeler_angle = 180 - rot
 
     @feedback
     def get_feeler_set_angle(self) -> float:
-        return math.degrees(self.desired_feeler_angle)
+        return self.desired_feeler_angle
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
 
-        self.feeler_servo.setAngle(math.degrees(self.desired_feeler_angle))
+        self.feeler_servo.setAngle(self.desired_feeler_angle)
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
