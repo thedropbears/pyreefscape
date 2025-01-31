@@ -219,6 +219,9 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.stop_snapping()
             self.chassis.drive_local(0, 0, 0)
 
+        if self.gamepad.getYButton():
+            self.coral_placer_component.place()
+        self.coral_placer_component.execute()
         self.status_lights.execute()
 
         if self.gamepad.getBButton():
@@ -232,6 +235,8 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
+        if self.gamepad.getAButton():
+            self.reef_intake.intake()
 
         self.algae_shooter.execute()
 
