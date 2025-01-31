@@ -18,6 +18,7 @@ class ReefIntake(StateMachine):
 
     RETREAT_DISTANCE = tunable(0.6)
 
+    FEELER_DETECT_SPEED = tunable(0.6)  # degrees per cycle
     FEELER_START_ANGLE = tunable(90)
     FEELER_START_OFFEST = tunable(17)
 
@@ -49,6 +50,7 @@ class ReefIntake(StateMachine):
 
     @state(must_finish=True)
     def safing(self, initial_call: bool):
+        has_touched_algae = False
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
 
@@ -67,14 +69,23 @@ class ReefIntake(StateMachine):
 
         distance = self.origin_robot_pose.translation() - robot_pose.translation()
 
-        if (
-            distance.norm() >= self.RETREAT_DISTANCE
-            and self.algae_manipulator_component.feeler_touching_algae()
-        ):
+        if self.algae_manipulator_component.feeler_touching_algae():
             self.algae_manipulator_component.algae_size = self.current_feeler_angle
+            self.algae_manipulator_component.set_feeler(self.FEELER_START_ANGLE)
+            self.current_feeler_angle = self.FEELER_START_ANGLE
+            has_touched_algae = True
+
+        if distance.norm() >= self.RETREAT_DISTANCE and (
+            self.algae_manipulator_component.feeler_touching_algae()
+            or has_touched_algae
+        ):
             self.done()
 
-        self.current_feeler_angle += 0.69  # degrees per cycle that the feeler will move
+        if (
+            not self.algae_manipulator_component.feeler_touching_algae()
+            and not has_touched_algae
+        ):
+            self.current_feeler_angle += self.FEELER_DETECT_SPEED
 
     @feedback
     def is_L3(self) -> bool:
