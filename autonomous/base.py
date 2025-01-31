@@ -15,7 +15,7 @@ from utilities import game
 
 
 class AutoBase(AutonomousStateMachine):
-    algae_intake: ReefIntake
+    reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
     algae_manipulator_component: AlgaeManipulatorComponent
 
@@ -138,7 +138,7 @@ class AutoBase(AutonomousStateMachine):
     @state
     def intake_algae(self, initial_call: bool) -> None:
         if initial_call:
-            self.algae_intake.intake()
+            self.reef_intake.intake()
         if self.algae_manipulator_component.has_algae():
             self.next_state("go_and_shoot")
 
