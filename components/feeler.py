@@ -1,14 +1,10 @@
-from magicbot import feedback, tunable
+from magicbot import feedback
 from wpilib import DigitalInput, Servo
 
 from ids import DioChannel, PwmChannel
 
 
 class FeelerComponent:
-    DETECT_SPEED = tunable(0.6)  # degrees per cycle
-    START_ANGLE = tunable(90)
-    START_OFFEST = tunable(17)
-
     def __init__(self):
         self.is_inverted = True
 

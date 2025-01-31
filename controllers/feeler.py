@@ -1,10 +1,14 @@
-from magicbot import StateMachine, state
+from magicbot import StateMachine, state, tunable
 
 from components.feeler import FeelerComponent
 
 
 class Feeler(StateMachine):
     feeler: FeelerComponent
+
+    DETECT_SPEED = tunable(0.6)  # degrees per cycle
+    START_ANGLE = tunable(90)
+    START_OFFSET = tunable(17)
 
     def __init__(self):
         pass
@@ -15,9 +19,7 @@ class Feeler(StateMachine):
     @state(first=True, must_finish=True)
     def searching(self, initial_call: bool):
         if initial_call:
-            self.current_feeler_algae = (
-                self.feeler.START_ANGLE + self.feeler.START_OFFEST
-            )
+            self.current_feeler_algae = self.START_ANGLE + self.START_OFFSET
             self.feeler.algae_size = 0.0
 
         if self.current_feeler_angle >= 160:
@@ -30,7 +32,7 @@ class Feeler(StateMachine):
             self.next_state("found")
             return
 
-        self.current_feeler_angle += self.feeler.DETECT_SPEED
+        self.current_feeler_angle += self.DETECT_SPEED
 
     @state(must_finish=True)
     def found(self):
@@ -39,5 +41,5 @@ class Feeler(StateMachine):
 
     def done(self) -> None:
         super().done()
-        self.feeler.set_angle(self.feeler.START_ANGLE)
-        self.current_feeler_angle = self.feeler.START_ANGLE
+        self.feeler.set_angle(self.START_ANGLE)
+        self.current_feeler_angle = self.START_ANGLE
