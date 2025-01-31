@@ -14,7 +14,7 @@ from controllers.algae_shooter import AlgaeShooter
 from utilities import game
 
 
-class CoralAutoBase(AutonomousStateMachine):
+class AutoBase(AutonomousStateMachine):
     algae_intake: AlgaeIntake
     algae_shooter: AlgaeShooter
     algae_manipulator_component: AlgaeManipulatorComponent
