@@ -9,13 +9,13 @@ from wpimath.kinematics import ChassisSpeeds
 
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
-from controllers.algae_intake import AlgaeIntake
 from controllers.algae_shooter import AlgaeShooter
+from controllers.reef_intake import ReefIntake
 from utilities import game
 
 
 class AutoBase(AutonomousStateMachine):
-    algae_intake: AlgaeIntake
+    algae_intake: ReefIntake
     algae_shooter: AlgaeShooter
     algae_manipulator_component: AlgaeManipulatorComponent
 
@@ -138,7 +138,7 @@ class AutoBase(AutonomousStateMachine):
     @state
     def intake_algae(self, initial_call: bool) -> None:
         if initial_call:
-            self.algae_intake.intake_L3()
+            self.algae_intake.intake()
         if self.algae_manipulator_component.has_algae():
             self.next_state("go_and_shoot")
 
