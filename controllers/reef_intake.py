@@ -23,9 +23,7 @@ class ReefIntake(StateMachine):
 
     current_feeler_angle = 0.0
 
-    FEELER_START_OFFSET = tunable(
-        math.radians(17)
-    )  # TODO: change to magic number we found from testing
+    FEELER_START_OFFSET = tunable(17)
 
     def __init__(self):
         self.last_l3 = False
