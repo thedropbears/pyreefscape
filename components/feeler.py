@@ -11,7 +11,7 @@ class FeelerComponent:
     START_OFFSET = tunable(17)
 
     def __init__(self):
-        self.is_inverted = False
+        self.is_inverted = True
         self.current_angle = 0.0
 
         self.limit_switch = DigitalInput(DioChannel.FEELER_LIMIT_SWITCH)
