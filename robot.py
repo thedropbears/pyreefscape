@@ -9,6 +9,7 @@ from phoenix6.configs import Slot0Configs
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from components.algae_manipulator import AlgaeManipulatorComponent
+from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.coral_placer import CoralPlacerComponent
 from components.feeler import FeelerComponent
@@ -44,6 +45,7 @@ class MyRobot(magicbot.MagicRobot):
     intake_component: IntakeComponent
     status_lights: LightStrip
     feeler_component: FeelerComponent
+    ballistics_component: BallisticsComponent
 
     max_speed = tunable(5.0)  # m/s
     lower_max_speed = tunable(2.0)  # m/s
