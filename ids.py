@@ -63,7 +63,6 @@ class PwmChannel(enum.IntEnum):
     """roboRIO PWM output channel number."""
 
     VISION_SERVO = 0
-    LED_STRIP = 5
 
     LIGHT_STRIP = 2
     
