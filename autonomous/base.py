@@ -1,6 +1,6 @@
 import choreo
 import choreo.trajectory
-from choreo.trajectory import SwerveTrajectory
+from choreo.trajectory import SwerveSample, SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
 from wpilib import RobotBase, Timer
 from wpimath.controller import PIDController
@@ -76,11 +76,13 @@ class AutoBase(AutonomousStateMachine):
 
         sample = self.trajectory.sample_at(state_tm, game.is_red())
 
+        assert sample is not None
+
         self.follow_trajectory(sample)
 
         # next state on leg completion
 
-    def follow_trajectory(self, sample):
+    def follow_trajectory(self, sample: SwerveSample):
         # track path
 
         pose = self.chassis.get_pose()
@@ -125,6 +127,9 @@ class AutoBase(AutonomousStateMachine):
             self.next_state("intake_algae")
 
         sample = self.trajectory.sample_at(state_tm, game.is_red())
+
+        assert sample is not None
+
         self.follow_trajectory(sample)
 
     @state
@@ -145,6 +150,7 @@ class AutoBase(AutonomousStateMachine):
                 self.chassis.set_pose(starting_pose)
 
         sample = self.trajectory.sample_at(state_tm, game.is_red())
+        assert sample is not None
         self.follow_trajectory(sample)
 
         final_pose = self.trajectory.get_final_pose(game.is_red())
