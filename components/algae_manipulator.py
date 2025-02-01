@@ -5,7 +5,7 @@ from phoenix6.configs import (
     MotorOutputConfigs,
     Slot0Configs,
 )
-from phoenix6.controls import Follower, NeutralOut, VelocityVoltage
+from phoenix6.controls import NeutralOut, VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
@@ -15,12 +15,11 @@ from ids import DioChannel, PwmChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
-    flywheel_shoot_speed = tunable(60)
     flywheel_intake_speed = tunable(-10)
     injector_inject_speed = tunable(6.0)
     injector_intake_speed = tunable(-0.5)
 
-    FLYWHEEL_RPS_TOLERENCE = 0.5
+    FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
@@ -69,7 +68,7 @@ class AlgaeManipulatorComponent:
             self.FLYWHEEL_GEAR_RATIO
         )
 
-        flywheel_1_closed_loop_ramp_config = (
+        flywheel_closed_loop_ramp_config = (
             ClosedLoopRampsConfigs().with_voltage_closed_loop_ramp_period(
                 self.FLYWHEEL_RAMP_TIME
             )
@@ -78,11 +77,12 @@ class AlgaeManipulatorComponent:
         flywheel_1_config.apply(flywheel_config)
         flywheel_1_config.apply(flywheel_pid)
         flywheel_1_config.apply(flywheel_gear_ratio)
-        flywheel_1_config.apply(flywheel_1_closed_loop_ramp_config)
+        flywheel_1_config.apply(flywheel_closed_loop_ramp_config)
 
         flywheel_2_config.apply(flywheel_config)
         flywheel_2_config.apply(flywheel_pid)
         flywheel_2_config.apply(flywheel_gear_ratio)
+        flywheel_2_config.apply(flywheel_closed_loop_ramp_config)
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.25
@@ -90,8 +90,8 @@ class AlgaeManipulatorComponent:
         self.algae_size = 0.0
         self.desired_feeler_angle = 90.0
 
-    def spin_flywheels(self) -> None:
-        self.desired_flywheel_speed = self.flywheel_shoot_speed
+    def spin_flywheels(self, flywheel_shoot_speed: float) -> None:
+        self.desired_flywheel_speed = flywheel_shoot_speed
 
     @feedback
     def flywheels_up_to_speed(self) -> bool:
@@ -105,6 +105,10 @@ class AlgaeManipulatorComponent:
     @feedback
     def flywheel_speed(self) -> float:
         return self.flywheel_1.get_velocity().value
+
+    @feedback
+    def flywheel_speed_2(self) -> float:
+        return self.flywheel_2.get_velocity().value
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
@@ -142,11 +146,11 @@ class AlgaeManipulatorComponent:
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
-            self.flywheel_2.set_control(Follower(TalonId.FLYWHEEL_1, False))
+            self.flywheel_2.set_control(NeutralOut())
 
         else:
             self.flywheel_1.set_control(VelocityVoltage(self.desired_flywheel_speed))
-            self.flywheel_2.set_control(Follower(TalonId.FLYWHEEL_1, False))
+            self.flywheel_2.set_control(VelocityVoltage(self.desired_flywheel_speed))
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.0
