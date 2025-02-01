@@ -115,6 +115,9 @@ class WristComponent:
         self.desired_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
         self.last_setpoint_update_time = time.monotonic()
 
+    def full_lift(self) -> None:
+        self.tilt_to(self.MAXIMUM_ELEVATION)
+
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
 

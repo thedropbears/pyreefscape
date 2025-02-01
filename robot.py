@@ -176,9 +176,9 @@ class MyRobot(magicbot.MagicRobot):
             self.coral_placer.place()
 
         if self.gamepad.getYButton():
-            self.reef_intake.intake()
+            self.wrist.full_lift()
         if self.gamepad.getAButton():
-            self.floor_intake.intake()
+            self.wrist.go_to_neutral()
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
