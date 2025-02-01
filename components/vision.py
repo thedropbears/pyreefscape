@@ -21,6 +21,7 @@ from wpimath.geometry import (
 )
 
 from components.chassis import ChassisComponent
+from utilities.caching import cache_per_loop
 from utilities.game import APRILTAGS, apriltag_layout
 from utilities.scalers import scale_value
 
@@ -109,6 +110,7 @@ class VisualLocalizer:
         self.chassis = chassis
         self.current_reproj = 0.0
         self.has_multitag = False
+        self._per_loop_cache: dict = {}
 
     @feedback
     def reproj(self) -> float:
@@ -123,7 +125,7 @@ class VisualLocalizer:
         # The encoder has been set up to return values in the interval [0, 2pi]
         return Rotation2d(self.encoder.get())
 
-    @feedback
+    @cache_per_loop
     def relative_bearing_to_best_cluster(self) -> Rotation2d:
         tags = self.visible_tags()
         if len(tags) == 0:
@@ -140,6 +142,7 @@ class VisualLocalizer:
         return tags[0].relative_bearing
 
     @feedback
+    @cache_per_loop
     def visible_tags(self) -> list[VisibleTag]:
         tags_in_view = []
 
