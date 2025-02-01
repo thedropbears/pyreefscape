@@ -84,7 +84,7 @@ class SwerveModule:
         steer_config = self.steer.configurator
 
         steer_motor_config = MotorOutputConfigs()
-        steer_motor_config.neutral_mode = NeutralModeValue.BRAKE
+        steer_motor_config.neutral_mode = NeutralModeValue.COAST
         # The SDS Mk4i rotation has one pair of gears.
         steer_motor_config.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
@@ -106,7 +106,7 @@ class SwerveModule:
         drive_config = self.drive.configurator
 
         drive_motor_config = MotorOutputConfigs()
-        drive_motor_config.neutral_mode = NeutralModeValue.BRAKE
+        drive_motor_config.neutral_mode = NeutralModeValue.COAST
         drive_motor_config.inverted = (
             InvertedValue.CLOCKWISE_POSITIVE
             if config.reverse_drive
@@ -202,6 +202,17 @@ class SwerveModule:
 
     def get(self) -> SwerveModuleState:
         return SwerveModuleState(self.get_speed(), self.get_rotation())
+
+    def set_neutral_mode(self, neutral_mode: NeutralModeValue) -> None:
+        steer_motor_config = MotorOutputConfigs()
+        self.steer.configurator.refresh(steer_motor_config)
+        steer_motor_config.neutral_mode = neutral_mode
+        self.steer.configurator.apply(steer_motor_config)
+
+        drive_motor_config = MotorOutputConfigs()
+        self.drive.configurator.refresh(drive_motor_config)
+        drive_motor_config.neutral_mode = neutral_mode
+        self.drive.configurator.apply(drive_motor_config)
 
 
 class ChassisComponent:
@@ -423,6 +434,7 @@ class ChassisComponent:
         """
         self.update_alliance()
         self.update_odometry()
+        self.set_coast_in_neutral(False)
 
     def get_rotational_velocity(self) -> float:
         return math.radians(
@@ -505,3 +517,13 @@ class ChassisComponent:
     @feedback
     def at_desired_heading(self) -> bool:
         return self.heading_controller.atGoal()
+
+    def set_coast_in_neutral(self, coast_mode: bool = True) -> None:
+        mode = NeutralModeValue.COAST if coast_mode else NeutralModeValue.BRAKE
+        self.module_fl.set_neutral_mode(mode)
+        self.module_rl.set_neutral_mode(mode)
+        self.module_rr.set_neutral_mode(mode)
+        self.module_fr.set_neutral_mode(mode)
+
+    def on_disable(self):
+        self.set_coast_in_neutral(True)
