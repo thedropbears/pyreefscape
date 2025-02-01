@@ -77,8 +77,9 @@ class BallisticsComponent:
         barge_X = FIELD_LENGTH / 2
 
         robot_to_barge_X_offset = barge_X - robot_pose.translation().X()
-        distance = robot_to_barge_X_offset / math.cos(
-            (robot_pose.rotation() + self.robot_to_shooter).radians()
+        distance = (
+            robot_to_barge_X_offset
+            / (robot_pose.rotation() + self.robot_to_shooter).cos()
         )
         return distance
 
@@ -115,12 +116,6 @@ class BallisticsComponent:
 
     @feedback
     def current_solution(self) -> BallisticsSolution:
-        """
-        self.desired_inclinator_angle = float(
-            numpy.interp(range, self.FLYWHEEL_DISTANCE_LOOKUP, self.FLYWHEEL_ANGLE_LOOKUP))
-        self.desired_flywheel_speed = float(
-            numpy.interp(range, self.FLYWHEEL_DISTANCE_LOOKUP, self.FLYWHEEL_SPEED_LOOKUP, right=0.0))
-        """
         return BallisticsSolution(
             float(
                 numpy.interp(
