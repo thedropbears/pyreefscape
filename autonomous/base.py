@@ -111,7 +111,7 @@ class AutoBase(AutonomousStateMachine):
         current_pose = self.chassis.get_pose()
 
         if initial_call:
-            self.trajectory = choreo.load_swerve_trajectory("AlgaeJI180")
+            self.trajectory = choreo.load_swerve_trajectory("AlgaeGH180")
             starting_pose = self.trajectory.get_initial_pose(game.is_red())
             if starting_pose is not None:
                 self.chassis.set_pose(starting_pose)
@@ -147,7 +147,7 @@ class AutoBase(AutonomousStateMachine):
         current_pose = self.chassis.get_pose()
 
         if initial_call:
-            self.trajectory = choreo.load_swerve_trajectory("AlgaeJIToShoot")
+            self.trajectory = choreo.load_swerve_trajectory("AlgaeGHToShoot")
             starting_pose = self.trajectory.get_initial_pose(game.is_red())
             if starting_pose is not None:
                 self.chassis.set_pose(starting_pose)
