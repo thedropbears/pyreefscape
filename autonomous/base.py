@@ -131,7 +131,7 @@ class AutoBase(AutonomousStateMachine):
     def intake_algae(self, initial_call: bool) -> None:
         if initial_call:
             self.reef_intake.intake()
-        if self.algae_manipulator_component.has_algae():
+        if self.algae_manipulator_component.has_algae() or RobotBase.isSimulation():
             self.next_state("go_and_shoot")
 
     @state
