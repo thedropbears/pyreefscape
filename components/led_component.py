@@ -83,6 +83,9 @@ class LightStrip:
     def not_in_range(self) -> None:
         self.pattern = Solid(HsvColour.RED)
 
+    def too_close_to_reef(self) -> None:
+        self.pattern = Flash(HsvColour.ORANGE)
+
     def rave(self) -> None:
         self.pattern = Rainbow(HsvColour.MAGENTA)
 
