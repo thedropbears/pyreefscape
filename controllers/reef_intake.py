@@ -47,6 +47,7 @@ class ReefIntake(StateMachine):
             ):
                 self.status_lights.too_close_to_reef()
                 self.done()
+                return
             else:
                 self.status_lights.team_colour()  # temporary reset to team colour since it doesn't reset in this branch right now
 
