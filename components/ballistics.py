@@ -59,6 +59,18 @@ class BallisticsComponent:
                 return (robot_pose.translation() - self.barge_blue_mid_end_point).norm()
 
     @feedback
+    def corrected_range(self) -> float:
+        distance = math.inf
+        if not self.is_aligned():
+            return distance
+        robot_pose = self.chassis.get_pose()
+        barge_X = FIELD_LENGTH / 2
+
+        robot_to_barge_X_offset = barge_X - robot_pose.translation().X()
+        distance = robot_to_barge_X_offset / math.cos(robot_pose.rotation().radians())
+        return distance
+
+    @feedback
     def is_aligned(self) -> bool:
         robot_pose = self.chassis.get_pose()
 
