@@ -5,7 +5,7 @@ from phoenix6.configs import (
     MotorOutputConfigs,
     Slot0Configs,
 )
-from phoenix6.controls import Follower, NeutralOut, VelocityVoltage
+from phoenix6.controls import NeutralOut, VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
@@ -68,7 +68,7 @@ class AlgaeManipulatorComponent:
             self.FLYWHEEL_GEAR_RATIO
         )
 
-        flywheel_1_closed_loop_ramp_config = (
+        flywheel_closed_loop_ramp_config = (
             ClosedLoopRampsConfigs().with_voltage_closed_loop_ramp_period(
                 self.FLYWHEEL_RAMP_TIME
             )
@@ -77,11 +77,12 @@ class AlgaeManipulatorComponent:
         flywheel_1_config.apply(flywheel_config)
         flywheel_1_config.apply(flywheel_pid)
         flywheel_1_config.apply(flywheel_gear_ratio)
-        flywheel_1_config.apply(flywheel_1_closed_loop_ramp_config)
+        flywheel_1_config.apply(flywheel_closed_loop_ramp_config)
 
         flywheel_2_config.apply(flywheel_config)
         flywheel_2_config.apply(flywheel_pid)
         flywheel_2_config.apply(flywheel_gear_ratio)
+        flywheel_2_config.apply(flywheel_closed_loop_ramp_config)
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.25
@@ -141,11 +142,11 @@ class AlgaeManipulatorComponent:
 
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
-            self.flywheel_2.set_control(Follower(TalonId.FLYWHEEL_1, False))
+            self.flywheel_2.set_control(NeutralOut())
 
         else:
             self.flywheel_1.set_control(VelocityVoltage(self.desired_flywheel_speed))
-            self.flywheel_2.set_control(Follower(TalonId.FLYWHEEL_1, False))
+            self.flywheel_2.set_control(VelocityVoltage(self.desired_flywheel_speed))
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.0
