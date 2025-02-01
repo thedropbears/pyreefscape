@@ -37,3 +37,7 @@ class AlgaeShooter(StateMachine):
     def shooting(self) -> None:
         self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
         self.algae_manipulator_component.inject()
+
+    def done(self) -> None:
+        super().done()
+        self.wrist.go_to_neutral()
