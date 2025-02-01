@@ -4,6 +4,7 @@ from magicbot import StateMachine, feedback, state, tunable
 
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
+from components.led_component import LightStrip
 from components.wrist import WristComponent
 from controllers.feeler import Feeler
 from utilities import game
@@ -14,6 +15,7 @@ class ReefIntake(StateMachine):
     wrist: WristComponent
     chassis: ChassisComponent
     feeler: Feeler
+    led_component: LightStrip
 
     L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
     L3_INTAKE_ANGLE = tunable(math.radians(-10.0))
@@ -43,8 +45,10 @@ class ReefIntake(StateMachine):
                 red_distance.norm() < self.ENGAGE_DISTANCE
                 or blue_distance.norm() < self.ENGAGE_DISTANCE
             ):
-                # TODO Flash lights
+                self.led_component.too_close_to_reef()
                 self.done()
+            else:
+                self.led_component.team_colour()  # temporary reset to team colour since it doesn't reset in this branch right now
 
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
