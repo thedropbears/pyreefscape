@@ -2,6 +2,7 @@ import math
 from dataclasses import dataclass
 from typing import ClassVar
 
+import numpy
 import wpiutil.wpistruct
 from magicbot import feedback
 from wpimath.geometry import (
@@ -28,10 +29,14 @@ class BallisticsComponent:
     status_lights: LightStrip
 
     x_max_offset_range = 4.0  # in meters
-    x_min_offset_range = 2.0
+    x_min_offset_range = 1.0
 
     barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
+
+    FLYWHEEL_DISTANCE_LOOKUP = (x_min_offset_range, x_max_offset_range)
+    FLYWHEEL_SPEED_LOOKUP = (60, 80)
+    FLYWHEEL_ANGLE_LOOKUP = (math.radians(-10), math.radians(-40))
 
     robot_to_shooter = Rotation2d(math.radians(180))
 
@@ -108,7 +113,28 @@ class BallisticsComponent:
 
     @feedback
     def current_solution(self) -> BallisticsSolution:
-        return BallisticsSolution(0.0, math.radians(-45.0))
+        """
+        self.desired_inclinator_angle = float(
+            numpy.interp(range, self.FLYWHEEL_DISTANCE_LOOKUP, self.FLYWHEEL_ANGLE_LOOKUP))
+        self.desired_flywheel_speed = float(
+            numpy.interp(range, self.FLYWHEEL_DISTANCE_LOOKUP, self.FLYWHEEL_SPEED_LOOKUP, right=0.0))
+        """
+        return BallisticsSolution(
+            float(
+                numpy.interp(
+                    self.corrected_range(),
+                    self.FLYWHEEL_DISTANCE_LOOKUP,
+                    self.FLYWHEEL_SPEED_LOOKUP,
+                )
+            ),
+            float(
+                numpy.interp(
+                    self.corrected_range(),
+                    self.FLYWHEEL_DISTANCE_LOOKUP,
+                    self.FLYWHEEL_ANGLE_LOOKUP,
+                )
+            ),
+        )
 
     def execute(self) -> None:
         if self.is_in_range():
