@@ -10,7 +10,7 @@ class AlgaeShooter(StateMachine):
     chassis: ChassisComponent
     wrist: WristComponent
 
-    SHOOT_ANGLE = tunable(40.0)
+    SHOOT_ANGLE = tunable(-50.0)
     SHOOT_SPEED = tunable(60.0)
 
     def __init__(self) -> None:
