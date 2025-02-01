@@ -28,7 +28,7 @@ class BallisticsSolution:
 class BallisticsComponent:
     chassis: ChassisComponent
     status_lights: LightStrip
-    algae_manipulator: AlgaeManipulatorComponent
+    algae_manipulator_component: AlgaeManipulatorComponent
 
     x_max_offset_range = 4.0  # in meters
     x_min_offset_range = 1.0
@@ -139,7 +139,7 @@ class BallisticsComponent:
         )
 
     def execute(self) -> None:
-        if self.algae_manipulator.has_algae():
+        if self.algae_manipulator_component.has_algae():
             if self.is_in_range():
                 if self.is_aligned():
                     self.status_lights.facing_in_range()
