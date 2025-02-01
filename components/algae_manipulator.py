@@ -19,7 +19,7 @@ class AlgaeManipulatorComponent:
     injector_inject_speed = tunable(6.0)
     injector_intake_speed = tunable(-0.5)
 
-    FLYWHEEL_RPS_TOLERENCE = 0.5
+    FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
