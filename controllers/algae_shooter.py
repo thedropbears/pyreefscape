@@ -1,3 +1,5 @@
+import math
+
 from magicbot import StateMachine, state, timed_state, tunable
 
 from components.algae_manipulator import AlgaeManipulatorComponent
@@ -20,8 +22,9 @@ class AlgaeShooter(StateMachine):
         self.engage()
 
     @state(first=True, must_finish=True)
-    def preparing(self):
-        self.wrist.tilt_to(self.SHOOT_ANGLE)
+    def preparing(self, initial_call: bool):
+        if initial_call:
+            self.wrist.tilt_to(math.radians(self.SHOOT_ANGLE))
         self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
 
         if (
