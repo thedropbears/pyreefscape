@@ -135,6 +135,7 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
+        self.chassis.set_coast_in_neutral(False)
 
     def teleopPeriodic(self) -> None:
         # Set max speed
@@ -210,7 +211,7 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.reset_odometry()
 
     def testInit(self) -> None:
-        pass
+        self.chassis.set_coast_in_neutral(True)
 
     def testPeriodic(self) -> None:
         dpad = self.gamepad.getPOV()
@@ -262,3 +263,6 @@ class MyRobot(magicbot.MagicRobot):
         self.wrist.execute()
 
         self.vision.execute()
+
+        if self.gamepad.getAButtonPressed():
+            self.chassis.toggle_coast_in_neutral()
