@@ -108,7 +108,7 @@ class BallisticsComponent:
         )
         return (
             relative_bearing_to_top_point.radians()
-            * relative_bearing_to_bottom_point.radians()
+            * relative_bearing_to_bottom_point.radians()  # to check if they have opposite signs
             < 0.0
             and abs(relative_bearing_to_top_point.degrees()) < 90.0
             and abs(relative_bearing_to_bottom_point.degrees()) < 90.0
