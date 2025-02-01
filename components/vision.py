@@ -15,6 +15,7 @@ from wpimath.geometry import (
     Pose3d,
     Rotation2d,
     Rotation3d,
+    Transform2d,
     Transform3d,
     Translation3d,
 )
@@ -53,7 +54,7 @@ class VisualLocalizer:
     CAMERA_FOV = math.radians(
         65
     )  # photon vision says 69.8, but we are being conservative
-    CAMERA_MAX_RANGE = 3.0  # m
+    CAMERA_MAX_RANGE = 4.0  # m
 
     add_to_estimator = tunable(True)
     should_log = tunable(True)
@@ -94,6 +95,8 @@ class VisualLocalizer:
         self.servo = wpilib.Servo(servo_id)
         self.pos = pos
         self.robot_to_turret = Transform3d(pos, rot)
+        self.robot_to_turret_2d = Transform2d(pos.toTranslation2d(), rot.toRotation2d())
+
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
         self.best_log = field.getObject(name + "_best_log")
@@ -141,17 +144,22 @@ class VisualLocalizer:
         tags_in_view = []
 
         robot_pose = self.chassis.get_pose()
+        turret_pose = robot_pose.transformBy(self.robot_to_turret_2d)
 
         for tag in APRILTAGS:
-            robot_to_tag = tag.pose.toPose2d().translation() - robot_pose.translation()
-            relative_bearing = robot_to_tag.angle() - robot_pose.rotation()
-            distance = robot_to_tag.norm()
-            relative_facing = tag.pose.toPose2d().rotation() - robot_to_tag.angle()
+            turret_to_tag = (
+                tag.pose.toPose2d().translation() - turret_pose.translation()
+            )
+            relative_bearing = turret_to_tag.angle() - turret_pose.rotation()
+            distance = turret_to_tag.norm()
+            relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
             if (
                 abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
-                and abs(relative_facing.degrees()) > 90
+                and abs(relative_facing.degrees()) > 100
                 and distance < self.CAMERA_MAX_RANGE
             ):
+                # Test for relative facing is more than 90 degrees because we don't want to be too
+                # close to parallel to the tag
                 tags_in_view.append(VisibleTag(tag.ID, relative_bearing, distance))
 
         return tags_in_view
