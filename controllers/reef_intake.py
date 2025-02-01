@@ -37,13 +37,14 @@ class ReefIntake(StateMachine):
     def intaking(self, initial_call: bool):
         if initial_call:
             current_pose = self.chassis.get_pose()
+            current_pos = current_pose.translation()
 
-            red_distance = game.RED_REEF_POS - current_pose.translation()
-            blue_distance = game.BLUE_REEF_POS - current_pose.translation()
+            red_distance = game.RED_REEF_POS.distance(current_pos)
+            blue_distance = game.BLUE_REEF_POS.distance(current_pos)
 
             if (
-                red_distance.norm() < self.ENGAGE_DISTANCE
-                or blue_distance.norm() < self.ENGAGE_DISTANCE
+                red_distance < self.ENGAGE_DISTANCE
+                or blue_distance < self.ENGAGE_DISTANCE
             ):
                 self.status_lights.too_close_to_reef()
                 self.done()
@@ -71,9 +72,11 @@ class ReefIntake(StateMachine):
 
         robot_pose = self.chassis.get_pose()
 
-        distance = self.origin_robot_pose.translation() - robot_pose.translation()
+        distance = self.origin_robot_pose.translation().distance(
+            robot_pose.translation()
+        )
 
-        if distance.norm() >= self.RETREAT_DISTANCE:
+        if distance >= self.RETREAT_DISTANCE:
             self.next_state("feeling")
 
     @state(must_finish=True)

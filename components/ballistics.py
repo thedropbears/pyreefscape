@@ -53,20 +53,17 @@ class BallisticsComponent:
     @feedback
     def range(self) -> float:
         robot_pose = self.chassis.get_pose()
+        robot_pos = robot_pose.translation()
         if is_red():
-            if robot_pose.translation().Y() > FIELD_WIDTH / 2:
-                return abs(
-                    self.barge_red_mid_end_point.X() - robot_pose.translation().X()
-                )
+            if robot_pos.Y() > FIELD_WIDTH / 2:
+                return abs(self.barge_red_mid_end_point.X() - robot_pos.X())
             else:
-                return (robot_pose.translation() - self.barge_red_mid_end_point).norm()
+                return robot_pos.distance(self.barge_red_mid_end_point)
         else:
-            if robot_pose.translation().Y() < FIELD_WIDTH / 2:
-                return abs(
-                    self.barge_blue_mid_end_point.X() - robot_pose.translation().X()
-                )
+            if robot_pos.Y() < FIELD_WIDTH / 2:
+                return abs(self.barge_blue_mid_end_point.X() - robot_pos.X())
             else:
-                return (robot_pose.translation() - self.barge_blue_mid_end_point).norm()
+                return robot_pos.distance(self.barge_blue_mid_end_point)
 
     @feedback
     def corrected_range(self) -> float:
