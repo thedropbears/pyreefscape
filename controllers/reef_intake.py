@@ -15,7 +15,7 @@ class ReefIntake(StateMachine):
     wrist: WristComponent
     chassis: ChassisComponent
     feeler: Feeler
-    led_component: LightStrip
+    status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
     L3_INTAKE_ANGLE = tunable(math.radians(-10.0))
@@ -45,10 +45,10 @@ class ReefIntake(StateMachine):
                 red_distance.norm() < self.ENGAGE_DISTANCE
                 or blue_distance.norm() < self.ENGAGE_DISTANCE
             ):
-                self.led_component.too_close_to_reef()
+                self.status_lights.too_close_to_reef()
                 self.done()
             else:
-                self.led_component.team_colour()  # temporary reset to team colour since it doesn't reset in this branch right now
+                self.status_lights.team_colour()  # temporary reset to team colour since it doesn't reset in this branch right now
 
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
