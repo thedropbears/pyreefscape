@@ -5,6 +5,7 @@ from typing import ClassVar
 import wpiutil.wpistruct
 from magicbot import feedback
 from wpimath.geometry import (
+    Rotation2d,
     Translation2d,
 )
 
@@ -31,6 +32,8 @@ class BallisticsComponent:
 
     barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
+
+    robot_to_shooter = Rotation2d(math.radians(180))
 
     def __init__(self) -> None:
         pass
@@ -67,7 +70,9 @@ class BallisticsComponent:
         barge_X = FIELD_LENGTH / 2
 
         robot_to_barge_X_offset = barge_X - robot_pose.translation().X()
-        distance = robot_to_barge_X_offset / math.cos(robot_pose.rotation().radians())
+        distance = robot_to_barge_X_offset / math.cos(
+            (robot_pose.rotation() + self.robot_to_shooter).radians()
+        )
         return distance
 
     @feedback
@@ -87,11 +92,11 @@ class BallisticsComponent:
                 self.barge_blue_mid_end_point - robot_pose.translation()
             )
 
-        relative_bearing_to_bottom_point = (
-            robot_to_bottom_point.angle() - robot_pose.rotation()
+        relative_bearing_to_bottom_point = robot_to_bottom_point.angle() - (
+            robot_pose.rotation() + self.robot_to_shooter
         )
-        relative_bearing_to_top_point = (
-            robot_to_top_point.angle() - robot_pose.rotation()
+        relative_bearing_to_top_point = robot_to_top_point.angle() - (
+            robot_pose.rotation() + self.robot_to_shooter
         )
         return (
             relative_bearing_to_top_point.radians()
