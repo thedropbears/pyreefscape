@@ -63,7 +63,7 @@ class WristComponent:
 
         self.encoder = self.wrist.getEncoder()
 
-        self.desired_angle = self.inclination()
+        self.desired_angle = WristComponent.NEUTRAL_ANGLE
 
     def on_enable(self):
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
