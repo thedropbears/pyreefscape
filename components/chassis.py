@@ -142,6 +142,8 @@ class SwerveModule:
         self.drive_request = VelocityVoltage(0)
         self.stop_request = VoltageOut(0)
 
+        self.neutral_mode = NeutralModeValue.BRAKE
+
     def get_angle_absolute(self) -> float:
         """Gets steer angle (rot) from absolute encoder"""
         return self.encoder.get_absolute_position().value
@@ -202,6 +204,25 @@ class SwerveModule:
 
     def get(self) -> SwerveModuleState:
         return SwerveModuleState(self.get_speed(), self.get_rotation())
+
+    def set_neutral_mode(self, neutral_mode: NeutralModeValue) -> None:
+        steer_motor_config = MotorOutputConfigs()
+        self.steer.configurator.refresh(steer_motor_config)
+        steer_motor_config.neutral_mode = neutral_mode
+        self.steer.configurator.apply(steer_motor_config)
+
+        drive_motor_config = MotorOutputConfigs()
+        self.drive.configurator.refresh(drive_motor_config)
+        drive_motor_config.neutral_mode = neutral_mode
+        self.drive.configurator.apply(drive_motor_config)
+
+        self.neutral_mode = neutral_mode
+
+    def toggle_neutral_mode(self) -> None:
+        if self.neutral_mode == NeutralModeValue.BRAKE:
+            self.set_neutral_mode(NeutralModeValue.COAST)
+        else:
+            self.set_neutral_mode(NeutralModeValue.BRAKE)
 
 
 class ChassisComponent:
@@ -423,6 +444,7 @@ class ChassisComponent:
         """
         self.update_alliance()
         self.update_odometry()
+        self.set_coast_in_neutral(False)
 
     def get_rotational_velocity(self) -> float:
         return math.radians(
@@ -505,3 +527,16 @@ class ChassisComponent:
     @feedback
     def at_desired_heading(self) -> bool:
         return self.heading_controller.atGoal()
+
+    def set_coast_in_neutral(self, coast_mode: bool = True) -> None:
+        mode = NeutralModeValue.COAST if coast_mode else NeutralModeValue.BRAKE
+        self.module_fl.set_neutral_mode(mode)
+        self.module_rl.set_neutral_mode(mode)
+        self.module_rr.set_neutral_mode(mode)
+        self.module_fr.set_neutral_mode(mode)
+
+    def toggle_coast_in_neutral(self) -> None:
+        self.module_fl.toggle_neutral_mode()
+        self.module_rl.toggle_neutral_mode()
+        self.module_rr.toggle_neutral_mode()
+        self.module_fr.toggle_neutral_mode()
