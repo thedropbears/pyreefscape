@@ -69,7 +69,6 @@ class PwmChannel(enum.IntEnum):
     FEELER_SERVO = 4
 
 
-
 @enum.unique
 class RioSerialNumber(enum.StrEnum):
     """roboRIO serial number"""
