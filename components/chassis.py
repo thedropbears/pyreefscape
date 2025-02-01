@@ -84,7 +84,7 @@ class SwerveModule:
         steer_config = self.steer.configurator
 
         steer_motor_config = MotorOutputConfigs()
-        steer_motor_config.neutral_mode = NeutralModeValue.COAST
+        steer_motor_config.neutral_mode = NeutralModeValue.BRAKE
         # The SDS Mk4i rotation has one pair of gears.
         steer_motor_config.inverted = InvertedValue.CLOCKWISE_POSITIVE
 
@@ -106,7 +106,7 @@ class SwerveModule:
         drive_config = self.drive.configurator
 
         drive_motor_config = MotorOutputConfigs()
-        drive_motor_config.neutral_mode = NeutralModeValue.COAST
+        drive_motor_config.neutral_mode = NeutralModeValue.BRAKE
         drive_motor_config.inverted = (
             InvertedValue.CLOCKWISE_POSITIVE
             if config.reverse_drive
@@ -141,6 +141,8 @@ class SwerveModule:
         self.central_angle = position.angle()
         self.drive_request = VelocityVoltage(0)
         self.stop_request = VoltageOut(0)
+
+        self.neutral_mode = NeutralModeValue.BRAKE
 
     def get_angle_absolute(self) -> float:
         """Gets steer angle (rot) from absolute encoder"""
@@ -213,6 +215,14 @@ class SwerveModule:
         self.drive.configurator.refresh(drive_motor_config)
         drive_motor_config.neutral_mode = neutral_mode
         self.drive.configurator.apply(drive_motor_config)
+
+        self.neutral_mode = neutral_mode
+
+    def toggle_neutral_mode(self) -> None:
+        if self.neutral_mode == NeutralModeValue.BRAKE:
+            self.set_neutral_mode(NeutralModeValue.COAST)
+        else:
+            self.set_neutral_mode(NeutralModeValue.BRAKE)
 
 
 class ChassisComponent:
@@ -525,5 +535,8 @@ class ChassisComponent:
         self.module_rr.set_neutral_mode(mode)
         self.module_fr.set_neutral_mode(mode)
 
-    def on_disable(self):
-        self.set_coast_in_neutral(True)
+    def toggle_coast_in_neutral(self) -> None:
+        self.module_fl.toggle_neutral_mode()
+        self.module_rl.toggle_neutral_mode()
+        self.module_rr.toggle_neutral_mode()
+        self.module_fr.toggle_neutral_mode()
