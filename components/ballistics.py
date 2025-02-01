@@ -10,6 +10,7 @@ from wpimath.geometry import (
     Translation2d,
 )
 
+from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
 from components.led_component import LightStrip
 from utilities.game import FIELD_LENGTH, FIELD_WIDTH, is_red
@@ -27,6 +28,7 @@ class BallisticsSolution:
 class BallisticsComponent:
     chassis: ChassisComponent
     status_lights: LightStrip
+    algae_manipulator: AlgaeManipulatorComponent
 
     x_max_offset_range = 4.0  # in meters
     x_min_offset_range = 1.0
@@ -137,12 +139,11 @@ class BallisticsComponent:
         )
 
     def execute(self) -> None:
-        if self.is_in_range():
-            if self.is_aligned():
-                self.status_lights.facing_in_range()
+        if self.algae_manipulator.has_algae():
+            if self.is_in_range():
+                if self.is_aligned():
+                    self.status_lights.facing_in_range()
+                else:
+                    self.status_lights.not_facing_in_range()
             else:
-                self.status_lights.not_facing_in_range()
-        else:
-            self.status_lights.not_in_range()
-        # TODO Update status LEDs when they are merged
-        pass
+                self.status_lights.not_in_range()
