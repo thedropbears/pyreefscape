@@ -40,7 +40,7 @@ class BallisticsComponent:
     FLYWHEEL_SPEED_LOOKUP = (60, 80)
     FLYWHEEL_ANGLE_LOOKUP = (math.radians(-10), math.radians(-40))
 
-    robot_to_shooter = Rotation2d(math.radians(180))
+    robot_to_shooter = Rotation2d.fromDegrees(180)
 
     def __init__(self) -> None:
         pass
