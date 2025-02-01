@@ -105,7 +105,7 @@ class AlgaeManipulatorComponent:
     @feedback
     def flywheel_speed(self) -> float:
         return self.flywheel_1.get_velocity().value
-    
+
     @feedback
     def flywheel_speed_2(self) -> float:
         return self.flywheel_2.get_velocity().value
