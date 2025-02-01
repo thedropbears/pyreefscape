@@ -4,8 +4,13 @@ from typing import ClassVar
 
 import wpiutil.wpistruct
 from magicbot import feedback
+from wpimath.geometry import (
+    Translation2d,
+)
 
 from components.chassis import ChassisComponent
+from components.led_component import LightStrip
+from utilities.game import FIELD_LENGTH, FIELD_WIDTH, is_red
 
 
 @wpiutil.wpistruct.make_wpistruct
@@ -19,20 +24,82 @@ class BallisticsSolution:
 
 class BallisticsComponent:
     chassis: ChassisComponent
+    status_lights: LightStrip
+
+    x_max_offset_range = 4.0  # in meters
+    x_min_offset_range = 2.0
+
+    barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
+    barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
 
     def __init__(self) -> None:
         pass
 
+    @feedback
     def is_in_range(self) -> bool:
-        return False
+        range = self.range()
+        return self.x_min_offset_range < range < self.x_max_offset_range
 
+    @feedback
+    def range(self) -> float:
+        robot_pose = self.chassis.get_pose()
+        if is_red():
+            if robot_pose.translation().Y() > FIELD_WIDTH / 2:
+                return abs(
+                    self.barge_red_mid_end_point.X() - robot_pose.translation().X()
+                )
+            else:
+                return (robot_pose.translation() - self.barge_red_mid_end_point).norm()
+        else:
+            if robot_pose.translation().Y() < FIELD_WIDTH / 2:
+                return abs(
+                    self.barge_blue_mid_end_point.X() - robot_pose.translation().X()
+                )
+            else:
+                return (robot_pose.translation() - self.barge_blue_mid_end_point).norm()
+
+    @feedback
     def is_aligned(self) -> bool:
-        return False
+        robot_pose = self.chassis.get_pose()
+
+        if is_red():
+            robot_to_top_point = self.barge_red_mid_end_point - robot_pose.translation()
+            robot_to_bottom_point = (
+                Translation2d(FIELD_LENGTH / 2, 0.0) - robot_pose.translation()
+            )
+        else:
+            robot_to_top_point = (
+                Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH) - robot_pose.translation()
+            )
+            robot_to_bottom_point = (
+                self.barge_blue_mid_end_point - robot_pose.translation()
+            )
+
+        relative_bearing_to_bottom_point = (
+            robot_to_bottom_point.angle() - robot_pose.rotation()
+        )
+        relative_bearing_to_top_point = (
+            robot_to_top_point.angle() - robot_pose.rotation()
+        )
+        return (
+            relative_bearing_to_top_point.radians()
+            * relative_bearing_to_bottom_point.radians()
+            < 0.0
+            and abs(relative_bearing_to_top_point.degrees()) < 90.0
+            and abs(relative_bearing_to_bottom_point.degrees()) < 90.0
+        )
 
     @feedback
     def current_solution(self) -> BallisticsSolution:
         return BallisticsSolution(0.0, math.radians(-45.0))
 
     def execute(self) -> None:
+        if self.is_in_range():
+            if self.is_aligned():
+                self.status_lights.facing_in_range()
+            else:
+                self.status_lights.not_facing_in_range()
+        else:
+            self.status_lights.not_in_range()
         # TODO Update status LEDs when they are merged
         pass
