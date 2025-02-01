@@ -42,11 +42,8 @@ class MyRobot(magicbot.MagicRobot):
     vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
-<<<<<<< HEAD
     status_lights: LightStrip
-=======
     feeler_component: FeelerComponent
->>>>>>> e466939 (Make new feeler state machine work in sim)
 
     max_speed = tunable(5.0)  # m/s
     lower_max_speed = tunable(2.0)  # m/s

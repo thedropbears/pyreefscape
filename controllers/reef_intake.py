@@ -50,6 +50,7 @@ class ReefIntake(StateMachine):
     def safing(self, initial_call: bool):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
+            self.feeler.engage()
 
         robot_pose = self.chassis.get_pose()
 
@@ -60,9 +61,7 @@ class ReefIntake(StateMachine):
 
     @state(must_finish=True)
     def feeling(self, initial_call):
-        if initial_call:
-            self.feeler.feel()
-        elif not self.feeler.is_executing:
+        if not self.feeler.is_executing:
             self.done()
 
     def done(self) -> None:

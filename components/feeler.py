@@ -6,7 +6,7 @@ from ids import DioChannel, PwmChannel
 
 class FeelerComponent:
     def __init__(self):
-        self.is_inverted = True
+        self.is_inverted = False
 
         self.current_angle = 0.0
         self.desired_angle = 90.0
