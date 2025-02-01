@@ -2,9 +2,9 @@ from utilities import caching
 
 
 def test_cache_per_loop():
-    class Test:
+    class Test(caching.HasPerLoopCache):
         def __init__(self):
-            self._per_loop_cache = {}
+            super().__init__()
             self._bare_called = 0
             self._property_called = 0
 

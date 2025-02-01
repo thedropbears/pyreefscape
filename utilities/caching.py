@@ -1,10 +1,12 @@
 import functools
 from collections.abc import Callable
-from typing import Any, Protocol, TypeVar
+from typing import Any, TypeVar
 
 
-class HasPerLoopCache(Protocol):
-    _per_loop_cache: dict[Callable, Any]
+class HasPerLoopCache:
+    def __init__(self) -> None:
+        super().__init__()
+        self._per_loop_cache: dict[Callable, Any] = {}
 
 
 S = TypeVar("S", bound=HasPerLoopCache)
