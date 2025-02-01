@@ -18,7 +18,8 @@ class ReefIntake(StateMachine):
     L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
     L3_INTAKE_ANGLE = tunable(math.radians(-10.0))
 
-    RETREAT_DISTANCE = tunable(0.6)
+    RETREAT_DISTANCE = tunable(0.6)  # metres
+    ENGAGE_DISTANCE = tunable(3.0)  # metres
 
     def __init__(self):
         self.last_l3 = False
@@ -32,6 +33,19 @@ class ReefIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
+        if initial_call:
+            current_pose = self.chassis.get_pose()
+
+            red_distance = game.RED_REEF_POS - current_pose.translation()
+            blue_distance = game.BLUE_REEF_POS - current_pose.translation()
+
+            if (
+                red_distance.norm() < self.ENGAGE_DISTANCE
+                or blue_distance.norm() < self.ENGAGE_DISTANCE
+            ):
+                # TODO Flash lights
+                self.done()
+
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
 
