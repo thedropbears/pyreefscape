@@ -31,7 +31,8 @@ class ReefIntake(StateMachine):
 
     @feedback
     def is_L3(self) -> bool:
-        return game.is_L3(game.nearest_reef_tag(self.chassis.get_pose()))
+        nearest_reef_tag_id = (game.nearest_reef_tag(self.chassis.get_pose()))[0]
+        return game.is_L3(nearest_reef_tag_id)
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
