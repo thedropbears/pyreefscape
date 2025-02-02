@@ -2,9 +2,13 @@ import math
 import time
 
 from magicbot import feedback
-from rev import ClosedLoopSlot, SparkMax, SparkMaxConfig
+from rev import (
+    ClosedLoopSlot,
+    SparkMax,
+    SparkMaxConfig,
+)
 from wpilib import AnalogEncoder, DigitalInput
-from wpimath.controller import ArmFeedforward
+from wpimath.controller import ArmFeedforward, PIDController
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import AnalogChannel, DioChannel, SparkId
@@ -39,14 +43,8 @@ class WristComponent:
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        wrist_config.closedLoop.P(
-            7.6813,
-            ClosedLoopSlot.kSlot0,
-        )
-        wrist_config.closedLoop.D(69.887, ClosedLoopSlot.kSlot0)
-        self.wrist_profile = TrapezoidProfile(
-            TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
-        )
+
+        self.pid = PIDController(Kp=7.6813, Ki=0, Kd=69.887)
 
         self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.09, kV=8.42, kA=0.0)
 
