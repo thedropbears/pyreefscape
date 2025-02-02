@@ -77,6 +77,7 @@ class ReefIntake(StateMachine):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
             self.feeler.engage()
+            self.chassis.stop_snapping()
 
         robot_pose = self.chassis.get_pose()
 
@@ -95,3 +96,4 @@ class ReefIntake(StateMachine):
     def done(self) -> None:
         super().done()
         self.wrist.go_to_neutral()
+        self.chassis.stop_snapping()
