@@ -236,7 +236,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBButton():
             self.climber.retract()
 
-        if self.gamepad.getXButton() >= 0.3:
+        if self.gamepad.getXButton():
             self.climber.deploy()
 
         if self.gamepad.getStartButton():
