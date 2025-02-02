@@ -78,7 +78,7 @@ def is_red() -> bool:
     return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
 
-def nearest_reef_tag(pose: Pose2d) -> tuple:
+def nearest_reef_tag(pose: Pose2d) -> tuple[int, Pose2d]:
     position = pose.translation()
     distance = math.inf
     closest_tag_id = 0

@@ -2,7 +2,6 @@ import math
 
 import wpilib
 from magicbot import StateMachine, feedback, state, tunable
-from wpimath.geometry import Pose2d
 
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
@@ -54,7 +53,7 @@ class ReefIntake(StateMachine):
                 return
 
             nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
-            self.rotation_lock = Pose2d.rotation(nearest_tag_pose)
+            self.rotation_lock = nearest_tag_pose.rotation()
 
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
