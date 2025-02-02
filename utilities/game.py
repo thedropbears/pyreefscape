@@ -74,10 +74,12 @@ def is_red() -> bool:
     return wpilib.DriverStation.getAlliance() == wpilib.DriverStation.Alliance.kRed
 
 
-def nearest_reef_tag(pose: Pose2d) -> int:
+def nearest_reef_tag(pose: Pose2d) -> tuple:
     position = pose.translation()
     distance = math.inf
     closest_tag_id = 0
+    global tag_pose_2d
+    tag_pose_2d = Pose2d
 
     for tag_id in L2_TAGS + L3_TAGS:
         tag_pose = apriltag_layout.getTagPose(tag_id)
@@ -88,8 +90,9 @@ def nearest_reef_tag(pose: Pose2d) -> int:
         if tag_distance < distance:
             distance = tag_distance
             closest_tag_id = tag_id
+            tag_pose_2d = tag_pose.toPose2d()
 
-    return closest_tag_id
+    return (closest_tag_id, tag_pose_2d)
 
 
 def is_L3(tag_id: int) -> bool:
