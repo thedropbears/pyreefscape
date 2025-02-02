@@ -233,10 +233,10 @@ class MyRobot(magicbot.MagicRobot):
         self.coral_placer_component.execute()
         self.status_lights.execute()
 
-        if self.gamepad.getRightBumper():
+        if self.gamepad.getBButton():
             self.climber.retract()
 
-        if self.gamepad.getRightTriggerAxis() >= 0.3:
+        if self.gamepad.getXButton() >= 0.3:
             self.climber.deploy()
 
         if self.gamepad.getBButton():
