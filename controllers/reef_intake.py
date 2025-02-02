@@ -52,12 +52,11 @@ class ReefIntake(StateMachine):
                 self.done()
                 return
 
-            nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
-            self.rotation_lock = nearest_tag_pose.rotation()
-
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
 
+        nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
+        self.rotation_lock = nearest_tag_pose.rotation()
         if not wpilib.DriverStation.isAutonomous():
             self.chassis.snap_to_heading(self.rotation_lock.radians())
 
