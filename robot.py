@@ -239,7 +239,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getXButton() >= 0.3:
             self.climber.deploy()
 
-        if self.gamepad.getBButton():
+        if self.gamepad.getStartButton():
             self.vision.zero_servo_()
         else:
             self.vision.execute()
