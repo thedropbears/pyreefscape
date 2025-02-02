@@ -44,6 +44,10 @@ class WristComponent:
         wrist_config.inverted(False)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
+        self.wrist_profile = TrapezoidProfile(
+            TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
+        )
+
         self.pid = PIDController(Kp=7.6813, Ki=0, Kd=69.887)
 
         self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.09, kV=8.42, kA=0.0)
