@@ -78,7 +78,7 @@ class LightStrip:
         self.pattern = Solid(HsvColour.GREEN)
 
     def not_facing_in_range(self) -> None:
-        self.pattern = Solid(HsvColour.YELLOW)
+        self.pattern = Flash(HsvColour.YELLOW)
 
     def not_in_range(self) -> None:
         self.pattern = Solid(HsvColour.RED)
