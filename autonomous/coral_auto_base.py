@@ -70,7 +70,7 @@ class CoralAutoBase(AutonomousStateMachine):
             self.next_state("scoring_coral")
             return
 
-        distance = (current_pose.translation() - final_pose.translation()).norm()
+        distance = current_pose.translation().distance(final_pose.translation())
 
         if distance < self.DISTANCE_TOLERANCE:
             self.next_state("scoring_coral")

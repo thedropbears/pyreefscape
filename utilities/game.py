@@ -75,6 +75,7 @@ def is_red() -> bool:
 
 
 def nearest_reef_tag(pose: Pose2d) -> int:
+    position = pose.translation()
     distance = math.inf
     closest_tag_id = 0
 
@@ -83,9 +84,9 @@ def nearest_reef_tag(pose: Pose2d) -> int:
 
         assert tag_pose
 
-        robot_to_tag = tag_pose.toPose2d() - pose
-        if robot_to_tag.translation().norm() < distance:
-            distance = robot_to_tag.translation().norm()
+        tag_distance = tag_pose.toPose2d().translation().distance(position)
+        if tag_distance < distance:
+            distance = tag_distance
             closest_tag_id = tag_id
 
     return closest_tag_id
