@@ -122,5 +122,5 @@ class WristComponent:
         ff = self.wrist_ff.calculate(desired_state.position, desired_state.velocity)
 
         self.motor.setVoltage(
-            self.pid.calculate(self.inclination(), self.desired_angle) + ff
+            self.pid.calculate(self.inclination(), desired_state.position) + ff
         )
