@@ -3,7 +3,6 @@ import time
 
 from magicbot import feedback
 from rev import (
-    ClosedLoopSlot,
     SparkMax,
     SparkMaxConfig,
 )
@@ -23,7 +22,7 @@ class WristComponent:
 
     WRIST_MAX_VEL = math.radians(30.0)
     WRIST_MAX_ACC = math.radians(15.0)
-
+    # New gear ratio to be calculated with wrist encoder
     angle_change_rate_while_zeroing = tunable(math.radians(0.1))
     wrist_gear_ratio = 432.0
     TOLERANCE = math.radians(3.0)
@@ -38,8 +37,6 @@ class WristComponent:
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
-        self.motor_controller = self.motor.getClosedLoopController()
-
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
@@ -47,7 +44,7 @@ class WristComponent:
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
-
+        # Values need to be modified with new gear ratio
         self.pid = PIDController(Kp=7.6813, Ki=0, Kd=69.887)
 
         self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.09, kV=8.42, kA=0.0)
@@ -130,9 +127,6 @@ class WristComponent:
         )
         ff = self.wrist_ff.calculate(desired_state.position, desired_state.velocity)
 
-        self.motor_controller.setReference(
-            desired_state.position,
-            SparkMax.ControlType.kPosition,
-            slot=ClosedLoopSlot.kSlot0,
-            arbFeedforward=ff,
+        self.motor.setVoltage(
+            self.pid.calculate(self.inclination(), self.desired_angle) + ff
         )
