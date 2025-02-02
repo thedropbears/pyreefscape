@@ -6,11 +6,11 @@ from rev import (
     SparkMax,
     SparkMaxConfig,
 )
-from wpilib import AnalogEncoder, DigitalInput
+from wpilib import AnalogEncoder
 from wpimath.controller import ArmFeedforward, PIDController
 from wpimath.trajectory import TrapezoidProfile
 
-from ids import AnalogChannel, DioChannel, SparkId
+from ids import AnalogChannel, SparkId
 from utilities.functions import clamp
 
 
@@ -28,8 +28,6 @@ class WristComponent:
     TOLERANCE = math.radians(3.0)
 
     def __init__(self):
-        self.switch = DigitalInput(DioChannel.WRIST_LIMIT_SWITCH)
-
         self.wrist_encoder = AnalogEncoder(
             AnalogChannel.WRIST_ENCODER, math.tau, self.ENCODER_ZERO_OFFSET
         )
