@@ -86,10 +86,6 @@ class WristComponent:
         )
 
     @feedback
-    def wrist_at_bottom_limit(self) -> bool:
-        return not self.switch.get()
-
-    @feedback
     def inclination(self) -> float:
         return self.wrist_encoder.get()
 
