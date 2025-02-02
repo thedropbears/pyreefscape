@@ -54,7 +54,7 @@ class ReefIntake(StateMachine):
 
             nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
             tag_rotation = Pose2d.rotation(nearest_tag_pose)
-            self.rotation_lock = game.field_flip_rotation2d(tag_rotation)
+            self.rotation_lock = game.opposite_flip_rotation2d(tag_rotation)
 
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
