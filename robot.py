@@ -1,5 +1,6 @@
 import math
 
+# import choreo
 import magicbot
 import ntcore
 import wpilib
@@ -256,6 +257,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.3:
             self.wrist.tilt_to(self.inclination_angle)
         self.wrist.execute()
+
+    def autonomousInit(self) -> None:
+        #     if self.trajectory:
+        #         initial_pose = self.trajectory.get_initial_pose(self.)
+        pass
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
