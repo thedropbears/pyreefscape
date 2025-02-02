@@ -5,10 +5,16 @@ import typing
 
 import phoenix6
 import phoenix6.unmanaged
+import rev
 import wpilib
 from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 from pyfrc.physics.core import PhysicsInterface
-from wpilib.simulation import DCMotorSim, DutyCycleEncoderSim, PWMSim
+from wpilib.simulation import (
+    DCMotorSim,
+    DIOSim,
+    DutyCycleEncoderSim,
+    PWMSim,
+)
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
@@ -113,6 +119,10 @@ class PhysicsEngine:
             )
         ]
 
+        self.wrist_motor = rev.SparkMaxSim(
+            sparkMax=robot.wrist.wrist, motor=DCMotor.NEO(1)
+        )
+
         self.imu = robot.chassis.imu.sim_state
 
         self.vision_sim = VisionSystemSim("main")
@@ -124,8 +134,16 @@ class PhysicsEngine:
         self.vision_sim.addCamera(self.camera, self.visual_localiser.robot_to_camera)
         self.vision_sim_counter = 0
 
-        self.servo_sim = PWMSim(self.visual_localiser.servo)
-        self.encoder_sim = DutyCycleEncoderSim(self.visual_localiser.encoder)
+        self.vision_servo_sim = PWMSim(self.visual_localiser.servo)
+        self.vision_encoder_sim = DutyCycleEncoderSim(self.visual_localiser.encoder)
+
+        self.algae_limit_switch_sim = DIOSim(
+            robot.algae_manipulator_component.algae_limit_switch
+        )
+        self.algae_finger_switch_sim = DIOSim(robot.feeler_component.limit_switch)
+        self.algae_pickup_counter = 0
+
+        self.robot = robot
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -153,7 +171,7 @@ class PhysicsEngine:
 
         self.physics_controller.drive(speeds, tm_diff)
 
-        self.encoder_sim.set(
+        self.vision_encoder_sim.set(
             constrain_angle(
                 (
                     (2.0 * self.visual_localiser.servo.getPosition() - 1.0)
@@ -171,3 +189,31 @@ class PhysicsEngine:
             )
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
+
+        # Trivially simple wrist simulation
+        self.wrist_motor.setPosition(self.robot.wrist.desired_angle)
+        self.wrist_motor.iterate(0.0, 12.0, tm_diff)
+
+        # Simulate algae pick up
+        if self.robot.floor_intake.current_state == "intaking":
+            # Simulate driving around for a couple of seconds
+            self.algae_pickup_counter += 1
+            if self.algae_pickup_counter == 100:
+                self.algae_limit_switch_sim.setValue(False)
+        else:
+            self.algae_pickup_counter = 0
+        if self.robot.reef_intake.current_state == "intaking":
+            # Check near reef
+            pose = self.physics_controller.get_pose()
+            if (pose.translation() - game.BLUE_REEF_POS).norm() < 2.0 or (
+                pose.translation() - game.RED_REEF_POS
+            ).norm() < 2.0:
+                self.algae_limit_switch_sim.setValue(False)
+        # Algae feeler
+        if self.robot.feeler.current_state == "searching":
+            self.algae_finger_switch_sim.setValue(True)
+        else:
+            self.algae_finger_switch_sim.setValue(False)
+        # Algae shooting
+        if self.robot.algae_shooter.current_state == "shooting":
+            self.algae_limit_switch_sim.setValue(True)
