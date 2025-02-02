@@ -14,7 +14,7 @@ class ClimberComponent:
         self.retracted = False  # TODO have some way to detect if this happened
 
         motor_config = SparkMaxConfig()
-        motor_config.inverted(False)  # TODO Change if needed
+        motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
         self.motor.configure(
