@@ -1,5 +1,6 @@
 import math
 
+import wpilib
 from magicbot import StateMachine, feedback, state, tunable
 from wpimath.geometry import Pose2d
 
@@ -53,13 +54,13 @@ class ReefIntake(StateMachine):
                 return
 
             nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
-            tag_rotation = Pose2d.rotation(nearest_tag_pose)
-            self.rotation_lock = game.opposite_flip_rotation2d(tag_rotation)
+            self.rotation_lock = Pose2d.rotation(nearest_tag_pose)
 
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
 
-        self.chassis.snap_to_heading(self.rotation_lock.radians())
+        if not wpilib.DriverStation.isAutonomous():
+            self.chassis.snap_to_heading(self.rotation_lock.radians())
 
         current_is_L3 = self.is_L3()
 
