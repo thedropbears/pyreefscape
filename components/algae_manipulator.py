@@ -18,6 +18,7 @@ class AlgaeManipulatorComponent:
     flywheel_intake_speed = tunable(-10)
     injector_inject_speed = tunable(6.0)
     injector_intake_speed = tunable(-0.5)
+    injector_backdrive_speed = tunable(-0.2)
 
     FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
@@ -119,8 +120,6 @@ class AlgaeManipulatorComponent:
         return not self.algae_limit_switch.get()
 
     def execute(self) -> None:
-        self.injector_1.setVoltage(self.desired_injector_speed)
-
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
             self.flywheel_2.set_control(NeutralOut())
@@ -128,6 +127,11 @@ class AlgaeManipulatorComponent:
         else:
             self.flywheel_1.set_control(VelocityVoltage(self.desired_flywheel_speed))
             self.flywheel_2.set_control(VelocityVoltage(self.desired_flywheel_speed))
+
+        if self.desired_injector_speed == 0.0 and self.has_algae():
+            self.injector_1.setVoltage(self.injector_backdrive_speed)
+        else:
+            self.injector_1.setVoltage(self.desired_injector_speed)
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.0
