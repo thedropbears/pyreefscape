@@ -1,7 +1,7 @@
 import math
 import time
 
-from magicbot import feedback, tunable
+from magicbot import feedback
 from rev import (
     SparkMax,
     SparkMaxConfig,
@@ -17,12 +17,11 @@ from utilities.functions import clamp
 class WristComponent:
     ENCODER_ZERO_OFFSET = 4.427696
     MAXIMUM_DEPRESSION = math.radians(-113.0)
-    MAXIMUM_ELEVATION = math.radians(-10.0)
+    MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
     WRIST_MAX_VEL = math.radians(30.0)
     WRIST_MAX_ACC = math.radians(15.0)
-    angle_change_rate_while_zeroing = tunable(math.radians(0.1))
     wrist_gear_ratio = 350.628
     TOLERANCE = math.radians(3.0)
 
@@ -43,9 +42,9 @@ class WristComponent:
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
         # Values need to be modified with new gear ratio
-        self.pid = PIDController(Kp=7.6813, Ki=0, Kd=69.887)
+        self.pid = PIDController(Kp=13.387, Ki=0, Kd=0.0078403)
 
-        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.09, kV=8.42, kA=0.0)
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.13, kV=6.83, kA=0.0)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
