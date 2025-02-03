@@ -229,7 +229,7 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.drive_local(0, 0, 0)
 
         if self.gamepad.getYButton():
-            self.coral_placer_component.place()
+            self.coral_placer.place()
         self.coral_placer_component.execute()
         self.status_lights.execute()
 
