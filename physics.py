@@ -120,7 +120,7 @@ class PhysicsEngine:
         ]
 
         self.wrist_motor = rev.SparkMaxSim(
-            sparkMax=robot.wrist.wrist, motor=DCMotor.NEO(1)
+            sparkMax=robot.wrist.motor, motor=DCMotor.NEO(1)
         )
 
         self.imu = robot.chassis.imu.sim_state

@@ -77,3 +77,10 @@ class RioSerialNumber(enum.StrEnum):
 
     TEST_BOT = "0305cc42"
     COMP_BOT = "03062898"
+
+
+@enum.unique
+class AnalogChannel(enum.IntEnum):
+    """roboRIO Analog input channel number"""
+
+    WRIST_ENCODER = 0
