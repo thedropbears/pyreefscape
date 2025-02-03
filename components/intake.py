@@ -29,7 +29,7 @@ class IntakeComponent:
 
     @feedback
     def deploy_motor_current(self) -> float:
-        return TalonSRX.getSupplyCurrent(self.deploy_motor)
+        return self.deploy_motor.getSupplyCurrent()
 
     def execute(self) -> None:
         self.motor.set(ControlMode.PercentOutput, self.desired_output)
