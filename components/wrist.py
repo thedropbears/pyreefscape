@@ -6,7 +6,7 @@ from rev import (
     SparkMax,
     SparkMaxConfig,
 )
-from wpilib import AnalogEncoder
+from wpilib import AnalogEncoder, AnalogInput
 from wpimath.controller import ArmFeedforward, PIDController
 from wpimath.trajectory import TrapezoidProfile
 
@@ -15,23 +15,23 @@ from utilities.functions import clamp
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = math.tau / 10
+    ENCODER_ZERO_OFFSET = 4.427696
     MAXIMUM_DEPRESSION = math.radians(-113.0)
     MAXIMUM_ELEVATION = math.radians(-10.0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
     WRIST_MAX_VEL = math.radians(30.0)
     WRIST_MAX_ACC = math.radians(15.0)
-    # New gear ratio to be calculated with wrist encoder
     angle_change_rate_while_zeroing = tunable(math.radians(0.1))
-    wrist_gear_ratio = 432.0
+    wrist_gear_ratio = 350.628
     TOLERANCE = math.radians(3.0)
 
     def __init__(self):
-        self.wrist_encoder = AnalogEncoder(
-            AnalogChannel.WRIST_ENCODER, math.tau, self.ENCODER_ZERO_OFFSET
-        )
-        self.wrist_encoder.setInverted(True)
+        self.wrist_encoder_raw = AnalogInput(AnalogChannel.WRIST_ENCODER)
+
+        self.wrist_encoder = AnalogEncoder(self.wrist_encoder_raw, math.tau, 0)
+        self.wrist_encoder.setInverted(False)
+        self.wrist_encoder.setVoltagePercentageRange(0.2 / 5, 4.8 / 5)
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
@@ -84,12 +84,16 @@ class WristComponent:
         )
 
     @feedback
+    def encoder_raw_volts(self) -> float:
+        return self.wrist_encoder_raw.getVoltage()
+
+    @feedback
     def inclination(self) -> float:
-        return self.wrist_encoder.get()
+        return self.wrist_encoder.get() - self.ENCODER_ZERO_OFFSET
 
     @feedback
     def inclination_deg(self) -> float:
-        return math.degrees(self.wrist_encoder.get())
+        return math.degrees(self.inclination())
 
     @feedback
     def shoot_angle_deg(self) -> float:
