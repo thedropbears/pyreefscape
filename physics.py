@@ -208,9 +208,11 @@ class PhysicsEngine:
         if self.reef_intake.current_state == "intaking":
             # Check near reef
             pose = self.physics_controller.get_pose()
-            if (pose.translation() - game.BLUE_REEF_POS).norm() < 2.0 or (
-                pose.translation() - game.RED_REEF_POS
-            ).norm() < 2.0:
+            pos = pose.translation()
+            if (
+            	pos.distance(game.BLUE_REEF_POS) < 2.0
+            	or pos.distance(game.RED_REEF_POS) < 2.0
+          	):
                 self.algae_limit_switch_sim.setValue(False)
         # Algae feeler
         if self.feeler.current_state == "searching":
