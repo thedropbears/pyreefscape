@@ -1,7 +1,7 @@
 import math
 import time
 
-from magicbot import feedback
+from magicbot import feedback, tunable
 from rev import (
     SparkMax,
     SparkMaxConfig,
