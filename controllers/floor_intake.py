@@ -15,6 +15,8 @@ class FloorIntake(StateMachine):
     feeler: Feeler
 
     HANDOFF_POSITION = tunable(math.radians(-108.0))
+    deployed = False
+    current_counter = 0
 
     def __init__(self):
         pass
@@ -25,15 +27,41 @@ class FloorIntake(StateMachine):
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
         if self.algae_manipulator_component.has_algae():
-            self.next_state("feeling")
+            self.next_state("retracting")
             return
 
         self.intake_component.intake()
+
+        if self.intake_component.deploy_motor_stopped():
+            self.current_counter += 1
+            if self.current_counter >= 5:  # Experimental value
+                self.current_counter = 0
+                self.deployed = True
+        else:
+            self.current_counter = 0
+
+        if not self.deployed:
+            self.intake_component.deploy()
 
         if initial_call:
             self.wrist.tilt_to(self.HANDOFF_POSITION)
 
         self.algae_manipulator_component.intake()
+
+    @state(must_finish=True)
+    def retracting(self):
+        if self.intake_component.deploy_motor_stopped():
+            self.current_counter += 1
+            if self.current_counter >= 5:  # Experimental value
+                self.current_counter = 0
+                self.deployed = False
+        else:
+            self.current_counter = 0
+
+        if self.deployed:
+            self.intake_component.retract()
+        else:
+            self.next_state("feeling")
 
     @state(must_finish=True)
     def feeling(self, initial_call):
