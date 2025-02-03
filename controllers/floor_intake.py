@@ -16,6 +16,7 @@ class FloorIntake(StateMachine):
 
     HANDOFF_POSITION = tunable(math.radians(-112.0))
     deployed = False
+    current_counter = 0
 
     def __init__(self):
         pass
@@ -34,7 +35,12 @@ class FloorIntake(StateMachine):
         if (
             self.intake_component.deploy_motor_current() > 100
         ):  # Current value may be inaccurate
-            self.deployed = True
+            self.current_counter += 1
+            if self.current_counter >= 5:  # Experimental value
+                self.current_counter = 0
+                self.deployed = True
+        else:
+            self.current_counter = 0
 
         if not self.deployed:
             self.intake_component.deploy()
@@ -46,15 +52,20 @@ class FloorIntake(StateMachine):
 
     @state(must_finish=True)
     def retracting(self):
+        if (
+            self.intake_component.deploy_motor_current() > 100
+        ):  # Current value may be inaccurate
+            self.current_counter += 1
+            if self.current_counter >= 5:  # Experimental value
+                self.current_counter = 0
+                self.deployed = False
+        else:
+            self.current_counter = 0
+
         if self.deployed:
             self.intake_component.retract()
         else:
             self.next_state("feeling")
-
-        if (
-            self.intake_component.deploy_motor_current() > 100
-        ):  # Current value may be inaccurate
-            self.deployed = False
 
     @state(must_finish=True)
     def feeling(self, initial_call):
