@@ -18,6 +18,7 @@ Hsv = tuple[int, int, int]
 FLASH_SPEED = 2
 BREATHE_SPEED = 0.5
 RAINBOW_SPEED = 1.5
+RESET_TIMEOUT = 2.0
 
 
 class HsvColour(Enum):
@@ -64,6 +65,8 @@ class LightStrip:
         self.leds.setData(self.strip_data)
         self.leds.start()
 
+        self.last_update_time = time.monotonic()
+
     @feedback
     def is_red_right(self) -> bool:
         return is_red()
@@ -73,23 +76,36 @@ class LightStrip:
             self.pattern = Solid(HsvColour.RED)
         else:
             self.pattern = Solid(HsvColour.BLUE)
+        self.keep_alive()
 
     def facing_in_range(self) -> None:
         self.pattern = Solid(HsvColour.GREEN)
+        self.keep_alive()
 
     def not_facing_in_range(self) -> None:
         self.pattern = Flash(HsvColour.YELLOW)
+        self.keep_alive()
 
     def not_in_range(self) -> None:
         self.pattern = Solid(HsvColour.RED)
+        self.keep_alive()
 
     def too_close_to_reef(self) -> None:
         self.pattern = Flash(HsvColour.ORANGE)
+        self.keep_alive()
 
     def rave(self) -> None:
         self.pattern = Rainbow(HsvColour.MAGENTA)
+        self.keep_alive()
+
+    def keep_alive(self) -> None:
+        # Refresh the timer to stop the LEDs being turned off
+        self.last_update_time = time.monotonic()
 
     def execute(self) -> None:
+        if time.monotonic() - self.last_update_time > RESET_TIMEOUT:
+            self.pattern = Solid(HsvColour.OFF)
+
         colour = self.pattern.update()
         self.led_data.setHSV(*colour)
         self.leds.setData(self.strip_data)
