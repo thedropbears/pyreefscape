@@ -321,6 +321,24 @@ class ChassisComponent:
     def imu_rotation(self) -> Rotation2d:
         return self.imu.getRotation2d()
 
+    @feedback
+    def module_drive_error(self) -> tuple:
+        return (
+            self.module_fl.drive.get_closed_loop_error().value,
+            self.module_rl.drive.get_closed_loop_error().value,
+            self.module_rr.drive.get_closed_loop_error().value,
+            self.module_fr.drive.get_closed_loop_error().value,
+        )
+
+    @feedback
+    def module_steer_error(self) -> tuple:
+        return (
+            self.module_fl.steer.get_closed_loop_error().value,
+            self.module_rl.steer.get_closed_loop_error().value,
+            self.module_rr.steer.get_closed_loop_error().value,
+            self.module_fr.steer.get_closed_loop_error().value,
+        )
+
     def get_module_states(
         self,
     ) -> tuple[
