@@ -142,8 +142,11 @@ class PhysicsEngine:
         )
         self.algae_finger_switch_sim = DIOSim(robot.feeler_component.limit_switch)
         self.algae_pickup_counter = 0
-
-        self.robot = robot
+        self.feeler = robot.feeler
+        self.floor_intake = robot.floor_intake
+        self.reef_intake = robot.reef_intake
+        self.algae_shooter = robot.algae_shooter
+        self.wrist_component = robot.wrist
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -191,18 +194,18 @@ class PhysicsEngine:
             self.vision_sim_counter = 0
 
         # Trivially simple wrist simulation
-        self.wrist_motor.setPosition(self.robot.wrist.desired_angle)
+        self.wrist_motor.setPosition(self.wrist_component.desired_angle)
         self.wrist_motor.iterate(0.0, 12.0, tm_diff)
 
         # Simulate algae pick up
-        if self.robot.floor_intake.current_state == "intaking":
+        if self.floor_intake.current_state == "intaking":
             # Simulate driving around for a couple of seconds
             self.algae_pickup_counter += 1
             if self.algae_pickup_counter == 100:
                 self.algae_limit_switch_sim.setValue(False)
         else:
             self.algae_pickup_counter = 0
-        if self.robot.reef_intake.current_state == "intaking":
+        if self.reef_intake.current_state == "intaking":
             # Check near reef
             pose = self.physics_controller.get_pose()
             if (pose.translation() - game.BLUE_REEF_POS).norm() < 2.0 or (
@@ -210,10 +213,10 @@ class PhysicsEngine:
             ).norm() < 2.0:
                 self.algae_limit_switch_sim.setValue(False)
         # Algae feeler
-        if self.robot.feeler.current_state == "searching":
+        if self.feeler.current_state == "searching":
             self.algae_finger_switch_sim.setValue(True)
         else:
             self.algae_finger_switch_sim.setValue(False)
         # Algae shooting
-        if self.robot.algae_shooter.current_state == "shooting":
+        if self.algae_shooter.current_state == "shooting":
             self.algae_limit_switch_sim.setValue(True)
