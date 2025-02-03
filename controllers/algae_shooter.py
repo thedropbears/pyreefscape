@@ -25,17 +25,22 @@ class AlgaeShooter(StateMachine):
     def preparing(self, initial_call: bool):
         if initial_call:
             self.wrist.tilt_to(math.radians(self.SHOOT_ANGLE))
-        self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
+        self.algae_manipulator_component.spin_flywheels(
+            self.SHOOT_SPEED, self.SHOOT_SPEED
+        )
 
         if (
             self.wrist.at_setpoint()
-            and self.algae_manipulator_component.flywheels_up_to_speed()
+            and self.algae_manipulator_component.top_flywheels_up_to_speed()
+            and self.algae_manipulator_component.bottom_flywheels_up_to_speed()
         ):
             self.next_state("shooting")
 
     @timed_state(duration=1, must_finish=True)
     def shooting(self) -> None:
-        self.algae_manipulator_component.spin_flywheels(self.SHOOT_SPEED)
+        self.algae_manipulator_component.spin_flywheels(
+            self.SHOOT_SPEED, self.SHOOT_SPEED
+        )
         self.algae_manipulator_component.inject()
 
     def done(self) -> None:
