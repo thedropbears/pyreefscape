@@ -78,7 +78,7 @@ def nearest_reef_tag(pose: Pose2d) -> tuple[int, Pose2d]:
     position = pose.translation()
     distance = math.inf
     closest_tag_id = 0
-    tag_pose_2d = pose
+    tag_pose_2d = Pose2d()
 
     for tag_id in L2_TAGS + L3_TAGS:
         tag_pose = apriltag_layout.getTagPose(tag_id)
