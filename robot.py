@@ -278,3 +278,7 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getAButtonPressed():
             self.chassis.toggle_coast_in_neutral()
+
+    def robotPeriodic(self) -> None:
+        # Clear component per-loop caches.
+        self.vision._per_loop_cache.clear()

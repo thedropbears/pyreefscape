@@ -55,12 +55,12 @@ class BallisticsComponent:
         robot_pose = self.chassis.get_pose()
         robot_pos = robot_pose.translation()
         if is_red():
-            if robot_pos.Y() > FIELD_WIDTH / 2:
+            if robot_pos.Y() < FIELD_WIDTH / 2:
                 return abs(self.barge_red_mid_end_point.X() - robot_pos.X())
             else:
                 return robot_pos.distance(self.barge_red_mid_end_point)
         else:
-            if robot_pos.Y() < FIELD_WIDTH / 2:
+            if robot_pos.Y() > FIELD_WIDTH / 2:
                 return abs(self.barge_blue_mid_end_point.X() - robot_pos.X())
             else:
                 return robot_pos.distance(self.barge_blue_mid_end_point)
