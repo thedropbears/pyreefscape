@@ -1,10 +1,16 @@
-from magicbot import StateMachine, timed_state
+import math
 
-from components.coral_placer import CoralPlacerComponent
+from magicbot import StateMachine, state, timed_state
+
+from components.algae_manipulator import AlgaeManipulatorComponent
+from components.wrist import WristComponent
 
 
 class CoralPlacer(StateMachine):
-    coral_placer_component: CoralPlacerComponent
+    wrist: WristComponent
+    algae_manipulator_component: AlgaeManipulatorComponent
+
+    WRIST_TILT_POINT = math.radians(-10.0)
 
     def __init__(self):
         pass
@@ -12,6 +18,16 @@ class CoralPlacer(StateMachine):
     def place(self):
         self.engage()
 
-    @timed_state(duration=2.0, first=True, must_finish=True)
+    @state(first=True, must_finish=True)
+    def lifting_wrist(self):
+        self.wrist.tilt_to(self.WRIST_TILT_POINT)
+        if self.wrist.at_setpoint():
+            self.next_state("placing")
+
+    @timed_state(duration=0.5, must_finish=True)
     def placing(self):
-        self.coral_placer_component.place()
+        self.algae_manipulator_component.inject()
+
+    def done(self) -> None:
+        super().done()
+        self.wrist.go_to_neutral()
