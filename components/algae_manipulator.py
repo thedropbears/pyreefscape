@@ -44,10 +44,10 @@ class AlgaeManipulatorComponent:
             SparkMax.PersistMode.kPersistParameters,
         )
 
-        self.flywheel_1 = TalonFX(TalonId.FLYWHEEL_1)
-        self.flywheel_2 = TalonFX(TalonId.FLYWHEEL_2)
-        flywheel_1_config = self.flywheel_1.configurator
-        flywheel_2_config = self.flywheel_2.configurator
+        self.top_flywheel = TalonFX(TalonId.TOP_FLYWHEEL)
+        self.bottom_flywheel = TalonFX(TalonId.BOTTOM_FLYWHEEL)
+        top_flywheel_config = self.top_flywheel.configurator
+        bottom_flywheel_config = self.bottom_flywheel.configurator
         flywheel_config = MotorOutputConfigs()
         flywheel_config.neutral_mode = NeutralModeValue.COAST
         flywheel_config.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
@@ -72,15 +72,15 @@ class AlgaeManipulatorComponent:
             )
         )
 
-        flywheel_1_config.apply(flywheel_config)
-        flywheel_1_config.apply(flywheel_pid)
-        flywheel_1_config.apply(flywheel_gear_ratio)
-        flywheel_1_config.apply(flywheel_closed_loop_ramp_config)
+        top_flywheel_config.apply(flywheel_config)
+        top_flywheel_config.apply(flywheel_pid)
+        top_flywheel_config.apply(flywheel_gear_ratio)
+        top_flywheel_config.apply(flywheel_closed_loop_ramp_config)
 
-        flywheel_2_config.apply(flywheel_config)
-        flywheel_2_config.apply(flywheel_pid)
-        flywheel_2_config.apply(flywheel_gear_ratio)
-        flywheel_2_config.apply(flywheel_closed_loop_ramp_config)
+        bottom_flywheel_config.apply(flywheel_config)
+        bottom_flywheel_config.apply(flywheel_pid)
+        bottom_flywheel_config.apply(flywheel_gear_ratio)
+        bottom_flywheel_config.apply(flywheel_closed_loop_ramp_config)
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
@@ -98,7 +98,9 @@ class AlgaeManipulatorComponent:
     @feedback
     def top_flywheels_up_to_speed(self) -> bool:
         return (
-            abs(self.flywheel_1.get_velocity().value - self.top_desired_flywheel_speed)
+            abs(
+                self.top_flywheel.get_velocity().value - self.top_desired_flywheel_speed
+            )
             <= self.FLYWHEEL_RPS_TOLERENCE
         )
 
@@ -106,7 +108,7 @@ class AlgaeManipulatorComponent:
     def bottom_flywheels_up_to_speed(self) -> bool:
         return (
             abs(
-                self.flywheel_2.get_velocity().value
+                self.bottom_flywheel.get_velocity().value
                 - self.bottom_desired_flywheel_speed
             )
             <= self.FLYWHEEL_RPS_TOLERENCE
@@ -114,11 +116,11 @@ class AlgaeManipulatorComponent:
 
     @feedback
     def top_flywheel_speed(self) -> float:
-        return self.flywheel_1.get_velocity().value
+        return self.top_flywheel.get_velocity().value
 
     @feedback
     def bottom_flywheel_speed(self) -> float:
-        return self.flywheel_2.get_velocity().value
+        return self.bottom_flywheel.get_velocity().value
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
@@ -136,16 +138,16 @@ class AlgaeManipulatorComponent:
         self.injector_1.setVoltage(self.desired_injector_speed)
 
         if self.top_desired_flywheel_speed == 0:
-            self.flywheel_1.set_control(NeutralOut())
+            self.top_flywheel.set_control(NeutralOut())
         else:
-            self.flywheel_1.set_control(
+            self.top_flywheel.set_control(
                 VelocityVoltage(self.top_desired_flywheel_speed)
             )
 
         if self.bottom_desired_flywheel_speed == 0:
-            self.flywheel_2.set_control(NeutralOut())
+            self.bottom_flywheel.set_control(NeutralOut())
         else:
-            self.flywheel_2.set_control(
+            self.bottom_flywheel.set_control(
                 VelocityVoltage(self.bottom_desired_flywheel_speed)
             )
 
