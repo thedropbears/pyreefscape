@@ -120,8 +120,6 @@ class AlgaeManipulatorComponent:
         return not self.algae_limit_switch.get()
 
     def execute(self) -> None:
-        self.injector_1.setVoltage(self.desired_injector_speed)
-
         if self.desired_flywheel_speed == 0:
             self.flywheel_1.set_control(NeutralOut())
             self.flywheel_2.set_control(NeutralOut())
@@ -132,6 +130,8 @@ class AlgaeManipulatorComponent:
 
         if self.desired_injector_speed == 0.0 and self.has_algae():
             self.injector_1.setVoltage(self.injector_backdrive_speed)
+        else:
+            self.injector_1.setVoltage(self.desired_injector_speed)
 
         self.desired_flywheel_speed = 0.0
         self.desired_injector_speed = 0.0
