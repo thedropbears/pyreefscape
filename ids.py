@@ -21,6 +21,7 @@ class TalonId(enum.IntEnum):
     BOTTOM_FLYWHEEL = 9
 
     INTAKE = 15
+    DEPLOY_INTAKE = 16  # Might be wrong ID
 
 
 @enum.unique
