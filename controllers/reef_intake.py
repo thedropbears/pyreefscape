@@ -1,5 +1,6 @@
 import math
 
+import wpilib
 from magicbot import StateMachine, feedback, state, tunable
 
 from components.algae_manipulator import AlgaeManipulatorComponent
@@ -31,7 +32,8 @@ class ReefIntake(StateMachine):
 
     @feedback
     def is_L3(self) -> bool:
-        return game.is_L3(game.nearest_reef_tag(self.chassis.get_pose()))
+        nearest_reef_tag_id = (game.nearest_reef_tag(self.chassis.get_pose()))[0]
+        return game.is_L3(nearest_reef_tag_id)
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
@@ -53,6 +55,11 @@ class ReefIntake(StateMachine):
         if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
 
+        nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
+        self.rotation_lock = nearest_tag_pose.rotation()
+        if not wpilib.DriverStation.isAutonomous():
+            self.chassis.snap_to_heading(self.rotation_lock.radians())
+
         current_is_L3 = self.is_L3()
 
         if self.last_l3 != current_is_L3 or initial_call:
@@ -69,6 +76,7 @@ class ReefIntake(StateMachine):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
             self.feeler.engage()
+            self.chassis.stop_snapping()
 
         robot_pose = self.chassis.get_pose()
 
@@ -87,3 +95,4 @@ class ReefIntake(StateMachine):
     def done(self) -> None:
         super().done()
         self.wrist.go_to_neutral()
+        self.chassis.stop_snapping()
