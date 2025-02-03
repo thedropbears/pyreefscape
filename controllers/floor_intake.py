@@ -33,7 +33,7 @@ class FloorIntake(StateMachine):
         self.intake_component.intake()
 
         if (
-            self.intake_component.deploy_motor_current() > 100
+            self.intake_component.deploy_motor_stopped()
         ):  # Current value may be inaccurate
             self.current_counter += 1
             if self.current_counter >= 5:  # Experimental value
@@ -53,7 +53,7 @@ class FloorIntake(StateMachine):
     @state(must_finish=True)
     def retracting(self):
         if (
-            self.intake_component.deploy_motor_current() > 100
+            self.intake_component.deploy_motor_stopped()
         ):  # Current value may be inaccurate
             self.current_counter += 1
             if self.current_counter >= 5:  # Experimental value
