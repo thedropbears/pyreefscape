@@ -31,6 +31,9 @@ class IntakeComponent:
     def deploy_motor_current(self) -> float:
         return self.deploy_motor.getSupplyCurrent()
 
+    def deploy_motor_stopped(self) -> bool:
+        return self.deploy_motor_current() > 100  # Experimental value
+
     def execute(self) -> None:
         self.motor.set(ControlMode.PercentOutput, self.desired_output)
 
