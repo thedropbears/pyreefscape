@@ -210,9 +210,9 @@ class PhysicsEngine:
             pose = self.physics_controller.get_pose()
             pos = pose.translation()
             if (
-            	pos.distance(game.BLUE_REEF_POS) < 2.0
-            	or pos.distance(game.RED_REEF_POS) < 2.0
-          	):
+                pos.distance(game.BLUE_REEF_POS) < 2.0
+                or pos.distance(game.RED_REEF_POS) < 2.0
+            ):
                 self.algae_limit_switch_sim.setValue(False)
         # Algae feeler
         if self.feeler.current_state == "searching":
