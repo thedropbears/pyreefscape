@@ -1,4 +1,4 @@
-from magicbot import tunable
+from magicbot import feedback, tunable
 from phoenix5 import ControlMode, TalonSRX
 
 from ids import TalonId
@@ -6,7 +6,7 @@ from ids import TalonId
 
 class IntakeComponent:
     intake_output = tunable(0.9)
-    deploy_output = tunable(0.1)
+    deploy_output = tunable(0.1)  # Test values
     retract_output = tunable(-0.1)
 
     def __init__(self) -> None:
@@ -27,6 +27,7 @@ class IntakeComponent:
     def retract(self) -> None:
         self.desired_deploy_output = self.retract_output
 
+    @feedback
     def deploy_motor_current(self) -> float:
         return TalonSRX.getSupplyCurrent(self.deploy_motor)
 
