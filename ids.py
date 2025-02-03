@@ -37,6 +37,8 @@ class CancoderId(enum.IntEnum):
 class SparkId(enum.IntEnum):
     """CAN ID for REV SPARK motor controllers (Spark Max, Spark Flex)."""
 
+    CLIMBER = 2
+
     CORAL_PLACER = 20
 
     INJECTOR_1 = 10

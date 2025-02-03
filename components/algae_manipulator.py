@@ -18,6 +18,7 @@ class AlgaeManipulatorComponent:
     flywheel_intake_speed = tunable(-10)
     injector_inject_speed = tunable(6.0)
     injector_intake_speed = tunable(-0.5)
+    injector_backdrive_speed = tunable(-0.2)
 
     FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
@@ -150,4 +151,10 @@ class AlgaeManipulatorComponent:
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
+
+        if self.desired_injector_speed == 0.0 and self.has_algae():
+            self.injector_1.setVoltage(self.injector_backdrive_speed)
+        else:
+            self.injector_1.setVoltage(self.desired_injector_speed)
+
         self.desired_injector_speed = 0.0

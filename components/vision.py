@@ -21,6 +21,7 @@ from wpimath.geometry import (
 )
 
 from components.chassis import ChassisComponent
+from utilities.caching import HasPerLoopCache, cache_per_loop
 from utilities.game import APRILTAGS, apriltag_layout
 from utilities.scalers import scale_value
 
@@ -35,7 +36,7 @@ class VisibleTag:
     range: float
 
 
-class VisualLocalizer:
+class VisualLocalizer(HasPerLoopCache):
     """
     This localizes the robot from AprilTags on the field,
     using information from a single PhotonVision camera.
@@ -80,6 +81,7 @@ class VisualLocalizer:
         data_log: wpiutil.log.DataLog,
         chassis: ChassisComponent,
     ) -> None:
+        super().__init__()
         self.camera = PhotonCamera(name)
         self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
         self.encoder.setAssumedFrequency(975.6)
@@ -123,7 +125,7 @@ class VisualLocalizer:
         # The encoder has been set up to return values in the interval [0, 2pi]
         return Rotation2d(self.encoder.get())
 
-    @feedback
+    @cache_per_loop
     def relative_bearing_to_best_cluster(self) -> Rotation2d:
         tags = self.visible_tags()
         if len(tags) == 0:
@@ -140,6 +142,7 @@ class VisualLocalizer:
         return tags[0].relative_bearing
 
     @feedback
+    @cache_per_loop
     def visible_tags(self) -> list[VisibleTag]:
         tags_in_view = []
 
