@@ -15,10 +15,10 @@ from ids import DioChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
-    flywheel_intake_speed = tunable(-10)
+    flywheel_intake_speed = tunable(-20)
     injector_inject_speed = tunable(6.0)
-    injector_intake_speed = tunable(-0.5)
-    injector_backdrive_speed = tunable(-0.2)
+    injector_intake_speed = tunable(-2.0)
+    injector_backdrive_speed = tunable(-0.5)
 
     FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
