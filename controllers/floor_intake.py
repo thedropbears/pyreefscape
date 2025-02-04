@@ -14,7 +14,7 @@ class FloorIntake(StateMachine):
     intake_component: IntakeComponent
     feeler: Feeler
 
-    HANDOFF_POSITION = tunable(math.radians(-108.0))
+    HANDOFF_POSITION = tunable(math.radians(-112.0))
 
     def __init__(self):
         pass
