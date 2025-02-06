@@ -114,6 +114,10 @@ class WristComponent:
     def at_setpoint(self) -> bool:
         return abs(self.desired_angle - self.inclination()) < WristComponent.TOLERANCE
 
+    @feedback
+    def return_desired_angle(self) -> float:
+        return self.desired_angle
+
     def tilt_to(self, pos: float) -> None:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 

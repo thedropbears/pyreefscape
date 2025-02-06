@@ -229,7 +229,9 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getYButton():
             self.climber.retract()
-        self.coral_placer_component.execute()
+
+        self.coral_placer.execute()
+
         self.status_lights.execute()
 
         if self.gamepad.getBButton():
