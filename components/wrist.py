@@ -107,8 +107,10 @@ class WristComponent:
         return abs(self.desired_angle - self.inclination()) < WristComponent.TOLERANCE
 
     def tilt_to(self, pos: float) -> None:
-        self.desired_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
-        self.last_setpoint_update_time = time.monotonic()
+        clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
+        if clamped_angle != self.desired_angle:
+            self.desired_angle = clamped_angle
+            self.last_setpoint_update_time = time.monotonic()
 
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
