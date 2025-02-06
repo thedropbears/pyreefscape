@@ -108,7 +108,9 @@ class WristComponent:
 
     def tilt_to(self, pos: float) -> None:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
-        if clamped_angle != self.desired_angle:
+
+        # If the new setpoint is within the tolerance we wouldn't move anyway
+        if abs(clamped_angle - self.desired_angle) > self.TOLERANCE:
             self.desired_angle = clamped_angle
             self.last_setpoint_update_time = time.monotonic()
 
