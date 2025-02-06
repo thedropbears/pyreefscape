@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import time
 import typing
 
 import phoenix6
@@ -132,7 +133,9 @@ class PhysicsEngine:
         self.camera = PhotonCameraSim(robot.vision.camera, properties)
         self.camera.setMaxSightRange(5.0)
         self.visual_localiser = robot.vision
-        self.vision_sim.addCamera(self.camera, self.visual_localiser.robot_to_camera)
+        self.vision_sim.addCamera(
+            self.camera, self.visual_localiser.robot_to_camera(time.monotonic())
+        )
         self.vision_sim_counter = 0
 
         self.vision_servo_sim = PWMSim(self.visual_localiser.servo)
@@ -190,7 +193,7 @@ class PhysicsEngine:
         self.vision_sim_counter += 1
         if self.vision_sim_counter == 10:
             self.vision_sim.adjustCamera(
-                self.camera, self.visual_localiser.robot_to_camera
+                self.camera, self.visual_localiser.robot_to_camera(time.monotonic())
             )
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
