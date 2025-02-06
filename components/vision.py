@@ -1,5 +1,4 @@
 import math
-import time
 from dataclasses import dataclass
 from typing import ClassVar
 
@@ -211,7 +210,9 @@ class VisualLocalizer(HasPerLoopCache):
             )
         )
 
-        self.turret_rotation_buffer.addSample(time.monotonic(), self.turret_rotation)
+        self.turret_rotation_buffer.addSample(
+            wpilib.Timer.getFPGATimestamp(), self.turret_rotation
+        )
 
         all_results = self.camera.getAllUnreadResults()
         for results in all_results:
@@ -224,7 +225,7 @@ class VisualLocalizer(HasPerLoopCache):
 
             if timestamp == self.last_timestamp:
                 return
-            self.last_recieved_timestep = time.monotonic()
+            self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
             self.last_timestamp = timestamp
 
             camera_to_robot = self.robot_to_camera(timestamp).inverse()
@@ -294,7 +295,9 @@ class VisualLocalizer(HasPerLoopCache):
 
     @feedback
     def sees_target(self):
-        return time.monotonic() - self.last_recieved_timestep < self.TIMEOUT
+        return (
+            wpilib.Timer.getFPGATimestamp() - self.last_recieved_timestep < self.TIMEOUT
+        )
 
 
 def estimate_poses_from_apriltag(

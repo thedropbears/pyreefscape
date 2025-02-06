@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import math
-import time
 import typing
 
 import phoenix6
@@ -134,7 +133,8 @@ class PhysicsEngine:
         self.camera.setMaxSightRange(5.0)
         self.visual_localiser = robot.vision
         self.vision_sim.addCamera(
-            self.camera, self.visual_localiser.robot_to_camera(time.monotonic())
+            self.camera,
+            self.visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
         )
         self.vision_sim_counter = 0
 
@@ -193,7 +193,8 @@ class PhysicsEngine:
         self.vision_sim_counter += 1
         if self.vision_sim_counter == 10:
             self.vision_sim.adjustCamera(
-                self.camera, self.visual_localiser.robot_to_camera(time.monotonic())
+                self.camera,
+                self.visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
             )
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
