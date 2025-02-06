@@ -10,7 +10,7 @@ class CoralPlacer(StateMachine):
     wrist: WristComponent
     algae_manipulator_component: AlgaeManipulatorComponent
 
-    WRIST_TILT_POINT = math.radians(-10.0)
+    WRIST_TILT_POINT = math.radians(0)
 
     def __init__(self):
         pass
@@ -19,14 +19,16 @@ class CoralPlacer(StateMachine):
         self.engage()
 
     @state(first=True, must_finish=True)
-    def lifting_wrist(self):
-        self.wrist.tilt_to(self.WRIST_TILT_POINT)
+    def lifting_wrist(self, initial_call):
+        if initial_call:
+            self.wrist.tilt_to(self.WRIST_TILT_POINT)
+
         if self.wrist.at_setpoint():
             self.next_state("placing")
 
     @timed_state(duration=1, must_finish=True)
     def placing(self):
-        self.algae_manipulator_component.inject()
+        self.algae_manipulator_component.shoot_coral()
 
     def done(self) -> None:
         super().done()

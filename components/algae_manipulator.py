@@ -20,6 +20,8 @@ class AlgaeManipulatorComponent:
     injector_intake_speed = tunable(-2.0)
     injector_backdrive_speed = tunable(-0.5)
 
+    coral_shoot_speed = tunable(2.0)
+
     FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
@@ -133,6 +135,9 @@ class AlgaeManipulatorComponent:
     @feedback
     def bottom_flywheel_speed(self) -> float:
         return self.bottom_flywheel.get_velocity().value
+
+    def shoot_coral(self) -> None:
+        self.desired_injector_speed = self.coral_shoot_speed
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
