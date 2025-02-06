@@ -6,9 +6,9 @@ from components.feeler import FeelerComponent
 class Feeler(StateMachine):
     feeler_component: FeelerComponent
 
-    DETECT_SPEED = tunable(0.6)  # degrees per cycle
-    START_ANGLE = tunable(90)
-    START_OFFSET = tunable(17)
+    DETECT_SPEED = tunable(1.0)  # degrees per cycle
+    START_ANGLE = tunable(45)
+    START_OFFSET = tunable(45)
 
     def __init__(self):
         pass
