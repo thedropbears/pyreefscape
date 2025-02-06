@@ -24,7 +24,7 @@ class CoralPlacer(StateMachine):
         if self.wrist.at_setpoint():
             self.next_state("placing")
 
-    @timed_state(duration=0.5, must_finish=True)
+    @timed_state(duration=1, must_finish=True)
     def placing(self):
         self.algae_manipulator_component.inject()
 
