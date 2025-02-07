@@ -126,6 +126,7 @@ class AlgaeManipulatorComponent:
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
+        self.has_seen_algae = False
 
     def intake(self) -> None:
         self.top_desired_flywheel_speed = self.flywheel_intake_speed
@@ -142,6 +143,9 @@ class AlgaeManipulatorComponent:
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
+
+        if self.has_algae():
+            self.has_seen_algae = True
 
         if self.top_desired_flywheel_speed == 0:
             self.top_flywheel.set_control(NeutralOut())

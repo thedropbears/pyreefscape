@@ -46,5 +46,4 @@ class AlgaeShooter(StateMachine):
 
     def done(self) -> None:
         super().done()
-        self.algae_manipulator_component.has_seen_algae = False
         self.wrist.go_to_neutral()
