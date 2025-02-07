@@ -11,6 +11,10 @@ RESET_TIMEOUT = 2.0
 LED_SPACING = 0.02
 
 
+def is_off(led_data: AddressableLED.LEDData) -> bool:
+    return led_data.b == 0 and led_data.g == 0 and led_data.r == 0
+
+
 class LightStrip:
     def __init__(self, strip_length: int = 5) -> None:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
@@ -24,6 +28,7 @@ class LightStrip:
         self.leds.start()
 
         self.last_update_time = time.monotonic()
+        self.is_reef_offset_flashing = False
 
     @feedback
     def is_red_right(self) -> bool:
@@ -62,35 +67,43 @@ class LightStrip:
         # Refresh the timer to stop the LEDs being turned off
         self.last_update_time = time.monotonic()
 
-    def reef_offset(self, offset: float):
+    def reef_offset(self, offset: float) -> None:
         flash_delay = round(min(1.0, abs(offset)) * 0.5, 1)
         if abs(offset) < 0.1:
             self.pattern = LEDPattern.solid(Color.kGreen)
-        elif offset > 0.0:
-            self.pattern = LEDPattern.blink(
-                LEDPattern.steps(
-                    [
-                        (0.0, Color.kBlack),
-                        (0.5, Color.kOrange),
-                    ]
-                ),
-                flash_delay,
-            )
-        else:
-            self.pattern = LEDPattern.blink(
-                LEDPattern.steps(
-                    [
-                        (0.0, Color.kOrange),
-                        (0.5, Color.kBlack),
-                    ]
-                ),
-                flash_delay,
-            )
+        elif (
+            not self.is_reef_offset_flashing
+            or not is_off(self.strip_data[0])
+            or not is_off(self.strip_data[-1])
+        ):
+            # We only set the new pattern if the previous one has finished a cycle
+            if offset > 0.0:
+                self.pattern = LEDPattern.blink(
+                    LEDPattern.steps(
+                        [
+                            (0.0, Color.kBlack),
+                            (0.5, Color.kOrange),
+                        ]
+                    ),
+                    flash_delay,
+                )
+            else:
+                self.pattern = LEDPattern.blink(
+                    LEDPattern.steps(
+                        [
+                            (0.0, Color.kOrange),
+                            (0.5, Color.kBlack),
+                        ]
+                    ),
+                    flash_delay,
+                )
         self.keep_alive()
+        self.is_reef_offset_flashing = True
 
     def execute(self) -> None:
         if time.monotonic() - self.last_update_time > RESET_TIMEOUT:
             self.pattern = LEDPattern.solid(wpilib.Color.kBlack)
+            self.is_reef_offset_flashing = False
         self.pattern.applyTo(
             self.strip_data, lambda idx, color: self.strip_data[idx].setLED(color)
         )
