@@ -114,8 +114,8 @@ class PhysicsEngine:
         self.flywheels = [
             Falcon500MotorSim(motor, gearing=1 / 1, moi=0.000412752224)
             for motor in (
-                robot.algae_manipulator_component.flywheel_1,
-                robot.algae_manipulator_component.flywheel_2,
+                robot.algae_manipulator_component.top_flywheel,
+                robot.algae_manipulator_component.bottom_flywheel,
             )
         ]
 
