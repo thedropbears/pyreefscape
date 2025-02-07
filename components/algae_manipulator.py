@@ -153,7 +153,7 @@ class AlgaeManipulatorComponent:
                 VelocityVoltage(self.bottom_desired_flywheel_speed)
             )
 
-        if self.desired_injector_speed == 0.0 and self.has_algae():
+        if self.desired_injector_speed == 0.0 and self.HOLDING_ALGAE:
             self.injector_1.setVoltage(self.injector_backdrive_speed)
         else:
             self.injector_1.setVoltage(self.desired_injector_speed)
