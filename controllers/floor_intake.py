@@ -25,7 +25,7 @@ class FloorIntake(StateMachine):
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
         if self.algae_manipulator_component.has_algae():
-            self.algae_manipulator_component.holding_algae = True
+            self.algae_manipulator_component.has_seen_algae = True
             self.next_state("feeling")
             return
 
