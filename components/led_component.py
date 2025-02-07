@@ -15,7 +15,7 @@ class LightStrip:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
         self.leds.setLength(strip_length)
 
-        self.strip_data = [AddressableLED.LEDData()] * strip_length
+        self.strip_data = [AddressableLED.LEDData() for _ in range(strip_length)]
 
         self.pattern: LEDPattern = LEDPattern.solid(Color.kBlack)
 
@@ -55,10 +55,35 @@ class LightStrip:
         # Refresh the timer to stop the LEDs being turned off
         self.last_update_time = time.monotonic()
 
+    def reef_offset(self, offset: float):
+        flash_delay = round(min(1.0, abs(offset)) * 0.5, 1)
+        if abs(offset) < 0.1:
+            self.pattern = LEDPattern.solid(Color.kGreen)
+        elif offset > 0.0:
+            self.pattern = LEDPattern.blink(
+                LEDPattern.steps(
+                    [
+                        (0.0, Color.kBlack),
+                        (0.5, Color.kOrange),
+                    ]
+                ),
+                flash_delay,
+            )
+        else:
+            self.pattern = LEDPattern.blink(
+                LEDPattern.steps(
+                    [
+                        (0.0, Color.kOrange),
+                        (0.5, Color.kBlack),
+                    ]
+                ),
+                flash_delay,
+            )
+        self.keep_alive()
+
     def execute(self) -> None:
         if time.monotonic() - self.last_update_time > RESET_TIMEOUT:
             self.pattern = LEDPattern.solid(wpilib.Color.kBlack)
-
         self.pattern.applyTo(
             self.strip_data, lambda idx, color: self.strip_data[idx].setLED(color)
         )
