@@ -24,7 +24,7 @@ class FloorIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
-        if self.algae_manipulator_component.has_algae():
+        if self.algae_manipulator_component.has_algae_limit_switch():
             self.algae_manipulator_component.HOLDING_ALGAE = True
             self.next_state("feeling")
             return

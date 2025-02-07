@@ -52,7 +52,7 @@ class ReefIntake(StateMachine):
                 self.done()
                 return
 
-        if self.algae_manipulator_component.has_algae():
+        if self.algae_manipulator_component.has_algae_limit_switch():
             self.algae_manipulator_component.HOLDING_ALGAE = True
             self.next_state("safing")
 
