@@ -12,7 +12,6 @@ from components.algae_manipulator import AlgaeManipulatorComponent
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
-from components.coral_placer import CoralPlacerComponent
 from components.feeler import FeelerComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
@@ -39,7 +38,6 @@ class MyRobot(magicbot.MagicRobot):
     # Components
     chassis: ChassisComponent
     climber: ClimberComponent
-    coral_placer_component: CoralPlacerComponent
     algae_manipulator_component: AlgaeManipulatorComponent
     vision: VisualLocalizer
     wrist: WristComponent
