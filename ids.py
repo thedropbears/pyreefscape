@@ -17,8 +17,8 @@ class TalonId(enum.IntEnum):
     DRIVE_FR = 4
     STEER_FR = 8
 
-    TOP_FLYWHEEL = 9
-    BOTTOM_FLYWHEEL = 10
+    TOP_FLYWHEEL = 10
+    BOTTOM_FLYWHEEL = 9
 
     INTAKE = 15
 
