@@ -94,7 +94,7 @@ dependencies = [
 
 [tool.robotpy]
 requires = [
-    "numpy==2.2.1.dev0",
+    "numpy==2.2.1.dev0; platform_machine == 'roborio'",
     "phoenix6~=25.1.0",
     "robotpy-ctre==2025.0.0",
     "robotpy-rev~=2025.0.1",
