@@ -10,6 +10,7 @@ import wpilib
 from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 from pyfrc.physics.core import PhysicsInterface
 from wpilib.simulation import (
+    AnalogEncoderSim,
     DCMotorSim,
     DIOSim,
     DutyCycleEncoderSim,
@@ -147,6 +148,7 @@ class PhysicsEngine:
         self.reef_intake = robot.reef_intake
         self.algae_shooter = robot.algae_shooter
         self.wrist_component = robot.wrist
+        self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -194,6 +196,10 @@ class PhysicsEngine:
             self.vision_sim_counter = 0
 
         # Trivially simple wrist simulation
+        self.wrist_encoder_sim.set(
+            self.wrist_component.desired_angle
+            + self.wrist_component.ENCODER_ZERO_OFFSET
+        )
         self.wrist_motor.setPosition(self.wrist_component.desired_angle)
         self.wrist_motor.iterate(0.0, 12.0, tm_diff)
 
