@@ -13,7 +13,8 @@ class AlgaeShooter(StateMachine):
     wrist: WristComponent
 
     SHOOT_ANGLE = tunable(-50.0)
-    SHOOT_SPEED = tunable(60.0)
+    TOP_SHOOT_SPEED = tunable(60.0)
+    BOTTOM_SHOOT_SPEED = tunable(65.0)
 
     def __init__(self) -> None:
         pass
@@ -26,7 +27,7 @@ class AlgaeShooter(StateMachine):
         if initial_call:
             self.wrist.tilt_to(math.radians(self.SHOOT_ANGLE))
         self.algae_manipulator_component.spin_flywheels(
-            self.SHOOT_SPEED, self.SHOOT_SPEED
+            self.TOP_SHOOT_SPEED, self.BOTTOM_SHOOT_SPEED
         )
 
         if (
@@ -39,7 +40,7 @@ class AlgaeShooter(StateMachine):
     @timed_state(duration=1, must_finish=True)
     def shooting(self) -> None:
         self.algae_manipulator_component.spin_flywheels(
-            self.SHOOT_SPEED, self.SHOOT_SPEED
+            self.TOP_SHOOT_SPEED, self.BOTTOM_SHOOT_SPEED
         )
         self.algae_manipulator_component.inject()
 
