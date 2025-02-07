@@ -133,7 +133,7 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = self.injector_intake_speed
 
     @feedback
-    def has_algae_limit_switch(self) -> bool:
+    def has_algae(self) -> bool:
         return not self.algae_limit_switch.get()
 
     @feedback
