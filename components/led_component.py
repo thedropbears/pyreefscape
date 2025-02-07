@@ -8,6 +8,7 @@ from ids import PwmChannel
 from utilities.game import is_red
 
 RESET_TIMEOUT = 2.0
+LED_SPACING = 0.02
 
 
 class LightStrip:
@@ -49,6 +50,12 @@ class LightStrip:
 
     def too_close_to_reef(self) -> None:
         self.pattern = LEDPattern.blink(LEDPattern.solid(wpilib.Color.kOrange), 0.5)
+        self.keep_alive()
+
+    def rainbow(self) -> None:
+        self.pattern = LEDPattern.rainbow(255, 255).scrollAtAbsoluteSpeed(
+            0.1, LED_SPACING
+        )
         self.keep_alive()
 
     def keep_alive(self) -> None:

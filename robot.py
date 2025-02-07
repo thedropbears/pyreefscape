@@ -274,6 +274,9 @@ class MyRobot(magicbot.MagicRobot):
 
         self.vision.execute()
 
+        self.status_lights.rainbow()
+        self.status_lights.execute()
+
         if self.gamepad.getAButtonPressed():
             self.chassis.toggle_coast_in_neutral()
 
