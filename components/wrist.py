@@ -63,6 +63,8 @@ class WristComponent:
 
         self.desired_angle = WristComponent.NEUTRAL_ANGLE
 
+        self.last_setpoint_update_time = time.monotonic()
+
     def on_enable(self):
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
         wrist_config = SparkMaxConfig()
