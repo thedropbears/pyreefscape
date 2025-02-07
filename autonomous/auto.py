@@ -1,5 +1,6 @@
 from autonomous.algae_only_auto_base import AlgaeOnlyAutoBase
 from autonomous.base import AutoBase
+from autonomous.test_base import TestAutoBase
 
 
 class Autonomous(AutoBase):
@@ -14,3 +15,10 @@ class LucienAuto(AlgaeOnlyAutoBase):
 
     def __init__(self):
         super().__init__("AlgaeOnly")
+
+
+class TestAuto(TestAutoBase):
+    MODE_NAME = "Testing"
+
+    def __init__(self):
+        super().__init__("TestRoutine")
