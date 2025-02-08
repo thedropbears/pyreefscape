@@ -20,9 +20,11 @@ class WristComponent:
     MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
-    WRIST_MAX_VEL = math.radians(30.0)
-    WRIST_MAX_ACC = math.radians(15.0)
-    wrist_gear_ratio = 350.628
+    WRIST_MAX_VEL = math.radians(90.0)
+    WRIST_MAX_ACC = math.radians(180.0)
+    wrist_gear_ratio = (
+        12.0 / 20.0
+    ) * 350.628  # not remeasured and just adjusted by the change in gear reduction
     TOLERANCE = math.radians(3.0)
 
     def __init__(self):
@@ -42,9 +44,9 @@ class WristComponent:
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
         # Values need to be modified with new gear ratio
-        self.pid = PIDController(Kp=13.387, Ki=0, Kd=0.0078403)
+        self.pid = PIDController(Kp=8.0177, Ki=0, Kd=0.0062399)
 
-        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.13, kV=6.83, kA=0.0)
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.18, kV=4.09, kA=0.003)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
