@@ -24,7 +24,6 @@ from controllers.feeler import Feeler
 from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
-from utilities.functions import clamp
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -192,23 +191,6 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
-
-        if dpad in (0, 45, 315):
-            self.inclination_angle += math.radians(0.05)
-            self.inclination_angle = clamp(
-                self.inclination_angle,
-                self.wrist.MAXIMUM_DEPRESSION,
-                self.wrist.MAXIMUM_ELEVATION,
-            )
-            self.wrist.tilt_to(self.inclination_angle)
-        if dpad in (180, 135, 225):
-            self.inclination_angle -= math.radians(0.05)
-            self.inclination_angle = clamp(
-                self.inclination_angle,
-                self.wrist.MAXIMUM_DEPRESSION,
-                self.wrist.MAXIMUM_ELEVATION,
-            )
-            self.wrist.tilt_to(self.inclination_angle)
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
