@@ -144,6 +144,7 @@ class MyRobot(magicbot.MagicRobot):
     def teleopPeriodic(self) -> None:
         # Set max speed
         max_speed = self.lower_max_speed
+        dpad_max_speed = 1
         max_spin_rate = self.lower_max_spin_rate
         if self.gamepad.getRightBumper():
             max_speed = self.max_speed
@@ -170,11 +171,15 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.stop_snapping()
 
         dpad = self.gamepad.getPOV()
-        # dpad upwards
-        # if dpad in (0, 45, 315):
-        # self.climber.deploy()
-        # elif dpad in (135, 180, 235):
-        # self.climber.retract()
+        if dpad != -1:
+            self.chassis.drive_local(
+                -dpad_max_speed
+                * math.cos(
+                    math.radians(dpad)
+                ),  # minus sign added to invert controls since algae is on the back
+                dpad_max_speed * math.sin(math.radians(dpad)),
+                0,
+            )
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.coral_placer.place()
