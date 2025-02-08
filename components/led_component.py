@@ -8,7 +8,7 @@ from ids import PwmChannel
 from utilities.game import is_red
 
 RESET_TIMEOUT = 2.0
-LED_SPACING = 0.02
+LED_SPACING = 1.0 / 144.0  # 144 LEDs per metre
 
 
 def is_off(led_data: AddressableLED.LEDData) -> bool:
@@ -58,7 +58,7 @@ class LightStrip:
         self.keep_alive()
 
     def rainbow(self) -> None:
-        self.pattern = LEDPattern.rainbow(255, 255).scrollAtAbsoluteSpeed(
+        self.pattern = LEDPattern.rainbow(255, 100).scrollAtAbsoluteSpeed(
             0.1, LED_SPACING
         )
         self.keep_alive()
