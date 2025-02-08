@@ -52,14 +52,24 @@ class AlgaeManipulatorComponent:
         flywheel_config.neutral_mode = NeutralModeValue.COAST
         flywheel_config.inverted = InvertedValue.COUNTER_CLOCKWISE_POSITIVE
 
-        flywheel_pid = (
+        flywheel_top_pid = (
             Slot0Configs()
-            .with_k_p(0.047949)
+            .with_k_p(0.47671)
             .with_k_i(0.0)
             .with_k_d(0.0)
-            .with_k_s(0.10383)
-            .with_k_v(0.11228)
-            .with_k_a(0.0062382)
+            .with_k_s(0.03704)
+            .with_k_v(0.11323)
+            .with_k_a(0.0062302)
+        )
+
+        flywheel_bottom_pid = (
+            Slot0Configs()
+            .with_k_p(2.9997e-11)
+            .with_k_i(0.0)
+            .with_k_d(0.0)
+            .with_k_s(0.046175)
+            .with_k_v(0.11189)
+            .with_k_a(0.0075943)
         )
 
         flywheel_gear_ratio = FeedbackConfigs().with_sensor_to_mechanism_ratio(
@@ -73,12 +83,12 @@ class AlgaeManipulatorComponent:
         )
 
         top_flywheel_config.apply(flywheel_config)
-        top_flywheel_config.apply(flywheel_pid)
+        top_flywheel_config.apply(flywheel_top_pid)
         top_flywheel_config.apply(flywheel_gear_ratio)
         top_flywheel_config.apply(flywheel_closed_loop_ramp_config)
 
         bottom_flywheel_config.apply(flywheel_config)
-        bottom_flywheel_config.apply(flywheel_pid)
+        bottom_flywheel_config.apply(flywheel_bottom_pid)
         bottom_flywheel_config.apply(flywheel_gear_ratio)
         bottom_flywheel_config.apply(flywheel_closed_loop_ramp_config)
 
