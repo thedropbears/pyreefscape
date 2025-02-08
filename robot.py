@@ -24,7 +24,6 @@ from controllers.feeler import Feeler
 from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
-from utilities.functions import clamp
 from utilities.game import is_red
 from utilities.scalers import rescale_js
 
@@ -54,6 +53,7 @@ class MyRobot(magicbot.MagicRobot):
     max_spin_rate = tunable(4.0)  # m/s
     lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
+    dpad_max_speed = tunable(0.4)
 
     START_POS_TOLERANCE = 1
 
@@ -144,6 +144,7 @@ class MyRobot(magicbot.MagicRobot):
     def teleopPeriodic(self) -> None:
         # Set max speed
         max_speed = self.lower_max_speed
+        dpad_max_speed = self.dpad_max_speed
         max_spin_rate = self.lower_max_spin_rate
         if self.gamepad.getRightBumper():
             max_speed = self.max_speed
@@ -170,11 +171,15 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.stop_snapping()
 
         dpad = self.gamepad.getPOV()
-        # dpad upwards
-        # if dpad in (0, 45, 315):
-        # self.climber.deploy()
-        # elif dpad in (135, 180, 235):
-        # self.climber.retract()
+        if dpad != -1:
+            self.chassis.drive_local(
+                -dpad_max_speed
+                * math.cos(
+                    math.radians(dpad)
+                ),  # minus sign added to invert controls since algae is on the back
+                dpad_max_speed * math.sin(math.radians(dpad)),
+                0,
+            )
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.coral_placer.place()
@@ -186,23 +191,6 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
-
-        if dpad in (0, 45, 315):
-            self.inclination_angle += math.radians(0.05)
-            self.inclination_angle = clamp(
-                self.inclination_angle,
-                self.wrist.MAXIMUM_DEPRESSION,
-                self.wrist.MAXIMUM_ELEVATION,
-            )
-            self.wrist.tilt_to(self.inclination_angle)
-        if dpad in (180, 135, 225):
-            self.inclination_angle -= math.radians(0.05)
-            self.inclination_angle = clamp(
-                self.inclination_angle,
-                self.wrist.MAXIMUM_DEPRESSION,
-                self.wrist.MAXIMUM_ELEVATION,
-            )
-            self.wrist.tilt_to(self.inclination_angle)
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
