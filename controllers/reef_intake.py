@@ -22,7 +22,7 @@ class ReefIntake(StateMachine):
     L3_INTAKE_ANGLE = tunable(math.radians(-5.0))
 
     RETREAT_DISTANCE = tunable(0.6)  # metres
-    ENGAGE_DISTANCE = tunable(3.0)  # metres
+    ENGAGE_DISTANCE = tunable(1.5)  # metres
 
     def __init__(self):
         self.last_l3 = False
