@@ -72,6 +72,8 @@ class SwerveModule:
         self.drive = TalonFX(drive_id)
         self.encoder = CANcoder(encoder_id)
 
+        self.target_speed: float = 0.0
+
         # Reduce CAN status frame rates before configuring
         self.steer.get_fault_field().set_update_frequency(
             frequency_hz=4, timeout_seconds=0.01
@@ -189,6 +191,9 @@ class SwerveModule:
 
         # rescale the speed target based on how close we are to being correctly aligned
         target_speed = self.state.speed * target_displacement.cos() ** 2
+
+        self.target_speed = target_speed
+
         speed_volt = self.drive_ff.calculate(target_speed)
 
         # original position change/100ms, new m/s -> rot/s
@@ -358,6 +363,15 @@ class ChassisComponent:
             self.module_fr.steer.get_closed_loop_error().value,
             self.module_rl.steer.get_closed_loop_error().value,
             self.module_rr.steer.get_closed_loop_error().value,
+        )
+
+    @feedback
+    def setpoint_controller_error(self) -> tuple:
+        return (
+            self.module_fl.target_speed,
+            self.module_fr.target_speed,
+            self.module_rl.target_speed,
+            self.module_rr.target_speed,
         )
 
     def get_module_states(
