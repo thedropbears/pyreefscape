@@ -54,6 +54,7 @@ class MyRobot(magicbot.MagicRobot):
     max_spin_rate = tunable(4.0)  # m/s
     lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
+    dpad_max_speed = tunable(0.4)
 
     START_POS_TOLERANCE = 1
 
@@ -144,7 +145,7 @@ class MyRobot(magicbot.MagicRobot):
     def teleopPeriodic(self) -> None:
         # Set max speed
         max_speed = self.lower_max_speed
-        dpad_max_speed = 1
+        dpad_max_speed = self.dpad_max_speed
         max_spin_rate = self.lower_max_spin_rate
         if self.gamepad.getRightBumper():
             max_speed = self.max_speed
