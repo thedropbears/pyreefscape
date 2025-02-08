@@ -269,5 +269,6 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.toggle_coast_in_neutral()
 
     def robotPeriodic(self) -> None:
+        super().robotPeriodic()
         # Clear component per-loop caches.
         self.vision._per_loop_cache.clear()
