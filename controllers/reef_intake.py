@@ -37,8 +37,8 @@ class ReefIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
+        current_pose = self.chassis.get_pose()
         if initial_call:
-            current_pose = self.chassis.get_pose()
             current_pos = current_pose.translation()
 
             red_distance = game.RED_REEF_POS.distance(current_pos)
@@ -56,10 +56,13 @@ class ReefIntake(StateMachine):
             self.algae_manipulator_component.holding_algae = True
             self.next_state("safing")
 
-        nearest_tag_pose = (game.nearest_reef_tag(self.chassis.get_pose()))[1]
+        nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]
         self.rotation_lock = nearest_tag_pose.rotation()
         if not wpilib.DriverStation.isAutonomous():
             self.chassis.snap_to_heading(self.rotation_lock.radians())
+        tag_to_robot = current_pose.relativeTo(nearest_tag_pose)
+        offset = tag_to_robot.translation().Y()
+        self.status_lights.reef_offset(offset)
 
         current_is_L3 = self.is_L3()
 

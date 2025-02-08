@@ -76,7 +76,7 @@ class MyRobot(magicbot.MagicRobot):
         self.field = wpilib.Field2d()
         wpilib.SmartDashboard.putData(self.field)
 
-        self.status_lights_strip_length = 28 * 3
+        self.status_lights_strip_length = 28 * 3 * 2
 
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
@@ -273,6 +273,9 @@ class MyRobot(magicbot.MagicRobot):
         self.wrist.execute()
 
         self.vision.execute()
+
+        self.status_lights.rainbow()
+        self.status_lights.execute()
 
         if self.gamepad.getAButtonPressed():
             self.chassis.toggle_coast_in_neutral()
