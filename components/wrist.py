@@ -20,8 +20,8 @@ class WristComponent:
     MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
-    WRIST_MAX_VEL = math.radians(30.0)
-    WRIST_MAX_ACC = math.radians(15.0)
+    WRIST_MAX_VEL = math.radians(90.0)
+    WRIST_MAX_ACC = math.radians(180.0)
     wrist_gear_ratio = 350.628
     TOLERANCE = math.radians(3.0)
 
