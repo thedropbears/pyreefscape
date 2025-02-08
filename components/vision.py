@@ -1,5 +1,4 @@
 import math
-import time
 from dataclasses import dataclass
 from typing import ClassVar
 
@@ -19,6 +18,7 @@ from wpimath.geometry import (
     Transform3d,
     Translation3d,
 )
+from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 
 from components.chassis import ChassisComponent
 from utilities.caching import HasPerLoopCache, cache_per_loop
@@ -98,6 +98,7 @@ class VisualLocalizer(HasPerLoopCache):
         self.pos = pos
         self.robot_to_turret = Transform3d(pos, rot)
         self.robot_to_turret_2d = Transform2d(pos.toTranslation2d(), rot.toRotation2d())
+        self.turret_rotation_buffer = TimeInterpolatableRotation2dBuffer(2.0)
 
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
@@ -179,15 +180,17 @@ class VisualLocalizer(HasPerLoopCache):
     def turret_rotation(self) -> Rotation2d:
         return self.raw_encoder_rotation() - self.encoder_offset
 
-    @property
-    def robot_to_camera(self) -> Transform3d:
+    def robot_to_camera(self, timestamp: float) -> Transform3d:
         robot_to_turret_rotation = self.robot_to_turret.rotation()
+        turret_rotation = self.turret_rotation_buffer.sample(timestamp)
+        if turret_rotation is None:
+            return self.robot_to_turret
         return Transform3d(
             self.robot_to_turret.translation(),
             Rotation3d(
                 robot_to_turret_rotation.x,
                 robot_to_turret_rotation.y,
-                robot_to_turret_rotation.z + self.turret_rotation.radians(),
+                robot_to_turret_rotation.z + turret_rotation.radians(),
             ),
         )
 
@@ -207,7 +210,9 @@ class VisualLocalizer(HasPerLoopCache):
             )
         )
 
-        camera_to_robot = self.robot_to_camera.inverse()
+        self.turret_rotation_buffer.addSample(
+            wpilib.Timer.getFPGATimestamp(), self.turret_rotation
+        )
 
         all_results = self.camera.getAllUnreadResults()
         for results in all_results:
@@ -220,8 +225,10 @@ class VisualLocalizer(HasPerLoopCache):
 
             if timestamp == self.last_timestamp:
                 return
-            self.last_recieved_timestep = time.monotonic()
+            self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
             self.last_timestamp = timestamp
+
+            camera_to_robot = self.robot_to_camera(timestamp).inverse()
 
             if results.multitagResult:
                 self.has_multitag = True
@@ -257,7 +264,9 @@ class VisualLocalizer(HasPerLoopCache):
                     if target.getPoseAmbiguity() > 0.25:
                         continue
 
-                    poses = estimate_poses_from_apriltag(self.robot_to_camera, target)
+                    poses = estimate_poses_from_apriltag(
+                        self.robot_to_camera(results.getTimestampSeconds()), target
+                    )
                     if poses is None:
                         # tag doesn't exist
                         continue
@@ -286,7 +295,9 @@ class VisualLocalizer(HasPerLoopCache):
 
     @feedback
     def sees_target(self):
-        return time.monotonic() - self.last_recieved_timestep < self.TIMEOUT
+        return (
+            wpilib.Timer.getFPGATimestamp() - self.last_recieved_timestep < self.TIMEOUT
+        )
 
 
 def estimate_poses_from_apriltag(
