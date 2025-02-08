@@ -89,7 +89,7 @@ class AlgaeManipulatorComponent:
         self.algae_size = 0.0
         self.desired_feeler_angle = 90.0
 
-        self.holding_algae: bool = False
+        self.has_seen_algae: bool = False
 
     def spin_flywheels(
         self, top_flywheel_shoot_speed: float, bottom_flywheel_shoot_speed: float
@@ -126,6 +126,7 @@ class AlgaeManipulatorComponent:
 
     def inject(self) -> None:
         self.desired_injector_speed = self.injector_inject_speed
+        self.has_seen_algae = False
 
     def intake(self) -> None:
         self.top_desired_flywheel_speed = self.flywheel_intake_speed
@@ -133,15 +134,18 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = self.injector_intake_speed
 
     @feedback
-    def has_algae_limit_switch(self) -> bool:
+    def has_algae(self) -> bool:
         return not self.algae_limit_switch.get()
 
     @feedback
     def should_be_holding_algae(self) -> bool:
-        return self.holding_algae
+        return self.has_seen_algae
 
     def execute(self) -> None:
         self.injector_1.setVoltage(self.desired_injector_speed)
+
+        if self.has_algae():
+            self.has_seen_algae = True
 
         if self.top_desired_flywheel_speed == 0:
             self.top_flywheel.set_control(NeutralOut())

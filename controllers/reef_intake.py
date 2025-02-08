@@ -52,8 +52,7 @@ class ReefIntake(StateMachine):
                 self.done()
                 return
 
-        if self.algae_manipulator_component.has_algae_limit_switch():
-            self.algae_manipulator_component.holding_algae = True
+        if self.algae_manipulator_component.has_algae():
             self.next_state("safing")
 
         nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]
