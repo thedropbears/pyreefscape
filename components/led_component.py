@@ -63,6 +63,10 @@ class LightStrip:
         )
         self.keep_alive()
 
+    def vision_timeout(self) -> None:
+        self.pattern = LEDPattern.breathe(LEDPattern.solid(Color.kPurple), 2.0)
+        self.keep_alive()
+
     def keep_alive(self) -> None:
         # Refresh the timer to stop the LEDs being turned off
         self.last_update_time = time.monotonic()
