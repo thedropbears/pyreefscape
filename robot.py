@@ -262,7 +262,10 @@ class MyRobot(magicbot.MagicRobot):
 
         self.vision.execute()
 
-        self.status_lights.rainbow()
+        if self.vision.sees_target():
+            self.status_lights.rainbow()
+        else:
+            self.status_lights.vision_timeout()
         self.status_lights.execute()
 
         if self.gamepad.getAButtonPressed():
