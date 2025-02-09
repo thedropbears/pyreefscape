@@ -421,6 +421,9 @@ class ChassisComponent:
         else:
             desired_speeds = self.chassis_speeds
 
+        desired_speeds = ChassisSpeeds.discretize(
+            desired_speeds, self.control_loop_wait_time
+        )
         if self.swerve_lock:
             self.do_smooth = False
 
