@@ -9,7 +9,7 @@ class IntakeComponent:
 
     def __init__(self) -> None:
         self.motor = TalonSRX(TalonId.INTAKE)
-        self.motor.setInverted(False)
+        self.motor.setInverted(True)
 
         self.desired_output = 0.0
 
