@@ -146,7 +146,7 @@ class MyRobot(magicbot.MagicRobot):
         max_speed = self.lower_max_speed
         dpad_max_speed = self.dpad_max_speed
         max_spin_rate = self.lower_max_spin_rate
-        if self.gamepad.getRightBumper():
+        if self.gamepad.getRightBumperButton():
             max_speed = self.max_speed
             max_spin_rate = self.max_spin_rate
 
@@ -182,12 +182,16 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
-            self.coral_placer.place()
+            # self.coral_placer.place()
+            self.floor_intake.intake()
+
+        if self.gamepad.getLeftBumperButton():
+            self.reef_intake.intake()
 
         if self.gamepad.getYButton():
-            self.reef_intake.intake()
+            self.climber.retract()
         if self.gamepad.getAButton():
-            self.floor_intake.intake()
+            self.climber.deploy()
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
@@ -217,15 +221,16 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.drive_local(0, 0, 0)
 
         if self.gamepad.getYButton():
-            self.coral_placer_component.place()
+            self.climber.retract()
         self.coral_placer_component.execute()
         self.status_lights.execute()
 
         if self.gamepad.getBButton():
-            self.climber.retract()
+            self.reef_intake.done()
+            self.floor_intake.done()
 
         if self.gamepad.getXButton():
-            self.climber.deploy()
+            pass
 
         if self.gamepad.getStartButton():
             self.vision.zero_servo_()
@@ -241,16 +246,19 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
-            self.reef_intake.intake()
+            self.climber.deploy()
 
         self.algae_shooter.execute()
+
+        if self.gamepad.getLeftBumperButton():
+            self.reef_intake.intake()
 
         self.reef_intake.execute()
 
         self.algae_manipulator_component.execute()
 
-        if self.gamepad.getLeftTriggerAxis() > 0.3:
-            self.wrist.tilt_to(self.inclination_angle)
+        if self.gamepad.getLeftTriggerAxis() > 0.5:
+            self.floor_intake.intake()
         self.wrist.execute()
 
     def disabledPeriodic(self) -> None:
