@@ -182,7 +182,6 @@ class MyRobot(magicbot.MagicRobot):
             )
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
-            # self.coral_placer.place()
             self.floor_intake.intake()
 
         if self.gamepad.getLeftBumperButton():
