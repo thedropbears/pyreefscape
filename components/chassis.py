@@ -188,7 +188,7 @@ class SwerveModule:
         self.steer.set_control(self.steer_request)
 
         # rescale the speed target based on how close we are to being correctly aligned
-        target_speed = self.state.speed * target_displacement.cos() ** 2
+        target_speed = self.state.speed * target_displacement.cos()
         speed_volt = self.drive_ff.calculate(target_speed)
 
         # original position change/100ms, new m/s -> rot/s
