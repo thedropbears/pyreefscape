@@ -7,7 +7,7 @@ from wpilib import AddressableLED, Color, LEDPattern
 from ids import PwmChannel
 from utilities.game import is_red
 
-RESET_TIMEOUT = 2.0
+RESET_TIMEOUT = 0.5
 LED_SPACING = 1.0 / 144.0  # 144 LEDs per metre
 
 
