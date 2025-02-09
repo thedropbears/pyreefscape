@@ -188,7 +188,7 @@ class SwerveModule:
         self.steer.set_control(self.steer_request)
 
         # rescale the speed target based on how close we are to being correctly aligned
-        target_speed = self.state.speed * target_displacement.cos() ** 2
+        target_speed = self.state.speed * target_displacement.cos()
         speed_volt = self.drive_ff.calculate(target_speed)
 
         # original position change/100ms, new m/s -> rot/s
@@ -244,7 +244,7 @@ class ChassisComponent:
     logger: Logger
 
     send_modules = magicbot.tunable(False)
-    do_fudge = magicbot.tunable(True)
+    fudge_factor = magicbot.tunable(12)
     do_smooth = magicbot.tunable(True)
     swerve_lock = magicbot.tunable(False)
 
@@ -406,21 +406,24 @@ class ChassisComponent:
                 self.get_rotation().radians(), self.get_rotational_velocity()
             )
 
-        if self.do_fudge:
-            # in the sim i found using 5 instead of 0.5 did a lot better
-            desired_speed_translation = Translation2d(
-                self.chassis_speeds.vx, self.chassis_speeds.vy
-            ).rotateBy(
-                Rotation2d(-self.chassis_speeds.omega * 5 * self.control_loop_wait_time)
+        desired_speed_translation = Translation2d(
+            self.chassis_speeds.vx, self.chassis_speeds.vy
+        ).rotateBy(
+            Rotation2d(
+                -self.chassis_speeds.omega
+                * self.fudge_factor
+                * self.control_loop_wait_time
             )
-            desired_speeds = ChassisSpeeds(
-                desired_speed_translation.x,
-                desired_speed_translation.y,
-                self.chassis_speeds.omega,
-            )
-        else:
-            desired_speeds = self.chassis_speeds
+        )
+        desired_speeds = ChassisSpeeds(
+            desired_speed_translation.x,
+            desired_speed_translation.y,
+            self.chassis_speeds.omega,
+        )
 
+        desired_speeds = ChassisSpeeds.discretize(
+            desired_speeds, self.control_loop_wait_time
+        )
         if self.swerve_lock:
             self.do_smooth = False
 

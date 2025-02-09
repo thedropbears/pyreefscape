@@ -27,7 +27,7 @@ def rescale_js(value: float, deadzone: float, exponential: float = 1.5) -> float
         exponential: the strength of the exponential to apply
                      (i.e. how non-linear should the response be)
     """
-    return map_exponential(apply_deadzone(value, deadzone), exponential + 1)
+    return map_exponential(apply_deadzone(value, deadzone), exponential)
 
 
 def scale_value(
