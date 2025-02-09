@@ -228,9 +228,6 @@ class MyRobot(magicbot.MagicRobot):
             self.reef_intake.done()
             self.floor_intake.done()
 
-        if self.gamepad.getXButton():
-            pass
-
         if self.gamepad.getStartButton():
             self.vision.zero_servo_()
         else:
