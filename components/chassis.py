@@ -244,7 +244,7 @@ class ChassisComponent:
     logger: Logger
 
     send_modules = magicbot.tunable(False)
-    fudge_factor = magicbot.tunable(5)
+    fudge_factor = magicbot.tunable(12)
     do_smooth = magicbot.tunable(True)
     swerve_lock = magicbot.tunable(False)
 
