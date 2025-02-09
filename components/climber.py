@@ -34,7 +34,7 @@ class ClimberComponent:
 
     @feedback
     def is_retracted(self) -> bool:
-        return not self.motor.getForwardLimitSwitch().get()
+        return not self.motor.getReverseLimitSwitch().get()
 
     def elevation(self) -> float:
         return 0.0
