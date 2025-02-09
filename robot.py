@@ -113,12 +113,12 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
                 drive_gains=Slot0Configs()
-                .with_k_p(0.15039)
+                .with_k_p(7.8294)
                 .with_k_i(0)
                 .with_k_d(0)
-                .with_k_s(0.21723)
-                .with_k_v(2.8697)
-                .with_k_a(0.048638),
+                .with_k_s(0.11742)
+                .with_k_v(2.3941)
+                .with_k_a(0.11426),
                 steer_ratio=(14 / 50) * (10 / 60),
                 steer_gains=Slot0Configs()
                 .with_k_p(92.079)
