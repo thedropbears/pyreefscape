@@ -16,6 +16,7 @@ class ClimberComponent:
         motor_config = SparkMaxConfig()
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        motor_config.openLoopRampRate(1.5)
 
         self.motor.configure(
             motor_config,
