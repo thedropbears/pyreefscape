@@ -103,7 +103,6 @@ class VisualLocalizer(HasPerLoopCache):
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
         self.best_log = field.getObject(name + "_best_log")
-        self.alt_log = field.getObject(name + "_alt_log")
         self.field_pos_obj = field.getObject(name + "_vision_pose")
         self.pose_log_entry = wpiutil.log.FloatArrayLogEntry(
             data_log, name + "_vision_pose"
@@ -256,7 +255,6 @@ class VisualLocalizer(HasPerLoopCache):
                 if self.should_log:
                     # Multitag results don't have best and alternates
                     self.best_log.setPose(pose)
-                    self.alt_log.setPose(pose)
             else:
                 self.has_multitag = False
                 for target in results.getTargets():
@@ -271,12 +269,7 @@ class VisualLocalizer(HasPerLoopCache):
                         # tag doesn't exist
                         continue
 
-                    best, alt, self.last_pose_z = poses
-                    pose = choose_pose(
-                        best,
-                        alt,
-                        self.chassis.get_pose(),
-                    )
+                    pose, _, __ = poses
 
                     self.field_pos_obj.setPose(pose)
                     self.chassis.estimator.addVisionMeasurement(
@@ -290,8 +283,7 @@ class VisualLocalizer(HasPerLoopCache):
                     )
 
                     if self.should_log:
-                        self.best_log.setPose(best)
-                        self.alt_log.setPose(alt)
+                        self.best_log.setPose(pose)
 
     @feedback
     def sees_target(self):
