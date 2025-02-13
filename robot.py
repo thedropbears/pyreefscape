@@ -76,7 +76,7 @@ class MyRobot(magicbot.MagicRobot):
         self.field = wpilib.Field2d()
         wpilib.SmartDashboard.putData(self.field)
 
-        self.status_lights_strip_length = 28 * 3 * 2
+        self.status_lights_strip_length = 28 * 3 * 3 + 144 + 3
 
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
