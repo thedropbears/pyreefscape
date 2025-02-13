@@ -76,6 +76,10 @@ class MyRobot(magicbot.MagicRobot):
         self.field = wpilib.Field2d()
         wpilib.SmartDashboard.putData(self.field)
 
+        self.mech = wpilib.Mechanism2d(2, 2)
+        wpilib.SmartDashboard.putData("Mech2d", self.mech)
+        self.wrist_mech_root = self.mech.getRoot("Wrist", 1, 1)
+
         self.status_lights_strip_length = 28 * 3 * 3 + 144 + 3
 
         self.vision_name = "ardu_cam"
