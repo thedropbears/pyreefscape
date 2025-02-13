@@ -80,15 +80,23 @@ def fuzz_xbox_gamepad(gamepad: wpilib.simulation.XboxControllerSim) -> None:
 
 
 def get_alliance_stations() -> list[str]:
+    choices_env_var = "FUZZ_ALLIANCE_STATIONS"
+    choices_env = os.environ.get(choices_env_var, None)
+    if choices_env is not None:  # pragma: no cover
+        return choices_env.split(",")
+
     stations = (1, 2, 3)
     if "CI" in os.environ:  # pragma: no branch
-        return [
+        choices = [
             f"{alliance}{station}"
             for alliance in ("Blue", "Red")
             for station in stations
         ]
     else:  # pragma: no cover
-        return [f"Blue{random.choice(stations)}", f"Red{random.choice(stations)}"]
+        choices = [f"Blue{random.choice(stations)}", f"Red{random.choice(stations)}"]
+
+    os.environ[choices_env_var] = ",".join(choices)
+    return choices
 
 
 @pytest.mark.parametrize("station", get_alliance_stations())
