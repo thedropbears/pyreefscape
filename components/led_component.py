@@ -19,6 +19,7 @@ class LightStrip:
     def __init__(self, strip_length: int = 5) -> None:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
         self.leds.setLength(strip_length)
+        self.halfway_point = 0.433
 
         self.strip_data = [AddressableLED.LEDData() for _ in range(strip_length)]
 
@@ -86,7 +87,7 @@ class LightStrip:
                     LEDPattern.steps(
                         [
                             (0.0, Color.kBlack),
-                            (0.5, Color.kOrange),
+                            (self.halfway_point, Color.kOrange),
                         ]
                     ),
                     flash_delay,
@@ -96,7 +97,7 @@ class LightStrip:
                     LEDPattern.steps(
                         [
                             (0.0, Color.kOrange),
-                            (0.5, Color.kBlack),
+                            (self.halfway_point, Color.kBlack),
                         ]
                     ),
                     flash_delay,
