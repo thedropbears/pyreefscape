@@ -1,3 +1,5 @@
+import math
+
 import choreo
 from choreo.trajectory import SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
@@ -11,7 +13,7 @@ from controllers.coral_placer import CoralPlacer
 from utilities import game
 
 
-class CoralAutoBase(AutonomousStateMachine):
+class AutoBase(AutonomousStateMachine):
     coral_placer: CoralPlacer
 
     chassis: ChassisComponent
@@ -23,7 +25,8 @@ class CoralAutoBase(AutonomousStateMachine):
         super().__init__()
         self.x_controller = PIDController(1.0, 0.0, 0.0)
         self.y_controller = PIDController(1.0, 0.0, 0.0)
-
+        self.heading_controller = PIDController(1.0, 0, 0)
+        self.heading_controller.enableContinuousInput(-math.pi, math.pi)
         try:
             self.trajectory = choreo.load_swerve_trajectory(trajectory_name)
         except ValueError:
@@ -84,7 +87,7 @@ class CoralAutoBase(AutonomousStateMachine):
             sample.vx + self.x_controller.calculate(pose.X(), sample.x),
             sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
             sample.omega
-            + self.chassis.heading_controller.calculate(
+            + self.heading_controller.calculate(
                 pose.rotation().radians(), sample.heading
             ),
         )

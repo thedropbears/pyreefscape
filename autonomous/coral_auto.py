@@ -1,7 +1,7 @@
-from autonomous.coral_auto_base import CoralAutoBase
+from autonomous.auto_base import AutoBase
 
 
-class CoralAuto(CoralAutoBase):
+class CoralAuto(AutoBase):
     MODE_NAME = "Coral Shooter"
 
     def __init__(self):
