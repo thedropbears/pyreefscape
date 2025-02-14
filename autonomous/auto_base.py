@@ -87,7 +87,7 @@ class AutoBase(AutonomousStateMachine):
         current_pose = self.chassis.get_pose()
         final_pose = self.trajectories[self.current_leg].get_final_pose(game.is_red())
         if final_pose is None:
-            self.next_state("scoring_coral")
+            self.done()
             return
 
         distance = current_pose.translation().distance(final_pose.translation())
@@ -100,7 +100,6 @@ class AutoBase(AutonomousStateMachine):
                 self.next_state("shooting_algae")
             else:
                 self.next_state("intaking_algae")
-            self.current_leg += 1
             return
 
         sample = self.trajectories[self.current_leg].sample_at(state_tm, game.is_red())
