@@ -65,19 +65,18 @@ class IntakeComponent:
         self.last_setpoint_update_time = time.monotonic()
 
     def intake(self):
-        if self.desired_angle != IntakeComponent.DEPLOYED_ANGLE:
-            self.desired_output = self.intake_output
+        if not math.isclose(
+            self.desired_angle, IntakeComponent.DEPLOYED_ANGLE, abs_tol=0.1
+        ):
             self.desired_angle = IntakeComponent.DEPLOYED_ANGLE
             self.last_setpoint_update_time = time.monotonic()
-        else:
-            pass
+
+        self.desired_output = self.intake_output
 
     def retract(self):
-        if self.desired_angle != IntakeComponent.RETRACTED_ANGLE:
+        if not math.isclose(self.desired_angle, self.RETRACTED_ANGLE, abs_tol=0.1):
             self.desired_angle = IntakeComponent.RETRACTED_ANGLE
             self.last_setpoint_update_time = time.monotonic()
-        else:
-            pass
 
     @feedback
     def raw_encoder(self) -> float:
