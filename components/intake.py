@@ -102,8 +102,8 @@ class IntakeComponent:
         )
         ff = self.arm_ff.calculate(desired_state.position, desired_state.velocity)
 
-        if not self.motion_profile.isFinished(
-            time.monotonic() - self.last_setpoint_update_time
+        if not math.isclose(
+            self.desired_angle, self.position(), abs_tol=math.radians(5)
         ):
             self.arm_motor.setVoltage(
                 self.pid.calculate(self.position(), desired_state.position) + ff
