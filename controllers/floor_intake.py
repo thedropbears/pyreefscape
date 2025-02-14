@@ -45,3 +45,4 @@ class FloorIntake(StateMachine):
     def done(self) -> None:
         super().done()
         self.wrist.go_to_neutral()
+        self.intake_component.retract()
