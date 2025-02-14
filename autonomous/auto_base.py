@@ -96,7 +96,7 @@ class AutoBase(AutonomousStateMachine):
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:
                 self.next_state("scoring_coral")
-            elif self.algae_manipulator_component.has_algae:
+            elif self.algae_manipulator_component.has_algae():
                 self.next_state("shooting_algae")
             else:
                 self.next_state("intaking_algae")
@@ -104,10 +104,8 @@ class AutoBase(AutonomousStateMachine):
             return
 
         sample = self.trajectories[self.current_leg].sample_at(state_tm, game.is_red())
-
-        self.follow_trajectory(sample)
-
-        # next state on leg completion
+        if sample is not None:
+            self.follow_trajectory(sample)
 
     def follow_trajectory(self, sample: SwerveSample):
         # track path
