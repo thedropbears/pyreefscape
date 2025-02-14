@@ -3,6 +3,7 @@ import time
 import wpilib
 from magicbot import feedback
 from wpilib import AddressableLED, Color, LEDPattern
+from wpimath.geometry import Translation2d
 
 from ids import PwmChannel
 from utilities.game import is_red
@@ -66,6 +67,46 @@ class LightStrip:
 
     def vision_timeout(self) -> None:
         self.pattern = LEDPattern.breathe(LEDPattern.solid(Color.kPurple), 2.0)
+        self.keep_alive()
+
+    def no_auto(self) -> None:
+        self.pattern = LEDPattern.blink(LEDPattern.solid(Color.kRed), 0.25)
+        self.keep_alive()
+
+    def invalid_start(self, translation: Translation2d, tol: float) -> None:
+        # Tolerance is total, so scale to the worse case component - ie 45 deg triangle
+        tol = tol / (2.0**0.5)
+        self.pattern = LEDPattern.blink(
+            LEDPattern.steps(
+                [
+                    (
+                        0.0,
+                        Color.kRed
+                        if translation.x < -tol or translation.y < -tol
+                        else Color.kBlack,
+                    ),
+                    (
+                        0.25,
+                        Color.kRed
+                        if translation.x < -tol or translation.y > tol
+                        else Color.kBlack,
+                    ),
+                    (
+                        0.5,
+                        Color.kRed
+                        if translation.x > tol or translation.y < -tol
+                        else Color.kBlack,
+                    ),
+                    (
+                        0.75,
+                        Color.kRed
+                        if translation.x > tol or translation.y > tol
+                        else Color.kBlack,
+                    ),
+                ]
+            ),
+            0.5,
+        )
         self.keep_alive()
 
     def keep_alive(self) -> None:
