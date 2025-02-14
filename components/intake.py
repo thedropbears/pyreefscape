@@ -34,6 +34,7 @@ class IntakeComponent:
         self.encoder = DutyCycleEncoder(DioChannel.INTAKE_ENCODER, math.tau, 0)
         self.encoder.setAssumedFrequency(975.6)
         self.encoder.setDutyCycleRange(1 / 1025, 1024 / 1025)
+        self.encoder.setInverted(True)
 
         spark_config = SparkMaxConfig()
         spark_config.inverted(False)
