@@ -64,13 +64,19 @@ class IntakeComponent:
         self.last_setpoint_update_time = time.monotonic()
 
     def intake(self):
-        self.desired_output = self.intake_output
-        self.desired_angle = IntakeComponent.DEPLOYED_ANGLE
-        self.last_setpoint_update_time = time.monotonic()
+        if self.desired_angle != IntakeComponent.DEPLOYED_ANGLE:
+            self.desired_output = self.intake_output
+            self.desired_angle = IntakeComponent.DEPLOYED_ANGLE
+            self.last_setpoint_update_time = time.monotonic()
+        else:
+            pass
 
     def retract(self):
-        self.desired_angle = IntakeComponent.RETRACTED_ANGLE
-        self.last_setpoint_update_time = time.monotonic()
+        if self.desired_angle != IntakeComponent.RETRACTED_ANGLE:
+            self.desired_angle = IntakeComponent.RETRACTED_ANGLE
+            self.last_setpoint_update_time = time.monotonic()
+        else:
+            pass
 
     @feedback
     def raw_encoder(self) -> float:
@@ -96,7 +102,9 @@ class IntakeComponent:
         )
         ff = self.arm_ff.calculate(desired_state.position, desired_state.velocity)
 
-        if self.motion_profile.isFinished:
+        if not self.motion_profile.isFinished(
+            time.monotonic() - self.last_setpoint_update_time
+        ):
             self.arm_motor.setVoltage(
                 self.pid.calculate(self.position(), desired_state.position) + ff
             )
