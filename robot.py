@@ -17,7 +17,7 @@ from components.coral_placer import CoralPlacerComponent
 from components.feeler import FeelerComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
-from components.vision import VisualLocalizer
+from components.vision import ServoOffsets, VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_shooter import AlgaeShooter
 from controllers.climber import ClimberStateMachine
@@ -92,7 +92,10 @@ class MyRobot(magicbot.MagicRobot):
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
         self.vision_servo_id = PwmChannel.VISION_SERVO
-
+        self.vision_servo_offsets = ServoOffsets(
+            neutral=Rotation2d(0.5757), full_range=Rotation2d(1.9234)
+        )
+        self.vision_rotation_range = [Rotation2d(1.525), Rotation2d(4.33)]
         if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
@@ -265,8 +268,10 @@ class MyRobot(magicbot.MagicRobot):
         self.climber.execute()
         self.coral_placer_component.execute()
         self.algae_manipulator_component.execute()
-        if self.gamepad.getStartButton():
+        if self.gamepad.getLeftStickButton():
             self.vision.zero_servo_()
+        elif self.gamepad.getRightStickButton():
+            self.vision.full_range_servo_()
         else:
             self.vision.execute()
         self.wrist.execute()
