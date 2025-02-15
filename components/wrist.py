@@ -1,6 +1,7 @@
 import math
 import time
 
+import wpilib
 from magicbot import feedback
 from rev import (
     SparkMax,
@@ -27,9 +28,12 @@ class WristComponent:
     ) * 350.628  # not remeasured and just adjusted by the change in gear reduction
     TOLERANCE = math.radians(3.0)
 
-    def __init__(self):
-        self.wrist_encoder_raw = AnalogInput(AnalogChannel.WRIST_ENCODER)
+    def __init__(self, mech_root: wpilib.MechanismRoot2d):
+        self.wrist_ligament = mech_root.appendLigament(
+            "wrist", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kYellow)
+        )
 
+        self.wrist_encoder_raw = AnalogInput(AnalogChannel.WRIST_ENCODER)
         self.wrist_encoder = AnalogEncoder(self.wrist_encoder_raw, math.tau, 0)
         self.wrist_encoder.setInverted(False)
         self.wrist_encoder.setVoltagePercentageRange(0.2 / 5, 4.8 / 5)
@@ -135,3 +139,6 @@ class WristComponent:
         self.motor.setVoltage(
             self.pid.calculate(self.inclination(), desired_state.position) + ff
         )
+
+        self.wrist_ligament.setAngle(self.inclination_deg())
+        # self.wrist_ligament.setAngle(math.degrees(desired_state.position))
