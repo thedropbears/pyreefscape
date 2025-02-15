@@ -14,7 +14,7 @@ class ClimberStateMachine(StateMachine):
 
     @state(first=True)
     def retracting(self) -> None:
-        if self.climber.is_deployed():
+        if self.climber.is_retracted():
             self.done()
             return
         self.climber.retract()

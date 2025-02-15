@@ -19,6 +19,7 @@ from components.led_component import LightStrip
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_shooter import AlgaeShooter
+from controllers.climber import ClimberStateMachine
 from controllers.coral_placer import CoralPlacer
 from controllers.feeler import Feeler
 from controllers.floor_intake import FloorIntake
@@ -35,6 +36,7 @@ class MyRobot(magicbot.MagicRobot):
     algae_shooter: AlgaeShooter
     floor_intake: FloorIntake
     feeler: Feeler
+    climber_state_machine: ClimberStateMachine
 
     # Components
     chassis: ChassisComponent
@@ -228,7 +230,7 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.drive_local(0, 0, 0)
 
         if self.gamepad.getYButton():
-            self.climber.retract()
+            self.climber_state_machine.climb()
         self.coral_placer_component.execute()
         self.status_lights.execute()
 
@@ -243,14 +245,14 @@ class MyRobot(magicbot.MagicRobot):
 
         self.chassis.execute()
 
-        self.climber.execute()
-
         self.chassis.update_odometry()
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
             self.climber.deploy()
+
+        self.climber.execute()
 
         self.algae_shooter.execute()
 
