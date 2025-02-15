@@ -235,7 +235,12 @@ class MyRobot(magicbot.MagicRobot):
 
     def testPeriodic(self) -> None:
         if self.gamepad.getYButton():
+            self.climber_state_machine.done()
             self.climber_state_machine.climb()
+
+        if self.gamepad.getAButton():
+            self.climber_state_machine.done()
+            self.climber_state_machine.deploy()
 
         if self.gamepad.getBButton():
             self.reef_intake.done()
