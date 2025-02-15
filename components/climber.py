@@ -1,5 +1,5 @@
-from magicbot import tunable
-from rev import SparkMax, SparkMaxConfig
+from magicbot import feedback, tunable
+from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
 
 from ids import SparkId
 
@@ -10,12 +10,19 @@ class ClimberComponent:
 
     def __init__(self) -> None:
         self.motor = SparkMax(SparkId.CLIMBER, SparkMax.MotorType.kBrushless)
-        self.deployed = False  # TODO have some way to detect if this happened
-        self.retracted = False  # TODO have some way to detect if this happened
 
         motor_config = SparkMaxConfig()
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        motor_config.openLoopRampRate(1.5)
+        motor_config.limitSwitch.forwardLimitSwitchType(
+            LimitSwitchConfig.Type.kNormallyOpen
+        )
+        motor_config.limitSwitch.reverseLimitSwitchType(
+            LimitSwitchConfig.Type.kNormallyOpen
+        )
+        motor_config.limitSwitch.forwardLimitSwitchEnabled(True)
+        motor_config.limitSwitch.reverseLimitSwitchEnabled(True)
 
         self.motor.configure(
             motor_config,
@@ -29,25 +36,18 @@ class ClimberComponent:
     def retract(self) -> None:
         self.target_speed = -self.winch_voltage
 
+    @feedback
     def is_deployed(self) -> bool:
-        return self.deployed
+        return self.motor.getForwardLimitSwitch().get()
 
+    @feedback
     def is_retracted(self) -> bool:
-        return self.retracted
+        return self.motor.getReverseLimitSwitch().get()
 
     def elevation(self) -> float:
         return 0.0
         # current place holder
 
     def execute(self) -> None:
-        if (
-            self.is_deployed()
-            and self.target_speed > 0
-            or self.is_retracted()
-            and self.target_speed < 0
-        ):
-            self.target_speed = 0.0
-            # stop motor if we're already there
-
         self.motor.setVoltage(self.target_speed)
         self.target_speed = 0.0
