@@ -20,6 +20,9 @@ class ClimberStateMachine(StateMachine):
     def retract(self) -> None:
         self.engage("retracting", force=True)
 
+    def deploy(self) -> None:
+        self.engage("deploying")
+
     @state(first=True, must_finish=True)
     def deploying(self, initial_call) -> None:
         if initial_call:
@@ -46,6 +49,13 @@ class ClimberStateMachine(StateMachine):
     @state(must_finish=True)
     def retracting(self) -> None:
         self.climber.go_to_retract()
+
+    @state(must_finish=True)
+    def deploying(self) -> None:
+        if self.climber.is_deployed():
+            self.done()
+            return
+        self.climber.deploy()
 
     def done(self) -> None:
         super().done()
