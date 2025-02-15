@@ -219,15 +219,15 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.set_coast_in_neutral(True)
 
     def testPeriodic(self) -> None:
-        dpad = self.gamepad.getPOV()
-        if dpad != -1:
-            if is_red():
-                self.chassis.snap_to_heading(-math.radians(dpad) + math.pi)
-            else:
-                self.chassis.snap_to_heading(-math.radians(dpad))
-        else:
-            self.chassis.stop_snapping()
-            self.chassis.drive_local(0, 0, 0)
+        # dpad = self.gamepad.getPOV()
+        # if dpad != -1:
+        #     if is_red():
+        #         self.chassis.snap_to_heading(-math.radians(dpad) + math.pi)
+        #     else:
+        #         self.chassis.snap_to_heading(-math.radians(dpad))
+        # else:
+        #     self.chassis.stop_snapping()
+        #     self.chassis.drive_local(0, 0, 0)
 
         if self.gamepad.getYButton():
             self.climber_state_machine.climb()
