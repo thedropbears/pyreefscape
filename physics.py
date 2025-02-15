@@ -15,12 +15,14 @@ from wpilib.simulation import (
     DIOSim,
     DutyCycleEncoderSim,
     PWMSim,
+    SingleJointedArmSim,
 )
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
+from components.wrist import WristComponent
 from utilities import game
 from utilities.functions import constrain_angle
 
@@ -120,8 +122,19 @@ class PhysicsEngine:
             )
         ]
 
-        self.wrist_motor = rev.SparkMaxSim(
-            sparkMax=robot.wrist.motor, motor=DCMotor.NEO(1)
+        wrist_gearbox = DCMotor.NEO(1)
+        self.wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
+        self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
+
+        self.wrist_sim = SingleJointedArmSim(
+            wrist_gearbox,
+            WristComponent.wrist_gear_ratio,
+            moi=0.295209215,
+            armLength=0.5,
+            minAngle=WristComponent.MAXIMUM_DEPRESSION,
+            maxAngle=WristComponent.MAXIMUM_ELEVATION,
+            simulateGravity=True,
+            startingAngle=WristComponent.MAXIMUM_DEPRESSION,
         )
 
         self.imu = robot.chassis.imu.sim_state
@@ -151,7 +164,6 @@ class PhysicsEngine:
         self.reef_intake = robot.reef_intake
         self.algae_shooter = robot.algae_shooter
         self.wrist_component = robot.wrist
-        self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -199,13 +211,13 @@ class PhysicsEngine:
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
 
-        # Trivially simple wrist simulation
+        # Update wrist simulation
+        self.wrist_sim.setInputVoltage(self.wrist_motor.getAppliedOutput() * 12.0)
+        self.wrist_sim.update(tm_diff)
         self.wrist_encoder_sim.set(
-            self.wrist_component.desired_angle
-            + self.wrist_component.ENCODER_ZERO_OFFSET
+            self.wrist_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
         )
-        self.wrist_motor.setPosition(self.wrist_component.desired_angle)
-        self.wrist_motor.iterate(0.0, 12.0, tm_diff)
+        self.wrist_motor.iterate(self.wrist_sim.getVelocity(), vbus=12.0, dt=tm_diff)
 
         # Simulate algae pick up
         if self.floor_intake.current_state == "intaking":
