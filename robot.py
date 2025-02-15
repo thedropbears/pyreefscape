@@ -240,6 +240,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
+            self.climber_state_machine.done()
 
         self.chassis.update_odometry()
 
