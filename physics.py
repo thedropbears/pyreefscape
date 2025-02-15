@@ -233,9 +233,12 @@ class PhysicsEngine:
             constrain_angle(
                 (
                     (2.0 * self.visual_localiser.servo.getPosition() - 1.0)
-                    * self.visual_localiser.SERVO_HALF_ANGLE
+                    * (
+                        self.visual_localiser.servo_offsets.full_range
+                        - self.visual_localiser.servo_offsets.neutral
+                    ).radians()
                 )
-                + self.visual_localiser.servo_offset.radians()
+                + self.visual_localiser.servo_offsets.neutral.radians()
             )
         )
 
