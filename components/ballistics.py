@@ -31,14 +31,14 @@ class BallisticsComponent:
     algae_manipulator_component: AlgaeManipulatorComponent
 
     x_max_offset_range = 4.0  # in meters
-    x_min_offset_range = 1.0
+    x_min_offset_range = 2.0
 
     barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
 
-    FLYWHEEL_DISTANCE_LOOKUP = (x_min_offset_range, x_max_offset_range)
-    FLYWHEEL_SPEED_LOOKUP = (60, 80)
-    FLYWHEEL_ANGLE_LOOKUP = (math.radians(-10), math.radians(-40))
+    FLYWHEEL_DISTANCE_LOOKUP = (x_min_offset_range, 3, x_max_offset_range)
+    FLYWHEEL_SPEED_LOOKUP = (37, 45, 90)
+    FLYWHEEL_ANGLE_LOOKUP = (math.radians(-15), math.radians(-20), math.radians(-29.5))
 
     robot_to_shooter = Rotation2d.fromDegrees(180)
 
