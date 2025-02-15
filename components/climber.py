@@ -32,6 +32,10 @@ class ClimberComponent:
     def is_deployed(self) -> bool:
         return self.motor.getForwardLimitSwitch().get()
 
+    @feedback
+    def is_retracted(self) -> bool:
+        return not self.motor.getForwardLimitSwitch().get()
+
     def elevation(self) -> float:
         return 0.0
         # current place holder
