@@ -252,6 +252,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getAButton():
             self.climber.deploy()
 
+        self.climber_state_machine.execute()
         self.climber.execute()
 
         self.algae_shooter.execute()
