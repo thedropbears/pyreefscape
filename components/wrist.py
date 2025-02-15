@@ -16,7 +16,7 @@ from utilities.functions import clamp
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = 4.427696
+    ENCODER_ZERO_OFFSET = 2.982438
     MAXIMUM_DEPRESSION = math.radians(-113.0)
     MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
@@ -91,8 +91,8 @@ class WristComponent:
         )
 
     @feedback
-    def encoder_raw_volts(self) -> float:
-        return self.wrist_encoder_raw.getVoltage()
+    def raw_encoder(self) -> float:
+        return self.wrist_encoder.get()
 
     @feedback
     def inclination(self) -> float:
