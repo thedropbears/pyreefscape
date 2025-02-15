@@ -147,6 +147,8 @@ class MyRobot(magicbot.MagicRobot):
             self.vision_servo_offset = Rotation2d(0.563)
             self.vision_encoder_offset = Rotation2d(0.975)
 
+        self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
+
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
         self.chassis.set_coast_in_neutral(False)
@@ -286,7 +288,7 @@ class MyRobot(magicbot.MagicRobot):
             self.status_lights.vision_timeout()
         self.status_lights.execute()
 
-        if self.gamepad.getAButtonPressed():
+        if not self.coast_button:
             self.chassis.toggle_coast_in_neutral()
 
     def robotPeriodic(self) -> None:
