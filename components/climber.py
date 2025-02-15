@@ -1,5 +1,5 @@
 from magicbot import feedback, tunable
-from rev import SparkMax, SparkMaxConfig
+from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
 
 from ids import SparkId
 
@@ -15,6 +15,14 @@ class ClimberComponent:
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
         motor_config.openLoopRampRate(1.5)
+        motor_config.limitSwitch.forwardLimitSwitchType(
+            LimitSwitchConfig.Type.kNormallyOpen
+        )
+        motor_config.limitSwitch.reverseLimitSwitchType(
+            LimitSwitchConfig.Type.kNormallyOpen
+        )
+        motor_config.limitSwitch.forwardLimitSwitchEnabled(True)
+        motor_config.limitSwitch.reverseLimitSwitchEnabled(True)
 
         self.motor.configure(
             motor_config,
