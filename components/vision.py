@@ -37,6 +37,12 @@ class VisibleTag:
     range: float
 
 
+@dataclass
+class ServoOffsets:
+    neutral: Rotation2d
+    full_range: Rotation2d
+
+
 class VisualLocalizer(HasPerLoopCache):
     """
     This localizes the robot from AprilTags on the field,
@@ -48,10 +54,6 @@ class VisualLocalizer(HasPerLoopCache):
 
     # Time since the last target sighting we allow before informing drivers
     TIMEOUT = 1.0  # s
-
-    # Calibration constants for servo and encoder
-    # range between +/-135 deg
-    SERVO_HALF_ANGLE = math.radians(135)
 
     CAMERA_FOV = math.radians(
         65
@@ -79,9 +81,11 @@ class VisualLocalizer(HasPerLoopCache):
         # The camera rotation at its neutral position (ie centred).
         rot: Rotation3d,
         servo_id: int,
-        servo_offset: Rotation2d,
+        servo_offsets: ServoOffsets,
         encoder_id: int,
         encoder_offset: Rotation2d,
+        # Encoder rotations at min and max of desired rotation range
+        rotation_range: tuple[Rotation2d, Rotation2d],
         field: wpilib.Field2d,
         data_log: wpiutil.log.DataLog,
         chassis: ChassisComponent,
@@ -95,8 +99,13 @@ class VisualLocalizer(HasPerLoopCache):
         # This has nothing to do with the servo - do it by hand!!
         self.encoder_offset = encoder_offset
 
-        # To find the servo offset, command the servo to neutral in test mode and record the encoder value
-        self.servo_offset = servo_offset
+        # To find the servo offsets, command the servo to neutral in test mode and record the encoder value
+        # Repeat for full range
+        self.servo_offsets = servo_offsets
+
+        relative_rotations = {(r - encoder_offset).radians() for r in rotation_range}
+        self.min_rotation = min(relative_rotations)
+        self.max_rotation = max(relative_rotations)
 
         self.servo = wpilib.Servo(servo_id)
         self.pos = pos
@@ -161,7 +170,8 @@ class VisualLocalizer(HasPerLoopCache):
             distance = turret_to_tag.norm()
             relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
             if (
-                abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
+                relative_bearing.radians() >= self.min_rotation
+                and relative_bearing.radians() <= self.max_rotation
                 and abs(relative_facing.degrees()) > 100
                 and distance < self.CAMERA_MAX_RANGE
             ):
@@ -177,7 +187,7 @@ class VisualLocalizer(HasPerLoopCache):
         return self.relative_bearing_to_best_cluster()
 
     def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
-        return turret - (self.servo_offset - self.encoder_offset)
+        return turret - (self.servo_offsets.neutral - self.encoder_offset)
 
     @property
     def turret_rotation(self) -> Rotation2d:
@@ -202,13 +212,18 @@ class VisualLocalizer(HasPerLoopCache):
         # This is used to put the servo in a neutral position to record the encoder value at that point
         self.servo.set(0.5)
 
+    def full_range_servo_(self) -> None:
+        # ONLY CALL THIS IN TEST MODE!
+        # This is used to put the servo to the full range position to record the encoder value at that point
+        self.servo.set(1.0)
+
     def execute(self) -> None:
         self.servo.set(
             scale_value(
                 self.turret_to_servo(self.desired_turret_rotation()).radians(),
-                -self.SERVO_HALF_ANGLE,
-                self.SERVO_HALF_ANGLE,
-                0.0,
+                (self.servo_offsets.neutral - self.encoder_offset).radians(),
+                (self.servo_offsets.full_range - self.encoder_offset).radians(),
+                0.5,
                 1.0,
             )
         )
