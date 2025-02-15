@@ -12,7 +12,7 @@ class ClimberStateMachine(StateMachine):
     def climb(self) -> None:
         self.engage()
 
-    @state(first=True)
+    @state(first=True, must_finish=True)
     def retracting(self) -> None:
         if self.climber.is_retracted():
             self.done()
