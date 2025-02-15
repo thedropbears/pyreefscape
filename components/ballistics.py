@@ -21,7 +21,8 @@ from utilities.game import FIELD_LENGTH, FIELD_WIDTH, is_red
 class BallisticsSolution:
     WPIStruct: ClassVar
 
-    speed: float
+    top_speed: float
+    bottom_speed: float
     inclination: float
 
 
@@ -30,16 +31,27 @@ class BallisticsComponent:
     status_lights: LightStrip
     algae_manipulator_component: AlgaeManipulatorComponent
 
-    x_max_offset_range = 4.0  # in meters
-    x_min_offset_range = 1.0
-
     barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
 
-    FLYWHEEL_DISTANCE_LOOKUP = (x_min_offset_range, x_max_offset_range)
-    FLYWHEEL_SPEED_LOOKUP = (60, 80)
-    FLYWHEEL_ANGLE_LOOKUP = (math.radians(-10), math.radians(-40))
-
+    FLYWHEEL_DISTANCE_LOOKUP = (2.0, 3.0)
+    # Keys of the lookup dictionaries are ball diameters in inches
+    # Tuples are values corresponding to the distances above
+    # fmt: off
+    FLYWHEEL_TOP_SPEED_LOOKUP = {
+        16.0: (45, 95),
+        # 16.5: (60, 80),
+        17.0: (37, 45),
+    }
+    # Currently we use the same speed top and bottom, but this could be seperate
+    FLYWHEEL_BOTTOM_SPEED_LOOKUP = FLYWHEEL_TOP_SPEED_LOOKUP
+    FLYWHEEL_ANGLE_LOOKUP = {
+        16.0: (math.radians(-15), math.radians(-20)),
+        # 16.5: (math.radians(-15), math.radians(-20)),
+        17.0: (math.radians(-15), math.radians(-20)),
+    }
+    # fmt: on
+    BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())
     robot_to_shooter = Rotation2d.fromDegrees(180)
 
     def __init__(self) -> None:
@@ -48,7 +60,9 @@ class BallisticsComponent:
     @feedback
     def is_in_range(self) -> bool:
         range = self.range()
-        return self.x_min_offset_range < range < self.x_max_offset_range
+        return (
+            self.FLYWHEEL_DISTANCE_LOOKUP[0] < range < self.FLYWHEEL_DISTANCE_LOOKUP[-1]
+        )
 
     @feedback
     def range(self) -> float:
@@ -113,19 +127,41 @@ class BallisticsComponent:
 
     @feedback
     def current_solution(self) -> BallisticsSolution:
+        d = self.corrected_range()
+        # Get the interpolated values for this range and all ball sizes
+        top_speeds = [
+            float(numpy.interp(d, self.FLYWHEEL_DISTANCE_LOOKUP, speeds))
+            for speeds in self.FLYWHEEL_TOP_SPEED_LOOKUP.values()
+        ]
+
+        bottom_speeds = [
+            float(numpy.interp(d, self.FLYWHEEL_DISTANCE_LOOKUP, speeds))
+            for speeds in self.FLYWHEEL_BOTTOM_SPEED_LOOKUP.values()
+        ]
+        inclinations = [
+            float(numpy.interp(d, self.FLYWHEEL_DISTANCE_LOOKUP, angles))
+            for angles in self.FLYWHEEL_ANGLE_LOOKUP.values()
+        ]
         return BallisticsSolution(
             float(
                 numpy.interp(
-                    self.corrected_range(),
-                    self.FLYWHEEL_DISTANCE_LOOKUP,
-                    self.FLYWHEEL_SPEED_LOOKUP,
+                    self.algae_manipulator_component.algae_size,
+                    self.BALL_SIZES,
+                    top_speeds,
                 )
             ),
             float(
                 numpy.interp(
-                    self.corrected_range(),
-                    self.FLYWHEEL_DISTANCE_LOOKUP,
-                    self.FLYWHEEL_ANGLE_LOOKUP,
+                    self.algae_manipulator_component.algae_size,
+                    self.BALL_SIZES,
+                    bottom_speeds,
+                )
+            ),
+            float(
+                numpy.interp(
+                    self.algae_manipulator_component.algae_size,
+                    self.BALL_SIZES,
+                    inclinations,
                 )
             ),
         )

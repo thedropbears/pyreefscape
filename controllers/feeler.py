@@ -36,7 +36,7 @@ class Feeler(StateMachine):
 
     @state(must_finish=True)
     def found(self):
-        self.feeler_component.algae_size = self.feeler_component.current_angle
+        self.feeler_component.record_size()
         self.done()
 
     def done(self) -> None:
