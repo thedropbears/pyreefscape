@@ -90,8 +90,10 @@ class IntakeComponent:
     def velocity(self) -> float:
         return self.motor_encoder.getVelocity()
 
-    def reset_windup(self) -> None:
+    def on_enable(self) -> None:
         self.last_setpoint_update_time = time.monotonic()
+        self.desired_angle = self.position()
+        self.desired_output = 0.0
 
     def execute(self) -> None:
         self.intake_motor.set(ControlMode.PercentOutput, self.desired_output)

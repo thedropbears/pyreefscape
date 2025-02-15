@@ -266,9 +266,6 @@ class MyRobot(magicbot.MagicRobot):
         self.wrist.reset_windup()
         self.wrist.execute()
 
-        self.intake_component.reset_windup()
-        self.intake_component.execute()
-
         self.vision.execute()
 
         if self.vision.sees_target():
