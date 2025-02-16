@@ -54,22 +54,22 @@ class AlgaeManipulatorComponent:
 
         flywheel_top_pid = (
             Slot0Configs()
-            .with_k_p(0.47671)
+            .with_k_p(0.1586)
             .with_k_i(0.0)
             .with_k_d(0.0)
-            .with_k_s(0.03704)
-            .with_k_v(0.11323)
-            .with_k_a(0.0062302)
+            .with_k_s(0.058604)
+            .with_k_v(0.11164)
+            .with_k_a(0.010271)
         )
 
         flywheel_bottom_pid = (
             Slot0Configs()
-            .with_k_p(2.9997e-11)
+            .with_k_p(0.10694)
             .with_k_i(0.0)
             .with_k_d(0.0)
-            .with_k_s(0.046175)
-            .with_k_v(0.11189)
-            .with_k_a(0.0075943)
+            .with_k_s(0.015251)
+            .with_k_v(0.11226)
+            .with_k_a(0.0207)
         )
 
         flywheel_gear_ratio = FeedbackConfigs().with_sensor_to_mechanism_ratio(
