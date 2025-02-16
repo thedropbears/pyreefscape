@@ -143,10 +143,10 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
-            self.vision_pos = Translation3d(0.055, 0.355, 0.670)
-            self.vision_rot = Rotation3d(0, 0, math.pi)
-            self.vision_servo_offset = Rotation2d(0.563)
-            self.vision_encoder_offset = Rotation2d(0.975)
+            self.vision_pos = Translation3d(-0.050, 0.305, 0.675)
+            self.vision_rot = Rotation3d(0, 0, math.radians(-90.0))
+            self.vision_servo_offset = Rotation2d(0.839)
+            self.vision_encoder_offset = Rotation2d(0.136)
 
         self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
         self.coast_button_debouncer = Debouncer(0.3, Debouncer.DebounceType.kBoth)
