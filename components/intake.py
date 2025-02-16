@@ -1,6 +1,7 @@
 import math
 import time
 
+import wpilib
 from magicbot import feedback, tunable
 from phoenix5 import ControlMode, TalonSRX
 from rev import (
@@ -25,7 +26,11 @@ class IntakeComponent:
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
 
-    def __init__(self) -> None:
+    def __init__(self, intake_mech_root: wpilib.MechanismRoot2d) -> None:
+        self.intake_ligament = intake_mech_root.appendLigament(
+            "intake", length=0.25, angle=90, color=wpilib.Color8Bit(wpilib.Color.kGreen)
+        )
+
         self.intake_motor = TalonSRX(TalonId.INTAKE)
         self.intake_motor.setInverted(True)
 
@@ -116,3 +121,6 @@ class IntakeComponent:
             )
         else:
             self.arm_motor.setVoltage(0.0)
+
+    def periodic(self) -> None:
+        self.intake_ligament.setAngle(math.degrees(self.position()))
