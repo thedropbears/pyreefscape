@@ -10,7 +10,6 @@ from wpimath.geometry import (
     Pose3d,
     Rotation2d,
     Translation2d,
-    Translation3d,
 )
 
 apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
@@ -53,16 +52,8 @@ def field_flip_pose2d(p: Pose2d):
     )
 
 
-def field_flip_translation3d(t: Translation3d):
-    return Translation3d(FIELD_LENGTH - t.x, t.y, t.z)
-
-
 def field_flip_rotation2d(r: Rotation2d):
     return Rotation2d(-r.cos(), r.sin())
-
-
-def field_flip_angle(r: float):
-    return math.atan2(math.sin(math.pi - r), math.cos(math.pi - r))
 
 
 def field_flip_translation2d(t: Translation2d):
