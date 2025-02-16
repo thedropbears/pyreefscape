@@ -7,7 +7,7 @@ from ids import DioChannel, PwmChannel
 
 class FeelerComponent:
     # Angles must be in increasing order
-    ALGAE_SERVO_ANGLES = [120, 130, 140]  # TODO Measure these
+    ALGAE_SERVO_ANGLES = [124.8, 130, 135.2]  # TODO Measure these
     ALGAE_SIZES = [17.0, 16.5, 16.0]
 
     def __init__(self):
