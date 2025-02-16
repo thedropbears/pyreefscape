@@ -15,10 +15,10 @@ from ids import DioChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
-    flywheel_intake_speed = tunable(-20.0)
-    injector_inject_speed = tunable(6.0)
-    injector_intake_speed = tunable(-2.0)
-    injector_backdrive_speed = tunable(-0.5)
+    FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
+    INJECTOR_INJECT_SPEED = tunable(6.0)
+    INJECTOR_INTAKE_SPEED = tunable(-2.0)
+    INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
 
     FLYWHEEL_RPS_TOLERENCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
@@ -135,13 +135,13 @@ class AlgaeManipulatorComponent:
         return self.bottom_flywheel.get_velocity().value
 
     def inject(self) -> None:
-        self.desired_injector_speed = self.injector_inject_speed
+        self.desired_injector_speed = self.INJECTOR_INJECT_SPEED
         self.has_seen_algae = False
 
     def intake(self) -> None:
-        self.top_desired_flywheel_speed = self.flywheel_intake_speed
-        self.bottom_desired_flywheel_speed = self.flywheel_intake_speed
-        self.desired_injector_speed = self.injector_intake_speed
+        self.top_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
+        self.bottom_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
+        self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
     @feedback
     def has_algae(self) -> bool:
@@ -162,7 +162,7 @@ class AlgaeManipulatorComponent:
         )
 
         if self.desired_injector_speed == 0.0 and self.should_be_holding_algae():
-            self.injector_1.setVoltage(self.injector_backdrive_speed)
+            self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
         else:
             self.injector_1.setVoltage(self.desired_injector_speed)
 
