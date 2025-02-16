@@ -7,6 +7,6 @@ class CoralAuto(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "Coral",
+                "StartToBranchH",
             ]
         )
