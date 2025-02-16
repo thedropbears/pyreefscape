@@ -221,19 +221,10 @@ class MyRobot(magicbot.MagicRobot):
     def testPeriodic(self) -> None:
         if self.gamepad.getYButton():
             self.climber_state_machine.climb()
-        self.coral_placer_component.execute()
-        self.status_lights.execute()
 
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
-
-        if self.gamepad.getStartButton():
-            self.vision.zero_servo_()
-        else:
-            self.vision.execute()
-
-        self.chassis.execute()
 
         self.chassis.update_odometry()
 
@@ -242,22 +233,34 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getAButton():
             self.climber.deploy()
 
-        self.climber_state_machine.execute()
-        self.climber.execute()
-
-        self.algae_shooter.execute()
-
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
-        self.reef_intake.execute()
-
-        self.algae_manipulator_component.execute()
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
-        self.floor_intake.execute()
 
+        # Controllers
+        self.coral_placer.execute()
+        self.reef_intake.execute()
+        self.algae_shooter.execute()
+        self.floor_intake.execute()
+        self.feeler.execute()
+        self.climber_state_machine.execute()
+
+        # Components
+        self.chassis.execute()
+        self.climber.execute()
+        self.coral_placer_component.execute()
+        self.algae_manipulator_component.execute()
+        if self.gamepad.getStartButton():
+            self.vision.zero_servo_()
+        else:
+            self.vision.execute()
         self.wrist.execute()
+        self.intake_component.execute()
+        self.status_lights.execute()
+        self.feeler_component.execute()
+        # self.ballistics_component.execute()
 
     def disabledPeriodic(self) -> None:
         self.chassis.update_alliance()
