@@ -181,13 +181,22 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.stop_snapping()
 
         dpad = self.gamepad.getPOV()
+
+        if (
+            self.algae_manipulator_component.should_be_holding_algae()
+            or self.floor_intake.is_executing
+            or self.reef_intake.is_executing
+        ):
+            inversion_factor = (
+                -1
+            )  # inverts direction through multiplication of this value
+        else:
+            inversion_factor = 1
+
         if dpad != -1:
             self.chassis.drive_local(
-                -dpad_max_speed
-                * math.cos(
-                    math.radians(dpad)
-                ),  # minus sign added to invert controls since algae is on the back
-                dpad_max_speed * math.sin(math.radians(dpad)),
+                (dpad_max_speed * math.cos(math.radians(dpad))) * inversion_factor,
+                (dpad_max_speed * math.sin(math.radians(dpad))) * -inversion_factor,
                 0,
             )
 
