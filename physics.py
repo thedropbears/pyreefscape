@@ -115,11 +115,16 @@ class PhysicsEngine:
             for module in robot.chassis.modules
         ]
         self.flywheels = [
-            Falcon500MotorSim(motor, gearing=1 / 1, moi=0.000412752224)
-            for motor in (
+            Falcon500MotorSim(
                 robot.algae_manipulator_component.top_flywheel,
+                gearing=1 / 1,
+                moi=0.00105679992,
+            ),
+            Falcon500MotorSim(
                 robot.algae_manipulator_component.bottom_flywheel,
-            )
+                gearing=1 / 1,
+                moi=0.00156014845,
+            ),
         ]
 
         wrist_gearbox = DCMotor.NEO(1)
