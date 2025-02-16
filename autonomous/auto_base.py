@@ -67,7 +67,7 @@ class AutoBase(AutonomousStateMachine):
         super().on_enable()
 
     def get_starting_pose(self) -> Pose2d | None:
-        return self.trajectory.get_initial_pose(game.is_red())
+        return self.trajectories[0].get_initial_pose(game.is_red())
 
     @state(first=True)
     def initialising(self) -> None:
