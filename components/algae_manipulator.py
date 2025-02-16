@@ -16,7 +16,7 @@ from ids import DioChannel, SparkId, TalonId
 
 class AlgaeManipulatorComponent:
     FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
-    INJECTOR_INJECT_SPEED = tunable(6.0)
+    INJECTOR_INJECT_SPEED = tunable(12.0)
     INJECTOR_INTAKE_SPEED = tunable(-2.0)
     INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
 
