@@ -449,6 +449,9 @@ class ChassisComponent:
         self.update_odometry()
         self.set_coast_in_neutral(False)
 
+    def on_disable(self) -> None:
+        self.set_coast_in_neutral(coast_mode=False)
+
     def get_rotational_velocity(self) -> float:
         return math.radians(
             self.imu.get_angular_velocity_z_world().value
