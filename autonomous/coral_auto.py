@@ -5,8 +5,4 @@ class CoralAuto(AutoBase):
     MODE_NAME = "Coral Shooter"
 
     def __init__(self):
-        super().__init__(
-            [
-                "StartToBranchH",
-            ]
-        )
+        super().__init__(["StartToBranchH", "BranchHToAlgaeGH", "AlgaeGHToShoot"])
