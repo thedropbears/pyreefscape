@@ -1,3 +1,5 @@
+import math
+
 from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
@@ -109,21 +111,18 @@ class AlgaeManipulatorComponent:
 
     @feedback
     def top_flywheels_up_to_speed(self) -> bool:
-        return (
-            abs(
-                self.top_flywheel.get_velocity().value - self.top_desired_flywheel_speed
-            )
-            <= self.FLYWHEEL_RPS_TOLERENCE
+        return math.isclose(
+            self.top_desired_flywheel_speed,
+            self.top_flywheel.get_velocity().value,
+            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERENCE,
         )
 
     @feedback
     def bottom_flywheels_up_to_speed(self) -> bool:
-        return (
-            abs(
-                self.bottom_flywheel.get_velocity().value
-                - self.bottom_desired_flywheel_speed
-            )
-            <= self.FLYWHEEL_RPS_TOLERENCE
+        return math.isclose(
+            self.bottom_desired_flywheel_speed,
+            self.bottom_flywheel.get_velocity().value,
+            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERENCE,
         )
 
     @feedback
@@ -161,7 +160,10 @@ class AlgaeManipulatorComponent:
             VelocityVoltage(self.bottom_desired_flywheel_speed)
         )
 
-        if self.desired_injector_speed == 0.0 and self.should_be_holding_algae():
+        if (
+            math.isclose(self.desired_injector_speed, 0.0, abs_tol=0.1)
+            and self.should_be_holding_algae()
+        ):
             self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
         else:
             self.injector_1.setVoltage(self.desired_injector_speed)
