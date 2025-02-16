@@ -26,11 +26,9 @@ class CoralAutoBase(AutonomousStateMachine):
 
         try:
             self.trajectory = choreo.load_swerve_trajectory(trajectory_name)
-            self.starting_pose = self.trajectory.get_initial_pose(game.is_red())
         except ValueError:
             # If the trajectory is not found, ChoreoLib already prints to DriverStation
             self.trajectory = SwerveTrajectory("", [], [], [])
-            self.starting_pose = None
 
     def setup(self) -> None:
         #  setup path tracking controllers
@@ -48,12 +46,7 @@ class CoralAutoBase(AutonomousStateMachine):
         super().on_enable()
 
     def get_starting_pose(self) -> Pose2d | None:
-        starting_pose = self.starting_pose
-        if starting_pose is None:
-            return None
-        if game.is_red():
-            starting_pose = game.field_flip_pose2d(starting_pose)
-        return starting_pose
+        return self.trajectory.get_initial_pose(game.is_red())
 
     @state(first=True)
     def initialising(self) -> None:
