@@ -5,7 +5,7 @@ from phoenix6.configs import (
     MotorOutputConfigs,
     Slot0Configs,
 )
-from phoenix6.controls import NeutralOut, VelocityVoltage
+from phoenix6.controls import VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from rev import SparkMax, SparkMaxConfig
@@ -157,19 +157,11 @@ class AlgaeManipulatorComponent:
         if self.has_algae():
             self.has_seen_algae = True
 
-        if self.top_desired_flywheel_speed == 0:
-            self.top_flywheel.set_control(NeutralOut())
-        else:
-            self.top_flywheel.set_control(
-                VelocityVoltage(self.top_desired_flywheel_speed)
-            )
+        self.top_flywheel.set_control(VelocityVoltage(self.top_desired_flywheel_speed))
 
-        if self.bottom_desired_flywheel_speed == 0:
-            self.bottom_flywheel.set_control(NeutralOut())
-        else:
-            self.bottom_flywheel.set_control(
-                VelocityVoltage(self.bottom_desired_flywheel_speed)
-            )
+        self.bottom_flywheel.set_control(
+            VelocityVoltage(self.bottom_desired_flywheel_speed)
+        )
 
         if self.desired_injector_speed == 0.0 and self.should_be_holding_algae():
             self.injector_1.setVoltage(self.injector_backdrive_speed)
