@@ -22,7 +22,7 @@ class AlgaeManipulatorComponent:
     INJECTOR_INTAKE_SPEED = tunable(-2.0)
     INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
 
-    FLYWHEEL_RPS_TOLERENCE = 1.0
+    FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
@@ -114,7 +114,7 @@ class AlgaeManipulatorComponent:
         return math.isclose(
             self.top_desired_flywheel_speed,
             self.top_flywheel.get_velocity().value,
-            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERENCE,
+            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERANCE,
         )
 
     @feedback
@@ -122,7 +122,7 @@ class AlgaeManipulatorComponent:
         return math.isclose(
             self.bottom_desired_flywheel_speed,
             self.bottom_flywheel.get_velocity().value,
-            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERENCE,
+            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERANCE,
         )
 
     @feedback
