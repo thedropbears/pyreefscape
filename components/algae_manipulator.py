@@ -161,7 +161,7 @@ class AlgaeManipulatorComponent:
         )
 
         if (
-            math.isclose(self.desired_injector_speed, 0.0, abs_tol=0.1)
+            math.isclose(self.desired_injector_speed, 0.0)
             and self.should_be_holding_algae()
         ):
             self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
