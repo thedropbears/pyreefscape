@@ -94,7 +94,7 @@ class AlgaeManipulatorComponent:
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
-        self.desired_injector_speed = 0.25
+        self.desired_injector_speed = 0.0
 
         self.algae_size = 0.0
         self.desired_feeler_angle = 90.0
