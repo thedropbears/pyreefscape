@@ -92,6 +92,12 @@ class AutoBase(AutonomousStateMachine):
 
         distance = current_pose.translation().distance(final_pose.translation())
 
+        if (
+            self.current_leg > 0
+            and not self.algae_manipulator_component.should_be_holding_algae()
+        ):
+            self.reef_intake.intake()
+
         if distance < self.DISTANCE_TOLERANCE:
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:
@@ -134,20 +140,15 @@ class AutoBase(AutonomousStateMachine):
         if initial_call:
             self.coral_placer.place()
         elif not self.coral_placer.is_executing:
-            self.next_state("driving_to_algae")
+            self.next_state("retreating")
 
     @state
     def retreating(self) -> None:
         self.next_state("tracking_trajectory")
 
     @state
-    def driving_to_algae(self) -> None:
-        self.reef_intake.intake()
-        self.next_state("tracking_trajectory")
-
-    @state
     def intaking_algae(self) -> None:
-        if self.algae_manipulator_component.has_algae():
+        if self.algae_manipulator_component.should_be_holding_algae():
             self.next_state("tracking_trajectory")
 
     @state
@@ -155,4 +156,4 @@ class AutoBase(AutonomousStateMachine):
         if initial_call:
             self.algae_shooter.shoot()
         elif not self.algae_shooter.is_executing:
-            self.next_state("driving_to_algae")
+            self.next_state("tracking_trajectory")
