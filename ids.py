@@ -44,6 +44,8 @@ class SparkId(enum.IntEnum):
     INJECTOR_1 = 10
     INJECTOR_2 = 11
 
+    INTAKE_ARM = 4
+
     WRIST = 5
 
 
@@ -51,13 +53,13 @@ class SparkId(enum.IntEnum):
 class DioChannel(enum.IntEnum):
     """roboRIO Digital I/O channel number."""
 
+    FEELER_LIMIT_SWITCH = 0
+
     VISION_ENCODER = 1
 
+    INTAKE_ENCODER = 3
+
     ALGAE_INTAKE_SWITCH = 5
-
-    WRIST_LIMIT_SWITCH = 3
-
-    FEELER_LIMIT_SWITCH = 0
 
 
 @enum.unique

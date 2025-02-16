@@ -249,13 +249,14 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
-
         self.reef_intake.execute()
 
         self.algae_manipulator_component.execute()
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
+        self.floor_intake.execute()
+
         self.wrist.execute()
 
     def disabledPeriodic(self) -> None:
