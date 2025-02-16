@@ -182,14 +182,28 @@ class MyRobot(magicbot.MagicRobot):
 
         dpad = self.gamepad.getPOV()
         if dpad != -1:
-            self.chassis.drive_local(
-                -dpad_max_speed
-                * math.cos(
-                    math.radians(dpad)
-                ),  # minus sign added to invert controls since algae is on the back
-                dpad_max_speed * math.sin(math.radians(dpad)),
-                0,
-            )
+            if (
+                self.algae_manipulator_component.should_be_holding_algae()
+                or self.floor_intake.is_executing
+                or self.reef_intake.is_executing
+            ):
+                self.chassis.drive_local(
+                    -dpad_max_speed
+                    * math.cos(
+                        math.radians(dpad)
+                    ),  # minus sign added to invert controls since algae is on the back
+                    dpad_max_speed * math.sin(math.radians(dpad)),
+                    0,
+                )
+            else:
+                self.chassis.drive_local(
+                    dpad_max_speed * math.cos(math.radians(dpad)),
+                    -dpad_max_speed
+                    * math.sin(
+                        math.radians(dpad)
+                    ),  # minus sign added to correct inversion
+                    0,
+                )
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
