@@ -6,6 +6,7 @@ import wpilib
 import wpilib.event
 from magicbot import tunable
 from phoenix6.configs import Slot0Configs
+from wpimath.filter import Debouncer
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from components.algae_manipulator import AlgaeManipulatorComponent
@@ -147,6 +148,9 @@ class MyRobot(magicbot.MagicRobot):
             self.vision_servo_offset = Rotation2d(0.563)
             self.vision_encoder_offset = Rotation2d(0.975)
 
+        self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
+        self.coast_button_debouncer = Debouncer(0.3, Debouncer.DebounceType.kBoth)
+
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
         self.chassis.set_coast_in_neutral(False)
@@ -286,7 +290,7 @@ class MyRobot(magicbot.MagicRobot):
             self.status_lights.vision_timeout()
         self.status_lights.execute()
 
-        if self.gamepad.getAButtonPressed():
+        if not self.coast_button_debouncer.calculate(self.coast_button.get()):
             self.chassis.toggle_coast_in_neutral()
 
     def robotPeriodic(self) -> None:

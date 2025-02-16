@@ -61,6 +61,8 @@ class DioChannel(enum.IntEnum):
 
     ALGAE_INTAKE_SWITCH = 5
 
+    SWERVE_COAST_SWITCH = 2
+
 
 @enum.unique
 class PwmChannel(enum.IntEnum):
