@@ -152,8 +152,6 @@ class AlgaeManipulatorComponent:
         return self.has_seen_algae
 
     def execute(self) -> None:
-        self.injector_1.setVoltage(self.desired_injector_speed)
-
         if self.has_algae():
             self.has_seen_algae = True
 
