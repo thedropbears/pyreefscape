@@ -40,7 +40,7 @@ class IntakeComponent:
         spark_config.inverted(False)
         spark_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
-        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(0.7, 0.7))
+        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(0.7, 0.5))
         self.pid = PIDController(Kp=2.1741, Ki=0, Kd=0.18444)
 
         # CG is at 220mm, 2.7kg
