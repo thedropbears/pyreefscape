@@ -87,6 +87,7 @@ class SwerveModule:
         steer_motor_config.neutral_mode = NeutralModeValue.BRAKE
         # The SDS Mk4i rotation has one pair of gears.
         steer_motor_config.inverted = InvertedValue.CLOCKWISE_POSITIVE
+        self.steer_motor_out_config = steer_motor_config
 
         steer_gear_ratio_config = FeedbackConfigs().with_sensor_to_mechanism_ratio(
             1 / config.steer_ratio
@@ -112,6 +113,7 @@ class SwerveModule:
             if config.reverse_drive
             else InvertedValue.COUNTER_CLOCKWISE_POSITIVE
         )
+        self.drive_motor_out_config = drive_motor_config
 
         drive_gear_ratio_config = FeedbackConfigs().with_sensor_to_mechanism_ratio(
             1 / (config.wheel_circumference * config.drive_ratio)
@@ -206,15 +208,11 @@ class SwerveModule:
         return SwerveModuleState(self.get_speed(), self.get_rotation())
 
     def set_neutral_mode(self, neutral_mode: NeutralModeValue) -> None:
-        steer_motor_config = MotorOutputConfigs()
-        self.steer.configurator.refresh(steer_motor_config)
-        steer_motor_config.neutral_mode = neutral_mode
-        self.steer.configurator.apply(steer_motor_config)
+        self.steer_motor_out_config.neutral_mode = neutral_mode
+        self.steer.configurator.apply(self.steer_motor_out_config)
 
-        drive_motor_config = MotorOutputConfigs()
-        self.drive.configurator.refresh(drive_motor_config)
-        drive_motor_config.neutral_mode = neutral_mode
-        self.drive.configurator.apply(drive_motor_config)
+        self.drive_motor_out_config.neutral_mode = neutral_mode
+        self.drive.configurator.apply(self.drive_motor_out_config)
 
         self.neutral_mode = neutral_mode
 
