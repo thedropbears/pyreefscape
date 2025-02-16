@@ -14,7 +14,7 @@ from wpimath.geometry import (
 )
 
 apriltag_layout = robotpy_apriltag.AprilTagFieldLayout.loadField(
-    robotpy_apriltag.AprilTagField.k2025Reefscape
+    robotpy_apriltag.AprilTagField.k2025ReefscapeWelded
 )
 
 TagId = typing.Literal[
