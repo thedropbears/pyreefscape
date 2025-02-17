@@ -142,6 +142,9 @@ class AlgaeManipulatorComponent:
         self.bottom_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
         self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
+    def measure_algae(self) -> None:
+        pass
+
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:
         return not self.algae_limit_switch.get()
