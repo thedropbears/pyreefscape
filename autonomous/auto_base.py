@@ -41,9 +41,7 @@ class AutoBase(AutonomousStateMachine):
             try:
                 self.trajectories.append(choreo.load_swerve_trajectory(trajectory_name))
                 if self.starting_pose is None:
-                    self.starting_pose = self.trajectories[0].get_initial_pose(
-                        game.is_red()
-                    )
+                    self.starting_pose = self.get_starting_pose()
             except ValueError:
                 # If the trajectory is not found, ChoreoLib already prints to DriverStation
                 pass
