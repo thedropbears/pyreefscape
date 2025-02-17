@@ -158,6 +158,9 @@ class AlgaeManipulatorComponent:
     def get_injector_position(self) -> float:
         return self.injector_1_encoder.getPosition()
 
+    def algae_size_feedback(self) -> float:
+        return self.algae_size
+
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:
         return not self.algae_limit_switch.get()
