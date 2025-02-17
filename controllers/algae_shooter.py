@@ -26,8 +26,14 @@ class AlgaeShooter(StateMachine):
         self.engage()
 
     @state(first=True, must_finish=True)
-    def preparing(self):
+    def preparing(self, initial_call: bool):
         if self.use_ballistics:
+            if initial_call and (
+                not self.ballistics_component.is_in_range()
+                or not self.ballistics_component.is_aligned()
+            ):
+                self.done()
+                return
             solution = self.ballistics_component.current_solution()
             self.wrist.tilt_to(solution.inclination)
             self.algae_manipulator_component.spin_flywheels(
