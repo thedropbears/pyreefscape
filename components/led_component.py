@@ -20,7 +20,9 @@ class LightStrip:
     def __init__(self, strip_length: int = 5) -> None:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
         self.leds.setLength(strip_length)
-        self.halfway_point = 0.433
+        self.right_rear_front_split = 0.212
+        self.halfway_split = 0.433
+        self.left_front_rear_split = 0.792
 
         self.strip_data = [AddressableLED.LEDData() for _ in range(strip_length)]
 
@@ -83,28 +85,28 @@ class LightStrip:
                     (
                         0.0,
                         Color.kRed
-                        if translation.x < -tol or translation.y < -tol
+                        if translation.x > tol or translation.y > tol
                         else Color.kBlack,
                     ),
                     # Front right
                     (
-                        0.25,
+                        self.right_rear_front_split,
                         Color.kRed
-                        if translation.x > tol or translation.y < -tol
+                        if translation.x < -tol or translation.y > tol
                         else Color.kBlack,
                     ),
                     # Front left
                     (
-                        0.5,
+                        self.halfway_split,
                         Color.kRed
-                        if translation.x > tol or translation.y > tol
+                        if translation.x < -tol or translation.y < -tol
                         else Color.kBlack,
                     ),
                     # Rear left
                     (
-                        0.75,
+                        self.left_front_rear_split,
                         Color.kRed
-                        if translation.x < -tol or translation.y > tol
+                        if translation.x > tol or translation.y < -tol
                         else Color.kBlack,
                     ),
                 ]
@@ -132,7 +134,7 @@ class LightStrip:
                     LEDPattern.steps(
                         [
                             (0.0, Color.kBlack),
-                            (self.halfway_point, Color.kOrange),
+                            (self.halfway_split, Color.kOrange),
                         ]
                     ),
                     flash_delay,
@@ -142,7 +144,7 @@ class LightStrip:
                     LEDPattern.steps(
                         [
                             (0.0, Color.kOrange),
-                            (self.halfway_point, Color.kBlack),
+                            (self.halfway_split, Color.kBlack),
                         ]
                     ),
                     flash_delay,
