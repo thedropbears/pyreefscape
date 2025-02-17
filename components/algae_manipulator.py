@@ -1,4 +1,5 @@
 import math
+import time
 
 from magicbot import feedback, tunable
 from phoenix6.configs import (
@@ -21,10 +22,12 @@ class AlgaeManipulatorComponent:
     INJECTOR_INJECT_SPEED = tunable(12.0)
     INJECTOR_INTAKE_SPEED = tunable(-2.0)
     INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
+    injector_measure_speed = tunable(3.0)
 
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
+    MEASUREMENT_CURRENT_THRESHOLD = 20.0
 
     def __init__(self) -> None:
         self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
@@ -102,6 +105,8 @@ class AlgaeManipulatorComponent:
         self.desired_feeler_angle = 90.0
 
         self.has_seen_algae: bool = False
+        self.measurement_in_process = False
+        self.algae_measured = False
 
     def spin_flywheels(
         self, top_flywheel_shoot_speed: float, bottom_flywheel_shoot_speed: float
@@ -143,7 +148,19 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
     def measure_algae(self) -> None:
-        pass
+        if not self.measurement_in_process:
+            self.measuring_start_time = time.monotonic()
+            self.desired_injector_speed = self.injector_measure_speed
+            self.measurement_in_process = True
+
+        elif (
+            self.injector_1.getOutputCurrent()
+            or self.injector_2.getOutputCurrent() > self.MEASUREMENT_CURRENT_THRESHOLD
+        ):
+            self.measuring_end_time = time.monotonic()
+            self.algae_measurement = self.measuring_end_time - self.measuring_start_time
+            self.measurement_in_process = False
+            self.algae_measured = True
 
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:
