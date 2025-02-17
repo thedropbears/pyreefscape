@@ -1,3 +1,5 @@
+import math
+
 from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
@@ -15,12 +17,12 @@ from ids import DioChannel, SparkId, TalonId
 
 
 class AlgaeManipulatorComponent:
-    flywheel_intake_speed = tunable(-20)
-    injector_inject_speed = tunable(6.0)
-    injector_intake_speed = tunable(-2.0)
-    injector_backdrive_speed = tunable(-0.5)
+    FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
+    INJECTOR_INJECT_SPEED = tunable(12.0)
+    INJECTOR_INTAKE_SPEED = tunable(-2.0)
+    INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
 
-    FLYWHEEL_RPS_TOLERENCE = 1.0
+    FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
@@ -94,7 +96,7 @@ class AlgaeManipulatorComponent:
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
-        self.desired_injector_speed = 0.25
+        self.desired_injector_speed = 0.0
 
         self.algae_size = 0.0
         self.desired_feeler_angle = 90.0
@@ -109,21 +111,18 @@ class AlgaeManipulatorComponent:
 
     @feedback
     def top_flywheels_up_to_speed(self) -> bool:
-        return (
-            abs(
-                self.top_flywheel.get_velocity().value - self.top_desired_flywheel_speed
-            )
-            <= self.FLYWHEEL_RPS_TOLERENCE
+        return math.isclose(
+            self.top_desired_flywheel_speed,
+            self.top_flywheel.get_velocity().value,
+            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERANCE,
         )
 
     @feedback
     def bottom_flywheels_up_to_speed(self) -> bool:
-        return (
-            abs(
-                self.bottom_flywheel.get_velocity().value
-                - self.bottom_desired_flywheel_speed
-            )
-            <= self.FLYWHEEL_RPS_TOLERENCE
+        return math.isclose(
+            self.bottom_desired_flywheel_speed,
+            self.bottom_flywheel.get_velocity().value,
+            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERANCE,
         )
 
     @feedback
@@ -135,13 +134,13 @@ class AlgaeManipulatorComponent:
         return self.bottom_flywheel.get_velocity().value
 
     def inject(self) -> None:
-        self.desired_injector_speed = self.injector_inject_speed
+        self.desired_injector_speed = self.INJECTOR_INJECT_SPEED
         self.has_seen_algae = False
 
     def intake(self) -> None:
-        self.top_desired_flywheel_speed = self.flywheel_intake_speed
-        self.bottom_desired_flywheel_speed = self.flywheel_intake_speed
-        self.desired_injector_speed = self.injector_intake_speed
+        self.top_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
+        self.bottom_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
+        self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
     @feedback
     def has_algae(self) -> bool:
@@ -152,8 +151,6 @@ class AlgaeManipulatorComponent:
         return self.has_seen_algae
 
     def execute(self) -> None:
-        self.injector_1.setVoltage(self.desired_injector_speed)
-
         if self.has_algae():
             self.has_seen_algae = True
 
@@ -163,8 +160,11 @@ class AlgaeManipulatorComponent:
             VelocityVoltage(self.bottom_desired_flywheel_speed)
         )
 
-        if self.desired_injector_speed == 0.0 and self.should_be_holding_algae():
-            self.injector_1.setVoltage(self.injector_backdrive_speed)
+        if (
+            math.isclose(self.desired_injector_speed, 0.0)
+            and self.should_be_holding_algae()
+        ):
+            self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
         else:
             self.injector_1.setVoltage(self.desired_injector_speed)
 
