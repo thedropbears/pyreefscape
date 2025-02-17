@@ -1,5 +1,4 @@
 import math
-import time
 
 from magicbot import feedback, tunable
 from phoenix6.configs import (
@@ -22,7 +21,7 @@ class AlgaeManipulatorComponent:
     INJECTOR_INJECT_SPEED = tunable(12.0)
     INJECTOR_INTAKE_SPEED = tunable(-2.0)
     INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
-    injector_measure_speed = tunable(3.0)
+    INJECTOR_MEASURE_SPEED = tunable(3.0)
 
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
@@ -48,6 +47,8 @@ class AlgaeManipulatorComponent:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
+
+        self.injector_1_encoder = self.injector_1.getEncoder()
 
         self.top_flywheel = TalonFX(TalonId.TOP_FLYWHEEL)
         self.bottom_flywheel = TalonFX(TalonId.BOTTOM_FLYWHEEL)
@@ -148,19 +149,14 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
     def measure_algae(self) -> None:
-        if not self.measurement_in_process:
-            self.measuring_start_time = time.monotonic()
-            self.desired_injector_speed = self.injector_measure_speed
-            self.measurement_in_process = True
+        self.desired_injector_speed = self.INJECTOR_MEASURE_SPEED
 
-        elif (
-            self.injector_1.getOutputCurrent()
-            or self.injector_2.getOutputCurrent() > self.MEASUREMENT_CURRENT_THRESHOLD
-        ):
-            self.measuring_end_time = time.monotonic()
-            self.algae_measurement = self.measuring_end_time - self.measuring_start_time
-            self.measurement_in_process = False
-            self.algae_measured = True
+    @feedback
+    def get_injector_velocity(self) -> float:
+        return self.injector_1_encoder.getVelocity()
+
+    def get_injector_position(self) -> float:
+        return self.injector_1_encoder.getPosition()
 
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:
