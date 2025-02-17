@@ -3,6 +3,7 @@ import time
 import wpilib
 from magicbot import feedback
 from wpilib import AddressableLED, Color, LEDPattern
+from wpimath.geometry import Translation2d
 
 from ids import PwmChannel
 from utilities.game import is_red
@@ -19,7 +20,9 @@ class LightStrip:
     def __init__(self, strip_length: int = 5) -> None:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
         self.leds.setLength(strip_length)
-        self.halfway_point = 0.433
+        self.right_rear_front_split = 0.212
+        self.halfway_split = 0.433
+        self.left_front_rear_split = 0.792
 
         self.strip_data = [AddressableLED.LEDData() for _ in range(strip_length)]
 
@@ -68,6 +71,50 @@ class LightStrip:
         self.pattern = LEDPattern.breathe(LEDPattern.solid(Color.kPurple), 2.0)
         self.keep_alive()
 
+    def no_auto(self) -> None:
+        self.pattern = LEDPattern.blink(LEDPattern.solid(Color.kRed), 0.25)
+        self.keep_alive()
+
+    def invalid_start(self, translation: Translation2d, tol: float) -> None:
+        # Tolerance is total, so scale to the worse case component - ie 45 deg triangle
+        tol = tol / (2.0**0.5)
+        self.pattern = LEDPattern.blink(
+            LEDPattern.steps(
+                [
+                    # Rear right
+                    (
+                        0.0,
+                        Color.kRed
+                        if translation.x > tol or translation.y > tol
+                        else Color.kBlack,
+                    ),
+                    # Front right
+                    (
+                        self.right_rear_front_split,
+                        Color.kRed
+                        if translation.x < -tol or translation.y > tol
+                        else Color.kBlack,
+                    ),
+                    # Front left
+                    (
+                        self.halfway_split,
+                        Color.kRed
+                        if translation.x < -tol or translation.y < -tol
+                        else Color.kBlack,
+                    ),
+                    # Rear left
+                    (
+                        self.left_front_rear_split,
+                        Color.kRed
+                        if translation.x > tol or translation.y < -tol
+                        else Color.kBlack,
+                    ),
+                ]
+            ),
+            0.5,
+        )
+        self.keep_alive()
+
     def keep_alive(self) -> None:
         # Refresh the timer to stop the LEDs being turned off
         self.last_update_time = time.monotonic()
@@ -87,7 +134,7 @@ class LightStrip:
                     LEDPattern.steps(
                         [
                             (0.0, Color.kBlack),
-                            (self.halfway_point, Color.kOrange),
+                            (self.halfway_split, Color.kOrange),
                         ]
                     ),
                     flash_delay,
@@ -97,7 +144,7 @@ class LightStrip:
                     LEDPattern.steps(
                         [
                             (0.0, Color.kOrange),
-                            (self.halfway_point, Color.kBlack),
+                            (self.halfway_split, Color.kBlack),
                         ]
                     ),
                     flash_delay,

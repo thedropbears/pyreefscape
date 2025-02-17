@@ -9,6 +9,7 @@ from phoenix6.configs import Slot0Configs
 from wpimath.filter import Debouncer
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
+from autonomous.auto_base import AutoBase
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
@@ -58,7 +59,7 @@ class MyRobot(magicbot.MagicRobot):
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
 
-    START_POS_TOLERANCE = 1
+    START_POS_TOLERANCE = 0.5
 
     def createObjects(self) -> None:
         self.data_log = wpilib.DataLogManager.getLog()
@@ -285,9 +286,28 @@ class MyRobot(magicbot.MagicRobot):
         self.vision.execute()
 
         if self.vision.sees_target():
-            self.status_lights.rainbow()
+            selected_auto = self._automodes.chooser.getSelected()
+            if isinstance(selected_auto, AutoBase):
+                intended_start_pose = selected_auto.get_starting_pose()
+                current_pose = self.chassis.get_pose()
+                if intended_start_pose is not None:
+                    self.field.getObject("Intended start pos").setPose(
+                        intended_start_pose
+                    )
+                    relative_translation = intended_start_pose.relativeTo(
+                        current_pose
+                    ).translation()
+                    if relative_translation.norm() > self.START_POS_TOLERANCE:
+                        self.status_lights.invalid_start(
+                            relative_translation, self.START_POS_TOLERANCE
+                        )
+                    else:
+                        self.status_lights.rainbow()
+            else:
+                self.status_lights.no_auto()
         else:
             self.status_lights.vision_timeout()
+
         self.status_lights.execute()
 
         if not self.coast_button_debouncer.calculate(self.coast_button.get()):
