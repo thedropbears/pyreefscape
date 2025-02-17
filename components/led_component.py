@@ -79,28 +79,32 @@ class LightStrip:
         self.pattern = LEDPattern.blink(
             LEDPattern.steps(
                 [
+                    # Rear right
                     (
                         0.0,
                         Color.kRed
                         if translation.x < -tol or translation.y < -tol
                         else Color.kBlack,
                     ),
+                    # Front right
                     (
                         0.25,
-                        Color.kRed
-                        if translation.x < -tol or translation.y > tol
-                        else Color.kBlack,
-                    ),
-                    (
-                        0.5,
                         Color.kRed
                         if translation.x > tol or translation.y < -tol
                         else Color.kBlack,
                     ),
+                    # Front left
+                    (
+                        0.5,
+                        Color.kRed
+                        if translation.x > tol or translation.y > tol
+                        else Color.kBlack,
+                    ),
+                    # Rear left
                     (
                         0.75,
                         Color.kRed
-                        if translation.x > tol or translation.y > tol
+                        if translation.x < -tol or translation.y > tol
                         else Color.kBlack,
                     ),
                 ]
