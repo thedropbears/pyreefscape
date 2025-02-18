@@ -33,7 +33,8 @@ class AlgaeManipulatorComponent:
     def __init__(self) -> None:
         self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
         self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
-        self.injector_closed_loop = self.injector_1.getClosedLoopController()
+        self.injector_1_closed_loop = self.injector_1.getClosedLoopController()
+        self.injector_2_closed_loop = self.injector_2.getClosedLoopController()
         injector_config = SparkMaxConfig()
 
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
@@ -50,7 +51,7 @@ class AlgaeManipulatorComponent:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
-        injector_config.follow(SparkId.INJECTOR_1, True)
+        injector_config.inverted(False)
         self.injector_2.configure(
             injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
@@ -191,7 +192,11 @@ class AlgaeManipulatorComponent:
         if math.isclose(self.desired_injector_speed, 0.0) and self.has_algae():
             self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
         else:
-            self.injector_closed_loop.setReference(
+            self.injector_1_closed_loop.setReference(
+                self.desired_injector_speed,
+                SparkMax.ControlType.kMAXMotionVelocityControl,
+            )
+            self.injector_2_closed_loop.setReference(
                 self.desired_injector_speed,
                 SparkMax.ControlType.kMAXMotionVelocityControl,
             )
