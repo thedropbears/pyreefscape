@@ -78,6 +78,18 @@ class Falcon500MotorSim:
             )
 
 
+class SparkArmSim:
+    def __init__(self, mech_sim: SingleJointedArmSim, motor_sim: rev.SparkSim) -> None:
+        self.mech_sim = mech_sim
+        self.motor_sim = motor_sim
+
+    def update(self, dt: float) -> None:
+        vbus = self.motor_sim.getBusVoltage()
+        self.mech_sim.setInputVoltage(self.motor_sim.getAppliedOutput() * vbus)
+        self.mech_sim.update(dt)
+        self.motor_sim.iterate(self.mech_sim.getVelocity(), vbus, dt)
+
+
 # class ServoEncoderSim:
 #     def __init__(self, pwm, encoder):
 #         self.pwm_sim = PWMSim(pwm)
@@ -128,10 +140,10 @@ class PhysicsEngine:
         ]
 
         wrist_gearbox = DCMotor.NEO(1)
-        self.wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
+        wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
         self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
 
-        self.wrist_sim = SingleJointedArmSim(
+        wrist_sim = SingleJointedArmSim(
             wrist_gearbox,
             WristComponent.wrist_gear_ratio,
             moi=0.295209215,
@@ -141,6 +153,7 @@ class PhysicsEngine:
             simulateGravity=True,
             startingAngle=WristComponent.MAXIMUM_DEPRESSION,
         )
+        self.wrist = SparkArmSim(wrist_sim, wrist_motor)
 
         self.imu = robot.chassis.imu.sim_state
 
@@ -215,12 +228,10 @@ class PhysicsEngine:
             self.vision_sim_counter = 0
 
         # Update wrist simulation
-        self.wrist_sim.setInputVoltage(self.wrist_motor.getAppliedOutput() * 12.0)
-        self.wrist_sim.update(tm_diff)
+        self.wrist.update(tm_diff)
         self.wrist_encoder_sim.set(
-            self.wrist_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
+            self.wrist.mech_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
         )
-        self.wrist_motor.iterate(self.wrist_sim.getVelocity(), vbus=12.0, dt=tm_diff)
 
         # Simulate algae pick up
         if self.floor_intake.current_state == "intaking":
