@@ -82,6 +82,7 @@ class MyRobot(magicbot.MagicRobot):
 
         self.mech = wpilib.Mechanism2d(2, 2)
         wpilib.SmartDashboard.putData("Mech2d", self.mech)
+        self.intake_mech_root = self.mech.getRoot("Intake", 1.5, 0.1)
         self.frame_mech_root = self.mech.getRoot("A-Frame", 1, 0)
         self.frame_member = self.frame_mech_root.appendLigament(
             "upright", length=1, angle=90, lineWidth=3
@@ -315,5 +316,6 @@ class MyRobot(magicbot.MagicRobot):
 
     def robotPeriodic(self) -> None:
         super().robotPeriodic()
+        self.intake_component.periodic()
         # Clear component per-loop caches.
         self.vision._per_loop_cache.clear()
