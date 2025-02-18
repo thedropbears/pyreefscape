@@ -179,7 +179,6 @@ class PhysicsEngine:
         self.floor_intake = robot.floor_intake
         self.reef_intake = robot.reef_intake
         self.algae_shooter = robot.algae_shooter
-        self.wrist_component = robot.wrist
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
