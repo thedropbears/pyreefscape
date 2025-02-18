@@ -3,6 +3,7 @@ from __future__ import annotations
 import math
 import statistics
 import typing
+from collections.abc import Callable
 
 import phoenix6
 import phoenix6.unmanaged
@@ -71,22 +72,24 @@ class SimpleTalonFXMotorSim:
         self.sim_state.add_rotor_position(velocity_rps * dt)
 
 
-class Falcon500MotorSim:
+class TalonFXMotorSim:
     def __init__(
         self,
+        # DCMotor gearbox factory, e.g. DCMotor.falcon500
+        gearbox_motor: Callable[[int], DCMotor],
         *motors: phoenix6.hardware.TalonFX,
         # Reduction between motor and encoder readings, as output over input.
         # If the mechanism spins slower than the motor, this number should be greater than one.
         gearing: float,
         moi: kilogram_square_meters,
     ):
-        self.falcon = DCMotor.falcon500(len(motors))
-        self.plant = LinearSystemId.DCMotorSystem(self.falcon, moi, gearing)
+        gearbox = gearbox_motor(len(motors))
+        self.plant = LinearSystemId.DCMotorSystem(gearbox, moi, gearing)
         self.gearing = gearing
         self.sim_states = [motor.sim_state for motor in motors]
         for sim_state in self.sim_states:
             sim_state.set_supply_voltage(12.0)
-        self.motor_sim = DCMotorSim(self.plant, self.falcon)
+        self.motor_sim = DCMotorSim(self.plant, gearbox)
 
     def update(self, dt: float) -> None:
         voltage = self.sim_states[0].motor_voltage
@@ -142,7 +145,8 @@ class PhysicsEngine:
             for module in robot.chassis.modules
         ]
         self.steer = [
-            Falcon500MotorSim(
+            TalonFXMotorSim(
+                DCMotor.krakenX60,
                 module.steer,
                 gearing=1 / robot.chassis.swerve_config.steer_ratio,
                 # measured from MKCad CAD
@@ -151,12 +155,14 @@ class PhysicsEngine:
             for module in robot.chassis.modules
         ]
         self.flywheels = [
-            Falcon500MotorSim(
+            TalonFXMotorSim(
+                DCMotor.falcon500,
                 robot.shooter_component.top_flywheel,
                 gearing=1 / 1,
                 moi=0.00105679992,
             ),
-            Falcon500MotorSim(
+            TalonFXMotorSim(
+                DCMotor.falcon500,
                 robot.shooter_component.bottom_flywheel,
                 gearing=1 / 1,
                 moi=0.00156014845,
