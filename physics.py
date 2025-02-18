@@ -22,6 +22,7 @@ from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
+from components.intake import IntakeComponent
 from components.wrist import WristComponent
 from utilities import game
 from utilities.functions import constrain_angle
@@ -139,6 +140,28 @@ class PhysicsEngine:
             ),
         ]
 
+        # Intake arm simulation
+        intake_arm_gearbox = DCMotor.NEO(1)
+        self.intake_arm_motor = rev.SparkMaxSim(
+            robot.intake_component.arm_motor, intake_arm_gearbox
+        )
+        self.intake_arm_encoder_sim = DutyCycleEncoderSim(
+            robot.intake_component.encoder
+        )
+        self.intake_arm = SparkArmSim(
+            SingleJointedArmSim(
+                intake_arm_gearbox,
+                IntakeComponent.gear_ratio,
+                moi=0.035579622,
+                armLength=0.22,
+                minAngle=IntakeComponent.DEPLOYED_ANGLE,
+                maxAngle=IntakeComponent.RETRACTED_ANGLE,
+                simulateGravity=True,
+                startingAngle=IntakeComponent.RETRACTED_ANGLE,
+            ),
+            self.intake_arm_motor,
+        )
+
         wrist_gearbox = DCMotor.NEO(1)
         wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
         self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
@@ -225,6 +248,10 @@ class PhysicsEngine:
             )
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
+
+        # Update intake arm simulation
+        self.intake_arm.update(tm_diff)
+        self.intake_arm_encoder_sim.set(self.intake_arm.mech_sim.getAngle())
 
         # Update wrist simulation
         self.wrist.update(tm_diff)
