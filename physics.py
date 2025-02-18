@@ -251,7 +251,9 @@ class PhysicsEngine:
 
         # Update intake arm simulation
         self.intake_arm.update(tm_diff)
-        self.intake_arm_encoder_sim.set(self.intake_arm.mech_sim.getAngle())
+        self.intake_arm_encoder_sim.set(
+            self.intake_arm.mech_sim.getAngle() + IntakeComponent.ARM_ENCODER_OFFSET
+        )
 
         # Update wrist simulation
         self.wrist.update(tm_diff)
