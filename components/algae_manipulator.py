@@ -19,23 +19,32 @@ from ids import DioChannel, SparkId, TalonId
 class AlgaeManipulatorComponent:
     FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
     INJECTOR_INJECT_SPEED = tunable(12.0)
-    INJECTOR_INTAKE_SPEED = tunable(-2.0)
+    INJECTOR_INTAKE_SPEED = tunable(2.0)
     INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
-    INJECTOR_MEASURE_SPEED = tunable(3.0)
+    INJECTOR_MEASURE_SPEED = tunable(1.0)
 
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
     MEASUREMENT_CURRENT_THRESHOLD = 20.0
+    INJECTOR_RPS_TOLERANCE = 0.5
+    INJECTOR_MAX_ACCEL = 0.5
 
     def __init__(self) -> None:
         self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
         self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
+        self.injector_closed_loop = self.injector_1.getClosedLoopController()
         injector_config = SparkMaxConfig()
 
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
         injector_config.inverted(True)
+        injector_config.encoder.velocityConversionFactor(1 / 60)
+        injector_config.closedLoop.maxMotion.maxAcceleration(
+            self.INJECTOR_MAX_ACCEL
+        ).allowedClosedLoopError(self.INJECTOR_RPS_TOLERANCE)
+        # PID Values Need To Be Implemented
+        injector_config.closedLoop.P(0.0).I(0.0).D(0.0)
         self.injector_1.configure(
             injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
@@ -182,7 +191,10 @@ class AlgaeManipulatorComponent:
         if math.isclose(self.desired_injector_speed, 0.0) and self.has_algae():
             self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
         else:
-            self.injector_1.setVoltage(self.desired_injector_speed)
+            self.injector_closed_loop.setReference(
+                self.desired_injector_speed,
+                SparkMax.ControlType.kMAXMotionVelocityControl,
+            )
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
