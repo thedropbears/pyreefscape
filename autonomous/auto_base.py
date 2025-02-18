@@ -35,13 +35,10 @@ class AutoBase(AutonomousStateMachine):
         self.heading_controller.enableContinuousInput(-math.pi, math.pi)
 
         self.current_leg = -1
-        self.starting_pose = None
         self.trajectories = []
         for trajectory_name in trajectory_names:
-            try:
+            try:  # noqa: SIM105
                 self.trajectories.append(choreo.load_swerve_trajectory(trajectory_name))
-                if self.starting_pose is None:
-                    self.starting_pose = self.get_starting_pose()
             except ValueError:
                 # If the trajectory is not found, ChoreoLib already prints to DriverStation
                 pass
