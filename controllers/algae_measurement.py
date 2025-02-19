@@ -33,7 +33,10 @@ class AlgaeMeasurement(StateMachine):
         else:
             self.stopped_counter = 0
 
-        if self.stopped_counter >= 5:
+        if (
+            self.algae_manipulator_component.bottom_flywheel_speed()
+            or self.algae_manipulator_component.top_flywheel_speed() >= 0.25
+        ):
             self.algae_manipulator_component.algae_size = (
                 self.algae_manipulator_component.get_injector_position()
                 - self.starting_position
