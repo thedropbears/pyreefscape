@@ -34,12 +34,18 @@ class AlgaeMeasurement(StateMachine):
             self.stopped_counter = 0
 
         if (
-            self.algae_manipulator_component.bottom_flywheel_speed()
-            or self.algae_manipulator_component.top_flywheel_speed() >= 0.25
+            self.algae_manipulator_component.bottom_flywheel_speed() >= 0.25
+            and self.algae_manipulator_component.top_flywheel_speed() >= 0.25
         ):
             self.algae_manipulator_component.algae_size = (
                 self.algae_manipulator_component.get_injector_position()
                 - self.starting_position
             )
             self.stopped_counter = 0
+            self.done()
+
+    @state(must_finish=True)
+    def ball_retraction(self) -> None:
+        self.algae_manipulator_component.intake()
+        if self.algae_manipulator_component.has_algae():
             self.done()
