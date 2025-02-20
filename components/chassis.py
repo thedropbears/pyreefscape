@@ -208,6 +208,9 @@ class SwerveModule:
         return SwerveModuleState(self.get_speed(), self.get_rotation())
 
     def set_neutral_mode(self, neutral_mode: NeutralModeValue) -> None:
+        if self.neutral_mode == neutral_mode:
+            return
+
         self.steer_motor_out_config.neutral_mode = neutral_mode
         self.steer.configurator.apply(self.steer_motor_out_config)
 
