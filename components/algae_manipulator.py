@@ -19,9 +19,9 @@ from ids import DioChannel, SparkId, TalonId
 class AlgaeManipulatorComponent:
     FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
     INJECTOR_INJECT_SPEED = tunable(12.0)
-    INJECTOR_INTAKE_SPEED = tunable(2.0)
+    INJECTOR_INTAKE_SPEED = tunable(200)
     INJECTOR_BACKDRIVE_SPEED = tunable(-1.0)
-    INJECTOR_MEASURE_SPEED = tunable(100)
+    INJECTOR_MEASURE_SPEED = tunable(75)
 
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
@@ -59,6 +59,7 @@ class AlgaeManipulatorComponent:
         )
 
         self.injector_1_encoder = self.injector_1.getEncoder()
+        self.injector_2_encoder = self.injector_2.getEncoder()
 
         self.top_flywheel = TalonFX(TalonId.TOP_FLYWHEEL)
         self.bottom_flywheel = TalonFX(TalonId.BOTTOM_FLYWHEEL)
@@ -161,13 +162,20 @@ class AlgaeManipulatorComponent:
     def measure_algae(self) -> None:
         self.desired_injector_speed = self.INJECTOR_MEASURE_SPEED
 
-    @feedback
-    def get_injector_velocity(self) -> float:
-        return self.injector_1_encoder.getVelocity()
-
-    def get_injector_position(self) -> float:
+    def get_injector_1_position(self) -> float:
         return self.injector_1_encoder.getPosition()
 
+    def get_injector_2_position(self) -> float:
+        return self.injector_2_encoder.getPosition()
+
+    def flywheel_top_position(self) -> float:
+        return self.top_flywheel.get_position().value_as_double
+
+    @feedback
+    def flywheel_bottom_position(self) -> float:
+        return self.bottom_flywheel.get_position().value_as_double
+
+    @feedback
     def algae_size_feedback(self) -> float:
         return self.algae_size
 
