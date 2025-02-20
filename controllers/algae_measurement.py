@@ -12,7 +12,7 @@ class AlgaeMeasurement(StateMachine):
         self.injector_2_starting_position = 0.0
         self.flywheel_top_starting_position = 0.0
         self.flywheel_bottom_starting_position = 0.0
-        self.injector_pos_delta_list = []
+        self.injector_pos_delta_list: list[float] = []
 
     def measure(self) -> None:
         self.engage()
@@ -76,9 +76,9 @@ class AlgaeMeasurement(StateMachine):
         if len(self.injector_pos_delta_list) < 4:
             self.next_state("pre_measure")
         else:
-            self.injector_pos_delta_list.pop(1)
             self.algae_manipulator_component.algae_size = scale_value(
-                sum(self.injector_pos_delta_list) / len(self.injector_pos_delta_list),
+                sum(self.injector_pos_delta_list[1:])
+                / (len(self.injector_pos_delta_list) - 1),
                 4.55,
                 1.62,
                 16.0,
