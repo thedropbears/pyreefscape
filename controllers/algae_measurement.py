@@ -12,7 +12,7 @@ class AlgaeMeasurement(StateMachine):
         self.injector_2_starting_position = 0.0
         self.flywheel_top_starting_position = 0.0
         self.flywheel_bottom_starting_position = 0.0
-        self.measured_sizes = []
+        self.measured_sizes: list[float] = []
 
     def measure(self) -> None:
         self.engage()
