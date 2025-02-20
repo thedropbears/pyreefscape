@@ -5,14 +5,14 @@ from magicbot import StateMachine, state, tunable
 from components.algae_manipulator import AlgaeManipulatorComponent
 from components.intake import IntakeComponent
 from components.wrist import WristComponent
-from controllers.feeler import Feeler
+from controllers.algae_measurement import AlgaeMeasurement
 
 
 class FloorIntake(StateMachine):
     algae_manipulator_component: AlgaeManipulatorComponent
     wrist: WristComponent
     intake_component: IntakeComponent
-    feeler: Feeler
+    algae_measurement: AlgaeMeasurement
 
     HANDOFF_POSITION = tunable(math.radians(-112.0))
 
@@ -25,7 +25,7 @@ class FloorIntake(StateMachine):
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
         if self.algae_manipulator_component.has_algae():
-            self.next_state("feeling")
+            self.next_state("measuring")
             return
 
         self.intake_component.intake()
@@ -36,10 +36,10 @@ class FloorIntake(StateMachine):
         self.algae_manipulator_component.intake()
 
     @state(must_finish=True)
-    def feeling(self, initial_call):
+    def measuring(self, initial_call):
         if initial_call:
-            self.feeler.feel()
-        elif not self.feeler.is_executing:
+            self.algae_measurement.measure()
+        elif not self.algae_measurement.is_executing:
             self.done()
 
     def done(self) -> None:

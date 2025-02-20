@@ -40,7 +40,7 @@ class MyRobot(magicbot.MagicRobot):
     floor_intake: FloorIntake
     feeler: Feeler
     climber_state_machine: ClimberStateMachine
-    algae_measurment: AlgaeMeasurement
+    algae_measurement: AlgaeMeasurement
 
     # Components
     chassis: ChassisComponent
@@ -257,7 +257,7 @@ class MyRobot(magicbot.MagicRobot):
             self.floor_intake.intake()
 
         if self.gamepad.getRightBumper():
-            self.algae_measurment.engage()
+            self.algae_measurement.engage()
 
         # Controllers
         self.coral_placer.execute()
@@ -266,7 +266,7 @@ class MyRobot(magicbot.MagicRobot):
         self.floor_intake.execute()
         self.feeler.execute()
         self.climber_state_machine.execute()
-        self.algae_measurment.execute()
+        self.algae_measurement.execute()
 
         # Components
         self.chassis.execute()

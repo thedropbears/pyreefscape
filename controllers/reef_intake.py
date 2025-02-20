@@ -7,7 +7,7 @@ from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
 from components.led_component import LightStrip
 from components.wrist import WristComponent
-from controllers.feeler import Feeler
+from controllers.algae_measurement import AlgaeMeasurement
 from utilities import game
 
 
@@ -15,7 +15,7 @@ class ReefIntake(StateMachine):
     algae_manipulator_component: AlgaeManipulatorComponent
     wrist: WristComponent
     chassis: ChassisComponent
-    feeler: Feeler
+    algae_measurement: AlgaeMeasurement
     status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
@@ -78,7 +78,7 @@ class ReefIntake(StateMachine):
     def safing(self, initial_call: bool):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
-            self.feeler.engage()
+            self.algae_measurement.measure()
             self.chassis.stop_snapping()
 
         robot_pose = self.chassis.get_pose()
@@ -88,11 +88,11 @@ class ReefIntake(StateMachine):
         )
 
         if distance >= self.RETREAT_DISTANCE:
-            self.next_state("feeling")
+            self.next_state("measuring")
 
     @state(must_finish=True)
-    def feeling(self, initial_call):
-        if not self.feeler.is_executing:
+    def measuring(self):
+        if not self.algae_measurement.is_executing:
             self.done()
 
     def done(self) -> None:
