@@ -20,8 +20,8 @@ class AlgaeManipulatorComponent:
     FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
     INJECTOR_INJECT_SPEED = tunable(12.0)
     INJECTOR_INTAKE_SPEED = tunable(2.0)
-    INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
-    INJECTOR_MEASURE_SPEED = tunable(1.0)
+    INJECTOR_BACKDRIVE_SPEED = tunable(-1.0)
+    INJECTOR_MEASURE_SPEED = tunable(100)
 
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
@@ -40,12 +40,12 @@ class AlgaeManipulatorComponent:
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
         injector_config.inverted(True)
-        injector_config.encoder.velocityConversionFactor(1 / 60)
         injector_config.closedLoop.maxMotion.maxAcceleration(
             self.INJECTOR_MAX_ACCEL
         ).allowedClosedLoopError(self.INJECTOR_RPS_TOLERANCE)
+        injector_config.closedLoop.velocityFF(1 / 917)
         # PID Values Need To Be Implemented
-        injector_config.closedLoop.P(0.0).I(0.0).D(0.0)
+        injector_config.closedLoop.P(0.0001).I(0.0).D(0.0)
         self.injector_1.configure(
             injector_config,
             SparkMax.ResetMode.kResetSafeParameters,
@@ -195,11 +195,11 @@ class AlgaeManipulatorComponent:
         else:
             self.injector_1_closed_loop.setReference(
                 self.desired_injector_speed,
-                SparkMax.ControlType.kMAXMotionVelocityControl,
+                SparkMax.ControlType.kVelocity,
             )
             self.injector_2_closed_loop.setReference(
                 self.desired_injector_speed,
-                SparkMax.ControlType.kMAXMotionVelocityControl,
+                SparkMax.ControlType.kVelocity,
             )
 
         self.top_desired_flywheel_speed = 0.0
