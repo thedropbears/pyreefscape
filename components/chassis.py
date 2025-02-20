@@ -144,8 +144,6 @@ class SwerveModule:
         self.drive_request = VelocityVoltage(0)
         self.stop_request = VoltageOut(0)
 
-        self.neutral_mode = NeutralModeValue.BRAKE
-
     def get_angle_absolute(self) -> float:
         """Gets steer angle (rot) from absolute encoder"""
         return self.encoder.get_absolute_position().value
@@ -208,7 +206,7 @@ class SwerveModule:
         return SwerveModuleState(self.get_speed(), self.get_rotation())
 
     def set_neutral_mode(self, neutral_mode: NeutralModeValue) -> None:
-        if self.neutral_mode == neutral_mode:
+        if self.steer_motor_out_config.neutral_mode == neutral_mode:
             return
 
         self.steer_motor_out_config.neutral_mode = neutral_mode
@@ -217,10 +215,8 @@ class SwerveModule:
         self.drive_motor_out_config.neutral_mode = neutral_mode
         self.drive.configurator.apply(self.drive_motor_out_config)
 
-        self.neutral_mode = neutral_mode
-
     def toggle_neutral_mode(self) -> None:
-        if self.neutral_mode == NeutralModeValue.BRAKE:
+        if self.steer_motor_out_config.neutral_mode == NeutralModeValue.BRAKE:
             self.set_neutral_mode(NeutralModeValue.COAST)
         else:
             self.set_neutral_mode(NeutralModeValue.BRAKE)
