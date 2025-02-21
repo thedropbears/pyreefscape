@@ -27,7 +27,7 @@ class CoralPlacer(StateMachine):
 
     @timed_state(duration=0.5, must_finish=True)
     def placing(self) -> None:
-        self.coral_placer_component.place()
+        pass  # This is where the servo to release the coral would be activated
 
     def done(self) -> None:
         self.wrist.go_to_neutral()
