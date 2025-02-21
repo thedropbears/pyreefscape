@@ -5,11 +5,13 @@ from typing import ClassVar
 import numpy
 import wpiutil.wpistruct
 from magicbot import feedback
+from wpilib import DriverStation
 from wpimath.geometry import (
     Rotation2d,
     Translation2d,
 )
 
+from autonomous.auto_base import AutoBase
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.led_component import LightStrip
@@ -34,6 +36,8 @@ class BallisticsSolution:
 
 
 class BallisticsComponent:
+    auto_base: AutoBase
+
     chassis: ChassisComponent
     status_lights: LightStrip
     shooter_component: ShooterComponent
@@ -75,7 +79,10 @@ class BallisticsComponent:
 
     @feedback
     def range(self) -> float:
-        robot_pose = self.chassis.get_pose()
+        if DriverStation.isAutonomous():
+            robot_pose = self.auto_base.get_ending_pose()
+        else:
+            robot_pose = self.chassis.get_pose()
         robot_pos = robot_pose.translation()
         if is_red():
             if robot_pos.Y() < FIELD_WIDTH / 2:
@@ -93,7 +100,10 @@ class BallisticsComponent:
         distance = math.inf
         if not self.is_aligned():
             return distance
-        robot_pose = self.chassis.get_pose()
+        if DriverStation.isAutonomous():
+            robot_pose = self.auto_base.get_ending_pose()
+        else:
+            robot_pose = self.chassis.get_pose()
         barge_X = FIELD_LENGTH / 2
 
         robot_to_barge_X_offset = barge_X - robot_pose.translation().X()
@@ -105,7 +115,10 @@ class BallisticsComponent:
 
     @feedback
     def is_aligned(self) -> bool:
-        robot_pose = self.chassis.get_pose()
+        if DriverStation.isAutonomous():
+            robot_pose = self.auto_base.get_ending_pose()
+        else:
+            robot_pose = self.chassis.get_pose()
 
         if is_red():
             robot_to_top_point = self.barge_red_mid_end_point - robot_pose.translation()
