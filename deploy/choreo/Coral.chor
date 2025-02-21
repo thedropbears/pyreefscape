@@ -5,6 +5,90 @@
  "variables":{
   "expressions":{},
   "poses":{
+   "AlgaeAB":{
+    "x":{
+     "exp":"3.13 m",
+     "val":3.13
+    },
+    "y":{
+     "exp":"4.02 m",
+     "val":4.02
+    },
+    "heading":{
+     "exp":"-180 deg",
+     "val":-3.141592653589793
+    }
+   },
+   "AlgaeCD":{
+    "x":{
+     "exp":"3.81 m",
+     "val":3.81
+    },
+    "y":{
+     "exp":"2.82 m",
+     "val":2.82
+    },
+    "heading":{
+     "exp":"-120 deg",
+     "val":-2.0943951023931953
+    }
+   },
+   "AlgaeEF":{
+    "x":{
+     "exp":"Reef.x * 2 - AlgaeCD.x",
+     "val":5.171999999999999
+    },
+    "y":{
+     "exp":"AlgaeCD.y",
+     "val":2.82
+    },
+    "heading":{
+     "exp":"180 deg - AlgaeCD.heading",
+     "val":5.235987755982988
+    }
+   },
+   "AlgaeGH":{
+    "x":{
+     "exp":"Reef.x * 2 - AlgaeAB.x",
+     "val":5.851999999999999
+    },
+    "y":{
+     "exp":"AlgaeAB.y",
+     "val":4.02
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "AlgaeIJ":{
+    "x":{
+     "exp":"AlgaeEF.x",
+     "val":5.171999999999999
+    },
+    "y":{
+     "exp":"Reef.y * 2 - AlgaeEF.y",
+     "val":5.231999999999999
+    },
+    "heading":{
+     "exp":"360 deg - AlgaeEF.heading",
+     "val":1.0471975511965983
+    }
+   },
+   "AlgaeKL":{
+    "x":{
+     "exp":"AlgaeCD.x",
+     "val":3.81
+    },
+    "y":{
+     "exp":"Reef.y * 2 - AlgaeCD.y",
+     "val":5.231999999999999
+    },
+    "heading":{
+     "exp":"360 deg - AlgaeCD.heading",
+     "val":8.377580409572781
+    }
+   },
    "BranchB":{
     "x":{
      "exp":"3.13 m",
