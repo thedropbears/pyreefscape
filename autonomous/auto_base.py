@@ -93,6 +93,12 @@ class AutoBase(AutonomousStateMachine):
         if self.current_leg > 0 and not self.algae_manipulator_component.has_algae():
             self.reef_intake.intake()
 
+        if (
+            self.current_leg > 0
+            and self.algae_manipulator_component.should_be_holding_algae()
+        ):
+            self.algae_shooter.shoot()
+
         if distance < self.DISTANCE_TOLERANCE:
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:
