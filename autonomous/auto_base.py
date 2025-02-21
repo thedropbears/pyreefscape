@@ -142,7 +142,8 @@ class AutoBase(AutonomousStateMachine):
             self.coral_depositor_component.deposit()
         if self.injector_component.has_algae():
             self.coral_depositor_component.tuck()
-            self.next_state("tracking_trajectory")
+            if not self.reef_intake.is_executing:
+                self.next_state("tracking_trajectory")
 
     @state
     def shooting_algae(self, initial_call: bool) -> None:
