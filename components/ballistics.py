@@ -167,7 +167,7 @@ class BallisticsComponent:
         )
 
     def execute(self) -> None:
-        if self.algae_manipulator_component.should_be_holding_algae():
+        if self.algae_manipulator_component.has_algae():
             if self.is_in_range():
                 if self.is_aligned():
                     self.status_lights.facing_in_range()

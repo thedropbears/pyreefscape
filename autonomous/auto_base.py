@@ -90,10 +90,7 @@ class AutoBase(AutonomousStateMachine):
 
         distance = current_pose.translation().distance(final_pose.translation())
 
-        if (
-            self.current_leg > 0
-            and not self.algae_manipulator_component.should_be_holding_algae()
-        ):
+        if self.current_leg > 0 and not self.algae_manipulator_component.has_algae():
             self.reef_intake.intake()
 
         if distance < self.DISTANCE_TOLERANCE:
@@ -146,7 +143,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def intaking_algae(self) -> None:
-        if self.algae_manipulator_component.should_be_holding_algae():
+        if self.algae_manipulator_component.has_algae():
             self.next_state("tracking_trajectory")
 
     @state

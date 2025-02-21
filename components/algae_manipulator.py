@@ -143,15 +143,15 @@ class AlgaeManipulatorComponent:
         self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
     @feedback
-    def has_algae(self) -> bool:
+    def _algae_limit_switch_pressed(self) -> bool:
         return not self.algae_limit_switch.get()
 
     @feedback
-    def should_be_holding_algae(self) -> bool:
+    def has_algae(self) -> bool:
         return self.has_seen_algae
 
     def execute(self) -> None:
-        if self.has_algae():
+        if self._algae_limit_switch_pressed():
             self.has_seen_algae = True
 
         self.top_flywheel.set_control(VelocityVoltage(self.top_desired_flywheel_speed))
@@ -160,10 +160,7 @@ class AlgaeManipulatorComponent:
             VelocityVoltage(self.bottom_desired_flywheel_speed)
         )
 
-        if (
-            math.isclose(self.desired_injector_speed, 0.0)
-            and self.should_be_holding_algae()
-        ):
+        if math.isclose(self.desired_injector_speed, 0.0) and self.has_algae():
             self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
         else:
             self.injector_1.setVoltage(self.desired_injector_speed)
