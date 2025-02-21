@@ -189,7 +189,7 @@ class MyRobot(magicbot.MagicRobot):
         dpad = self.gamepad.getPOV()
 
         if (
-            self.algae_manipulator_component.should_be_holding_algae()
+            self.algae_manipulator_component.has_algae()
             or self.floor_intake.is_executing
             or self.reef_intake.is_executing
         ):
