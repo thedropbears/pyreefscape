@@ -9,6 +9,7 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
 from components.algae_manipulator import AlgaeManipulatorComponent
+from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
@@ -23,6 +24,7 @@ class AutoBase(AutonomousStateMachine):
 
     algae_manipulator_component: AlgaeManipulatorComponent
     chassis: ChassisComponent
+    ballistics_component: BallisticsComponent
 
     DISTANCE_TOLERANCE = 0.05  # metres
 
@@ -67,9 +69,6 @@ class AutoBase(AutonomousStateMachine):
     def get_starting_pose(self) -> Pose2d | None:
         return self.trajectories[0].get_initial_pose(game.is_red())
 
-    def get_ending_pose(self) -> Pose2d:
-        return self.trajectories[self.current_leg].get_final_pose(game.is_red())
-
     @state(first=True)
     def initialising(self) -> None:
         # Add any tasks that need doing first
@@ -90,6 +89,7 @@ class AutoBase(AutonomousStateMachine):
         if final_pose is None:
             self.done()
             return
+        self.ballistics_component.set_final_auto_pose(final_pose)
 
         distance = current_pose.translation().distance(final_pose.translation())
 
