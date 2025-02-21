@@ -16,7 +16,7 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"TopStart.x", "val":7.5}, "y":{"exp":"TopStart.y", "val":5.5}, "heading":{"exp":"TopStart.heading", "val":3.141592653589793}, "intervals":96, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"AllianceStart.x", "val":7.5}, "y":{"exp":"AllianceStart.y", "val":5.5}, "heading":{"exp":"AllianceStart.heading", "val":3.141592653589793}, "intervals":96, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"4.459385395050049 m", "val":4.459385395050049}, "y":{"exp":"5.722683906555176 m", "val":5.722683906555176}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":52, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"BranchL.x", "val":3.661}, "y":{"exp":"BranchL.y", "val":5.129999999999999}, "heading":{"exp":"BranchL.heading", "val":8.377580409572781}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
