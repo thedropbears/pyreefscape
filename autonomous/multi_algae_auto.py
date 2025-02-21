@@ -2,7 +2,7 @@ from autonomous.auto_base import AutoBase
 
 
 class CentreAuto(AutoBase):
-    MODE_NAME = "Centre (F>EF>GH>IJ)"
+    MODE_NAME = "F>EF>GH>IJ"
 
     def __init__(self):
         super().__init__(
@@ -19,7 +19,7 @@ class CentreAuto(AutoBase):
 
 
 class TopAuto(AutoBase):
-    MODE_NAME = "Top (L>KL>AB)"
+    MODE_NAME = "L>KL>AB"
 
     def __init__(self):
         super().__init__(
@@ -34,7 +34,7 @@ class TopAuto(AutoBase):
 
 
 class BottomAuto(AutoBase):
-    MODE_NAME = "Bottom (C>CD>KL)"
+    MODE_NAME = "C>CD>KL"
 
     def __init__(self):
         super().__init__(
