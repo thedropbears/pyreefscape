@@ -1,6 +1,6 @@
 import math
 
-from magicbot import StateMachine, state, timed_state, tunable
+from magicbot import StateMachine, state, tunable
 
 from components.coral_placer import CoralPlacerComponent
 from components.wrist import WristComponent
@@ -23,11 +23,7 @@ class CoralPlacer(StateMachine):
         if initial_call:
             self.wrist.tilt_to(self.CORAL_PLACE_ANGLE)
         if self.wrist.at_setpoint():
-            self.next_state("placing")
-
-    @timed_state(duration=0.5, must_finish=True)
-    def placing(self) -> None:
-        pass  # This is where the servo to release the coral would be activated
+            self.done()
 
     def done(self) -> None:
         self.wrist.go_to_neutral()
