@@ -18,7 +18,7 @@ from utilities import game
 
 x_controller = PIDController(1.0, 0.0, 0.0)
 y_controller = PIDController(1.0, 0.0, 0.0)
-heading_controller = PIDController(1.0, 0, 0)
+heading_controller = PIDController(3.0, 0, 0)
 heading_controller.enableContinuousInput(-math.pi, math.pi)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
