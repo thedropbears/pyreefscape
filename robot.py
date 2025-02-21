@@ -275,7 +275,7 @@ class MyRobot(magicbot.MagicRobot):
         # Components
         self.chassis.execute()
         self.climber.execute()
-        self.coral_placer_component.execute()
+        # self.coral_placer_component.execute()
         self.shooter_component.execute()
         self.injector_component.execute()
         if self.gamepad.getStartButton():
