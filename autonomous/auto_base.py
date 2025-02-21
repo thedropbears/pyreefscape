@@ -73,6 +73,9 @@ class AutoBase(AutonomousStateMachine):
     def get_starting_pose(self) -> Pose2d | None:
         return self.trajectories[0].get_initial_pose(game.is_red())
 
+    def get_ending_pose(self) -> Pose2d:
+        return self.trajectories[self.current_leg].get_final_pose(game.is_red())
+
     @state(first=True)
     def initialising(self) -> None:
         # Add any tasks that need doing first
