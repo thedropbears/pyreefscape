@@ -8,9 +8,9 @@ from ids import DioChannel, SparkId
 
 
 class InjectorComponent:
-    INJECTOR_INJECT_SPEED = tunable(12.0)
-    INJECTOR_INTAKE_SPEED = tunable(200)
-    INJECTOR_BACKDRIVE_SPEED = tunable(-1.0)
+    INJECTOR_INJECT_VOLTAGE = tunable(12.0)
+    INJECTOR_INTAKE_VOLTAGE = tunable(-2.0)
+    INJECTOR_BACKDRIVE_VOLTAGE = tunable(-0.5)
     INJECTOR_MEASURE_SPEED = tunable(75)
 
     INJECTOR_RPS_TOLERANCE = 0.5
@@ -49,7 +49,9 @@ class InjectorComponent:
 
         self.has_seen_algae: bool = False
 
-        self.desired_injector_speed = 0.0
+        self.should_measure = False
+
+        self.desired_injector_voltage = 0.0
 
     @feedback
     def has_algae(self) -> bool:
@@ -60,14 +62,14 @@ class InjectorComponent:
         return self.has_seen_algae
 
     def inject(self) -> None:
-        self.desired_injector_speed = self.INJECTOR_INJECT_SPEED
+        self.desired_injector_voltage = self.INJECTOR_INJECT_VOLTAGE
         self.has_seen_algae = False
 
     def intake(self) -> None:
-        self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
+        self.desired_injector_voltage = self.INJECTOR_INTAKE_VOLTAGE
 
     def measure_algae(self) -> None:
-        self.desired_injector_speed = self.INJECTOR_MEASURE_SPEED
+        self.should_measure = True
 
     def get_injector_positions(self) -> tuple[float, float]:
         return (
@@ -79,17 +81,21 @@ class InjectorComponent:
         if self.has_algae():
             self.has_seen_algae = True
 
-        if math.isclose(self.desired_injector_speed, 0.0) and self.has_seen_algae:
-            self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
-            self.injector_2.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
-        else:
+        if math.isclose(self.desired_injector_voltage, 0.0) and self.has_seen_algae:
+            self.desired_injector_voltage = self.INJECTOR_BACKDRIVE_VOLTAGE
+
+        if self.should_measure:
             self.injector_1_closed_loop.setReference(
-                self.desired_injector_speed,
+                self.INJECTOR_MEASURE_SPEED,
                 SparkMax.ControlType.kVelocity,
             )
             self.injector_2_closed_loop.setReference(
-                self.desired_injector_speed,
+                self.INJECTOR_MEASURE_SPEED,
                 SparkMax.ControlType.kVelocity,
             )
+        else:
+            self.injector_1.setVoltage(self.desired_injector_voltage)
+            self.injector_2.setVoltage(self.desired_injector_voltage)
 
-        self.desired_injector_speed = 0.0
+        self.should_measure = False
+        self.desired_injector_voltage = 0.0
