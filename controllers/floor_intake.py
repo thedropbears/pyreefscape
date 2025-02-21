@@ -2,14 +2,16 @@ import math
 
 from magicbot import StateMachine, state, tunable
 
-from components.algae_manipulator import AlgaeManipulatorComponent
+from components.injector import InjectorComponent
 from components.intake import IntakeComponent
+from components.shooter import ShooterComponent
 from components.wrist import WristComponent
 from controllers.algae_measurement import AlgaeMeasurement
 
 
 class FloorIntake(StateMachine):
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
     wrist: WristComponent
     intake_component: IntakeComponent
     algae_measurement: AlgaeMeasurement
@@ -24,7 +26,7 @@ class FloorIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
-        if self.algae_manipulator_component.has_algae():
+        if self.injector_component.has_algae():
             self.next_state("measuring")
             return
 
@@ -33,7 +35,8 @@ class FloorIntake(StateMachine):
         if initial_call:
             self.wrist.tilt_to(self.HANDOFF_POSITION)
 
-        self.algae_manipulator_component.intake()
+        self.shooter_component.intake()
+        self.injector_component.intake()
 
     @state(must_finish=True)
     def measuring(self, initial_call):

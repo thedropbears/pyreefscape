@@ -10,9 +10,10 @@ from wpimath.geometry import (
     Translation2d,
 )
 
-from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
+from components.injector import InjectorComponent
 from components.led_component import LightStrip
+from components.shooter import ShooterComponent
 from utilities.game import FIELD_LENGTH, FIELD_WIDTH, is_red
 
 
@@ -29,7 +30,8 @@ class BallisticsSolution:
 class BallisticsComponent:
     chassis: ChassisComponent
     status_lights: LightStrip
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
 
     barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
@@ -146,21 +148,21 @@ class BallisticsComponent:
         return BallisticsSolution(
             float(
                 numpy.interp(
-                    self.algae_manipulator_component.algae_size,
+                    self.shooter_component.algae_size,
                     self.BALL_SIZES,
                     top_speeds,
                 )
             ),
             float(
                 numpy.interp(
-                    self.algae_manipulator_component.algae_size,
+                    self.shooter_component.algae_size,
                     self.BALL_SIZES,
                     bottom_speeds,
                 )
             ),
             float(
                 numpy.interp(
-                    self.algae_manipulator_component.algae_size,
+                    self.shooter_component.algae_size,
                     self.BALL_SIZES,
                     inclinations,
                 )
@@ -168,7 +170,7 @@ class BallisticsComponent:
         )
 
     def execute(self) -> None:
-        if self.algae_manipulator_component.has_algae():
+        if self.injector_component.has_algae():
             if self.is_in_range():
                 if self.is_aligned():
                     self.status_lights.facing_in_range()

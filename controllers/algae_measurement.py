@@ -1,17 +1,17 @@
 from magicbot import StateMachine, state, timed_state
 
-from components.algae_manipulator import AlgaeManipulatorComponent
+from components.injector import InjectorComponent
+from components.shooter import ShooterComponent
 from utilities.scalers import scale_value
 
 
 class AlgaeMeasurement(StateMachine):
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
 
     def __init__(self) -> None:
-        self.injector_1_starting_position = 0.0
-        self.injector_2_starting_position = 0.0
-        self.flywheel_top_starting_position = 0.0
-        self.flywheel_bottom_starting_position = 0.0
+        self.injector_starting_positions = (0.0, 0.0)
+        self.flywheel_starting_positions = (0.0, 0.0)
         self.measured_sizes: list[float] = []
 
     def measure(self) -> None:
@@ -33,9 +33,9 @@ class AlgaeMeasurement(StateMachine):
     def calculating(self) -> None:
         if len(self.measured_sizes) == 3:
             # Throw away the first one and average the last two
-            self.algae_manipulator_component.algae_size = sum(
-                self.measured_sizes[1:]
-            ) / (len(self.measured_sizes) - 1)
+            self.shooter_component.algae_size = sum(self.measured_sizes[1:]) / (
+                len(self.measured_sizes) - 1
+            )
             self.done()
         else:
             self.next_state("pre_measure")
@@ -43,36 +43,26 @@ class AlgaeMeasurement(StateMachine):
     @state(must_finish=True)
     def measuring(self, initial_call) -> None:
         if initial_call:
-            self.injector_1_starting_position = (
-                self.algae_manipulator_component.get_injector_1_position()
-            )
-            self.injector_2_starting_position = (
-                self.algae_manipulator_component.get_injector_2_position()
+            self.injector_starting_positions = (
+                self.injector_component.get_injector_positions()
             )
 
-            self.flywheel_top_starting_position = (
-                self.algae_manipulator_component.flywheel_top_position()
-            )
-            self.flywheel_bottom_starting_position = (
-                self.algae_manipulator_component.flywheel_bottom_position()
+            self.flywheel_starting_positions = (
+                self.shooter_component.flywheel_positions()
             )
 
-        self.algae_manipulator_component.measure_algae()
+        self.injector_component.measure_algae()
 
-        if (
-            self.algae_manipulator_component.flywheel_top_position()
-            - self.flywheel_top_starting_position
-        ) >= 0.001 and (
-            self.algae_manipulator_component.flywheel_bottom_position()
-            - self.flywheel_bottom_starting_position
-        ) >= 0.001:
-            injector_position_delta = (
-                self.algae_manipulator_component.get_injector_1_position()
-                - self.injector_1_starting_position
-            ) + (
-                self.algae_manipulator_component.get_injector_2_position()
-                - self.injector_2_starting_position
+        if all(
+            current - start >= 0.001
+            for current, start in zip(
+                self.shooter_component.flywheel_positions(),
+                self.flywheel_starting_positions,
             )
+        ):
+            injector_position_delta = sum(
+                self.injector_component.get_injector_positions()
+            ) - sum(self.injector_starting_positions)
             self.measured_sizes.append(
                 scale_value(injector_position_delta, 4.55, 1.62, 16.0, 17.0)
             )
@@ -81,6 +71,7 @@ class AlgaeMeasurement(StateMachine):
 
     @state(must_finish=True)
     def ball_retraction(self) -> None:
-        self.algae_manipulator_component.intake()
-        if self.algae_manipulator_component.has_algae():
+        self.shooter_component.intake()
+        self.injector_component.intake()
+        if self.injector_component.has_algae():
             self.next_state("calculating")

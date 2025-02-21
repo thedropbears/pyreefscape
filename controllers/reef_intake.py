@@ -3,16 +3,18 @@ import math
 import wpilib
 from magicbot import StateMachine, feedback, state, tunable
 
-from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
+from components.injector import InjectorComponent
 from components.led_component import LightStrip
+from components.shooter import ShooterComponent
 from components.wrist import WristComponent
 from controllers.algae_measurement import AlgaeMeasurement
 from utilities import game
 
 
 class ReefIntake(StateMachine):
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
     wrist: WristComponent
     chassis: ChassisComponent
     algae_measurement: AlgaeMeasurement
@@ -52,7 +54,7 @@ class ReefIntake(StateMachine):
                 self.done()
                 return
 
-        if self.algae_manipulator_component.has_algae():
+        if self.injector_component.has_algae():
             self.next_state("safing")
 
         nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]
@@ -72,7 +74,8 @@ class ReefIntake(StateMachine):
                 self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
             self.last_l3 = current_is_L3
 
-        self.algae_manipulator_component.intake()
+        self.shooter_component.intake()
+        self.injector_component.intake()
 
     @state(must_finish=True)
     def safing(self, initial_call: bool):

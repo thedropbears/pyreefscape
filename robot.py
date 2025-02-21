@@ -10,14 +10,15 @@ from wpimath.filter import Debouncer
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from autonomous.auto_base import AutoBase
-from components.algae_manipulator import AlgaeManipulatorComponent
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
 from components.coral_placer import CoralPlacerComponent
 from components.feeler import FeelerComponent
+from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
+from components.shooter import ShooterComponent
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_measurement import AlgaeMeasurement
@@ -46,7 +47,8 @@ class MyRobot(magicbot.MagicRobot):
     chassis: ChassisComponent
     climber: ClimberComponent
     coral_placer_component: CoralPlacerComponent
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
     vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
@@ -191,7 +193,7 @@ class MyRobot(magicbot.MagicRobot):
         dpad = self.gamepad.getPOV()
 
         if (
-            self.algae_manipulator_component.has_algae()
+            self.injector_component.has_algae()
             or self.floor_intake.is_executing
             or self.reef_intake.is_executing
         ):
@@ -272,7 +274,7 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.execute()
         self.climber.execute()
         self.coral_placer_component.execute()
-        self.algae_manipulator_component.execute()
+        self.shooter_component.execute()
         if self.gamepad.getStartButton():
             self.vision.zero_servo_()
         else:
