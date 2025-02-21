@@ -160,7 +160,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def intaking_algae(self) -> None:
-        if self.injector_component.has_algae():
+        if not self.reef_intake.is_executing:
             self.next_state("tracking_trajectory")
 
     @state
