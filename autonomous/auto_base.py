@@ -31,8 +31,8 @@ class AutoBase(AutonomousStateMachine):
     def __init__(self, trajectory_names: list[str]) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
         super().__init__()
-        self.x_controller = PIDController(1.0, 0.0, 0.0)
-        self.y_controller = PIDController(1.0, 0.0, 0.0)
+        self.x_controller = PIDController(3.0, 0.0, 0.0)
+        self.y_controller = PIDController(3.0, 0.0, 0.0)
         self.heading_controller = PIDController(1.0, 0, 0)
         self.heading_controller.enableContinuousInput(-math.pi, math.pi)
 
