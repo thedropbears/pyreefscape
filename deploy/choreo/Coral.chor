@@ -131,6 +131,34 @@
      "val":-2.0943951023931953
     }
    },
+   "BranchF":{
+    "x":{
+     "exp":"Reef.x * 2 - BranchC.x",
+     "val":5.321
+    },
+    "y":{
+     "exp":"BranchC.y",
+     "val":2.922
+    },
+    "heading":{
+     "exp":"180 deg - BranchC.heading",
+     "val":5.235987755982988
+    }
+   },
+   "BranchL":{
+    "x":{
+     "exp":"BranchC.x",
+     "val":3.661
+    },
+    "y":{
+     "exp":"Reef.y * 2 - BranchC.y",
+     "val":5.129999999999999
+    },
+    "heading":{
+     "exp":"360 deg - BranchC.heading",
+     "val":8.377580409572781
+    }
+   },
    "Reef":{
     "x":{
      "exp":"4.491 m",
