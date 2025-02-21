@@ -102,6 +102,9 @@ class AutoBase(AutonomousStateMachine):
         else:
             self.reef_intake.intake()
 
+        if self.current_leg > 0 and self.injector_component.has_algae():
+            self.algae_shooter.shoot()
+
         if (
             distance < self.DISTANCE_TOLERANCE
             and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
