@@ -6,10 +6,7 @@ import numpy
 import wpiutil.wpistruct
 from magicbot import feedback
 from wpilib import DriverStation
-from wpimath.geometry import (
-    Rotation2d,
-    Translation2d,
-)
+from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 
 from autonomous.auto_base import AutoBase
 from components.chassis import ChassisComponent
@@ -68,7 +65,10 @@ class BallisticsComponent:
     robot_to_shooter = Rotation2d.fromDegrees(180)
 
     def __init__(self) -> None:
-        pass
+        self.auto_final_pose = Pose2d(0, 0, 0)
+
+    def set_final_auto_pose(self, pose: Pose2d) -> None:
+        self.auto_final_pose = pose
 
     @feedback
     def is_in_range(self) -> bool:
@@ -80,7 +80,7 @@ class BallisticsComponent:
     @feedback
     def range(self) -> float:
         if DriverStation.isAutonomous():
-            robot_pose = self.auto_base.get_ending_pose()
+            robot_pose = self.auto_final_pose
         else:
             robot_pose = self.chassis.get_pose()
         robot_pos = robot_pose.translation()
@@ -101,7 +101,7 @@ class BallisticsComponent:
         if not self.is_aligned():
             return distance
         if DriverStation.isAutonomous():
-            robot_pose = self.auto_base.get_ending_pose()
+            robot_pose = self.auto_final_pose
         else:
             robot_pose = self.chassis.get_pose()
         barge_X = FIELD_LENGTH / 2
@@ -116,7 +116,7 @@ class BallisticsComponent:
     @feedback
     def is_aligned(self) -> bool:
         if DriverStation.isAutonomous():
-            robot_pose = self.auto_base.get_ending_pose()
+            robot_pose = self.auto_final_pose
         else:
             robot_pose = self.chassis.get_pose()
 

@@ -9,6 +9,7 @@ from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
+from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent
 from components.coral_depositor import CoralDepositorComponent
 from components.injector import InjectorComponent
@@ -32,6 +33,7 @@ class AutoBase(AutonomousStateMachine):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     chassis: ChassisComponent
+    ballistics_component: BallisticsComponent
 
     DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
@@ -73,9 +75,6 @@ class AutoBase(AutonomousStateMachine):
     def get_starting_pose(self) -> Pose2d | None:
         return self.trajectories[0].get_initial_pose(game.is_red())
 
-    def get_ending_pose(self) -> Pose2d:
-        return self.trajectories[self.current_leg].get_final_pose(game.is_red())
-
     @state(first=True)
     def initialising(self) -> None:
         # Add any tasks that need doing first
@@ -96,6 +95,7 @@ class AutoBase(AutonomousStateMachine):
         if final_pose is None:
             self.done()
             return
+        self.ballistics_component.set_final_auto_pose(final_pose)
 
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
