@@ -18,6 +18,7 @@ class AlgaeShooter(StateMachine):
     TOP_SHOOT_SPEED = tunable(60.0)
     BOTTOM_SHOOT_SPEED = tunable(65.0)
     use_ballistics = tunable(True)
+    CHASSIS_SPEED_TOLERANCE = tunable(0.2)
 
     def __init__(self) -> None:
         pass
@@ -49,6 +50,8 @@ class AlgaeShooter(StateMachine):
             self.wrist.at_setpoint()
             and self.algae_manipulator_component.top_flywheels_up_to_speed()
             and self.algae_manipulator_component.bottom_flywheels_up_to_speed()
+            and self.chassis.get_velocity().vx < self.CHASSIS_SPEED_TOLERANCE
+            and self.chassis.get_velocity().vy < self.CHASSIS_SPEED_TOLERANCE
         ):
             self.next_state("shooting")
 
