@@ -2,12 +2,10 @@ import math
 
 from magicbot import StateMachine, state, tunable
 
-from components.coral_placer import CoralPlacerComponent
 from components.wrist import WristComponent
 
 
 class CoralPlacer(StateMachine):
-    coral_placer_component: CoralPlacerComponent
     wrist: WristComponent
 
     CORAL_PLACE_ANGLE = tunable(math.radians(-5.0))
