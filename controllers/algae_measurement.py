@@ -1,4 +1,6 @@
-from magicbot import StateMachine, feedback, state, timed_state
+import time
+
+from magicbot import StateMachine, feedback, state, tunable
 
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
@@ -9,11 +11,14 @@ class AlgaeMeasurement(StateMachine):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
 
+    retraction_speed = tunable(-4.0)
+
     def __init__(self) -> None:
         self.injector_starting_positions = (0.0, 0.0)
         self.flywheel_starting_positions = (0.0, 0.0)
         self.measured_sizes: list[float] = []
         self.measured_raw_sizes: list[float] = []
+        self.recovery_start_time = 0
 
     def measure(self) -> None:
         self.engage()
@@ -25,13 +30,19 @@ class AlgaeMeasurement(StateMachine):
         if all(abs(v) <= 0.0001 for v in self.shooter_component.flywheel_speeds()):
             self.next_state("calculating")
 
-    @timed_state(
-        duration=0.5,
-        next_state="measuring",
-        must_finish=True,
-    )
-    def pre_measure(self) -> None:
-        self.injector_component.desired_injector_voltage = -2.0
+    state(must_finish=True)
+
+    def pre_measure(self, initial_call) -> None:
+        if initial_call:
+            self.recovery_start_time = time.monotonic()
+        self.injector_component.desired_injector_voltage = self.retraction_speed
+
+        if (
+            (time.monotonic() - self.recovery_start_time) > 0.01
+            and all(v < 0.01 for v in self.injector_component.get_injector_velocities())
+            or (time.monotonic() - self.recovery_start_time) > 1.0
+        ):
+            self.next_state("measuring")
 
     @state(must_finish=True)
     def calculating(self) -> None:
@@ -77,9 +88,17 @@ class AlgaeMeasurement(StateMachine):
 
             self.next_state("calculating")
 
-    @timed_state(duration=0.5, must_finish=True)
-    def recovering(self) -> None:
-        self.injector_component.desired_injector_voltage = -2.0
+    @state(must_finish=True)
+    def recovering(self, initial_call) -> None:
+        if initial_call:
+            self.recovery_start_time = time.monotonic()
+        self.injector_component.desired_injector_voltage = self.retraction_speed
+        if (
+            (time.monotonic() - self.recovery_start_time) > 0.01
+            and all(v < 0.01 for v in self.injector_component.get_injector_velocities())
+            or (time.monotonic() - self.recovery_start_time) > 1.0
+        ):
+            self.done()
 
     @feedback
     def raw_ball_measurments(self) -> list[float]:
