@@ -34,21 +34,22 @@ class BallisticsComponent:
     barge_red_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
 
-    FLYWHEEL_DISTANCE_LOOKUP = (1.5, 2.0, 3.0, 4.0)
+    # TODO Retune for  >= 4m when the space allows
+    FLYWHEEL_DISTANCE_LOOKUP = (1.5, 2.0, 3.0)  # , 4.0
     # Keys of the lookup dictionaries are ball diameters in inches
     # Tuples are values corresponding to the distances above
     # fmt: off
     FLYWHEEL_TOP_SPEED_LOOKUP = {
-        16.0: (65, 65, 90, 90),
+        16.0: (30, 32.5, 38.0),  # , 90
         # 16.5: (60, 80),
-        17.0: (30, 32, 37, 50),
+        17.0: (33, 36, 39.0), # , 50
     }
     # Currently we use the same speed top and bottom, but this could be seperate
     FLYWHEEL_BOTTOM_SPEED_LOOKUP = FLYWHEEL_TOP_SPEED_LOOKUP
     FLYWHEEL_ANGLE_LOOKUP = {
-        16.0: (math.radians(-10), math.radians(-15), math.radians(-20), math.radians(-25)),
+        16.0: (math.radians(-10), math.radians(-12), math.radians(-19)), # , math.radians(-25)
         # 16.5: (math.radians(-15), math.radians(-20)),
-        17.0: (math.radians(-10), math.radians(-15), math.radians(-20), math.radians(-25)),
+        17.0: (math.radians(-10), math.radians(-12), math.radians(-19)), # , math.radians(-25)
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())
