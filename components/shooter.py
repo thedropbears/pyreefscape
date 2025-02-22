@@ -10,42 +10,17 @@ from phoenix6.configs import (
 from phoenix6.controls import VelocityVoltage
 from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
-from rev import SparkMax, SparkMaxConfig
-from wpilib import DigitalInput
 
-from ids import DioChannel, SparkId, TalonId
+from ids import TalonId
 
 
-class AlgaeManipulatorComponent:
+class ShooterComponent:
     FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
-    INJECTOR_INJECT_SPEED = tunable(12.0)
-    INJECTOR_INTAKE_SPEED = tunable(-2.0)
-    INJECTOR_BACKDRIVE_SPEED = tunable(-0.5)
-
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
     def __init__(self) -> None:
-        self.injector_1 = SparkMax(SparkId.INJECTOR_1, SparkMax.MotorType.kBrushless)
-        self.injector_2 = SparkMax(SparkId.INJECTOR_2, SparkMax.MotorType.kBrushless)
-        injector_config = SparkMaxConfig()
-
-        self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
-
-        injector_config.inverted(True)
-        self.injector_1.configure(
-            injector_config,
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
-        injector_config.follow(SparkId.INJECTOR_1, True)
-        self.injector_2.configure(
-            injector_config,
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
-
         self.top_flywheel = TalonFX(TalonId.TOP_FLYWHEEL)
         self.bottom_flywheel = TalonFX(TalonId.BOTTOM_FLYWHEEL)
         top_flywheel_config = self.top_flywheel.configurator
@@ -96,12 +71,8 @@ class AlgaeManipulatorComponent:
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
-        self.desired_injector_speed = 0.0
 
         self.algae_size = 0.0
-        self.desired_feeler_angle = 90.0
-
-        self.has_seen_algae: bool = False
 
     def spin_flywheels(
         self, top_flywheel_shoot_speed: float, bottom_flywheel_shoot_speed: float
@@ -114,7 +85,7 @@ class AlgaeManipulatorComponent:
         return math.isclose(
             self.top_desired_flywheel_speed,
             self.top_flywheel.get_velocity().value,
-            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERANCE,
+            abs_tol=ShooterComponent.FLYWHEEL_RPS_TOLERANCE,
         )
 
     @feedback
@@ -122,49 +93,37 @@ class AlgaeManipulatorComponent:
         return math.isclose(
             self.bottom_desired_flywheel_speed,
             self.bottom_flywheel.get_velocity().value,
-            abs_tol=AlgaeManipulatorComponent.FLYWHEEL_RPS_TOLERANCE,
+            abs_tol=ShooterComponent.FLYWHEEL_RPS_TOLERANCE,
         )
 
     @feedback
-    def top_flywheel_speed(self) -> float:
-        return self.top_flywheel.get_velocity().value
-
-    @feedback
-    def bottom_flywheel_speed(self) -> float:
-        return self.bottom_flywheel.get_velocity().value
-
-    def inject(self) -> None:
-        self.desired_injector_speed = self.INJECTOR_INJECT_SPEED
-        self.has_seen_algae = False
+    def flywheel_speeds(self) -> tuple[float, float]:
+        return (
+            self.top_flywheel.get_velocity().value,
+            self.bottom_flywheel.get_velocity().value,
+        )
 
     def intake(self) -> None:
         self.top_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
         self.bottom_desired_flywheel_speed = self.FLYWHEEL_INTAKE_SPEED
-        self.desired_injector_speed = self.INJECTOR_INTAKE_SPEED
 
     @feedback
-    def _algae_limit_switch_pressed(self) -> bool:
-        return not self.algae_limit_switch.get()
+    def algae_size_feedback(self) -> float:
+        return self.algae_size
 
     @feedback
-    def has_algae(self) -> bool:
-        return self.has_seen_algae
+    def flywheel_positions(self) -> tuple[float, float]:
+        return (
+            self.top_flywheel.get_position().value_as_double,
+            self.bottom_flywheel.get_position().value_as_double,
+        )
 
     def execute(self) -> None:
-        if self._algae_limit_switch_pressed():
-            self.has_seen_algae = True
-
         self.top_flywheel.set_control(VelocityVoltage(self.top_desired_flywheel_speed))
 
         self.bottom_flywheel.set_control(
             VelocityVoltage(self.bottom_desired_flywheel_speed)
         )
 
-        if math.isclose(self.desired_injector_speed, 0.0) and self.has_algae():
-            self.injector_1.setVoltage(self.INJECTOR_BACKDRIVE_SPEED)
-        else:
-            self.injector_1.setVoltage(self.desired_injector_speed)
-
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
-        self.desired_injector_speed = 0.0

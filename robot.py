@@ -10,16 +10,18 @@ from wpimath.filter import Debouncer
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from autonomous.auto_base import AutoBase
-from components.algae_manipulator import AlgaeManipulatorComponent
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
 from components.coral_placer import CoralPlacerComponent
 from components.feeler import FeelerComponent
+from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
+from components.shooter import ShooterComponent
 from components.vision import VisualLocalizer
 from components.wrist import WristComponent
+from controllers.algae_measurement import AlgaeMeasurement
 from controllers.algae_shooter import AlgaeShooter
 from controllers.climber import ClimberStateMachine
 from controllers.coral_placer import CoralPlacer
@@ -39,12 +41,14 @@ class MyRobot(magicbot.MagicRobot):
     floor_intake: FloorIntake
     feeler: Feeler
     climber_state_machine: ClimberStateMachine
+    algae_measurement: AlgaeMeasurement
 
     # Components
     chassis: ChassisComponent
     climber: ClimberComponent
     coral_placer_component: CoralPlacerComponent
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
     vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
@@ -189,7 +193,7 @@ class MyRobot(magicbot.MagicRobot):
         dpad = self.gamepad.getPOV()
 
         if (
-            self.algae_manipulator_component.has_algae()
+            self.injector_component.has_algae()
             or self.floor_intake.is_executing
             or self.reef_intake.is_executing
         ):
@@ -254,6 +258,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
 
+        if self.gamepad.getRightBumper():
+            self.algae_measurement.engage()
+
         # Controllers
         self.coral_placer.execute()
         self.reef_intake.execute()
@@ -261,12 +268,13 @@ class MyRobot(magicbot.MagicRobot):
         self.floor_intake.execute()
         self.feeler.execute()
         self.climber_state_machine.execute()
+        self.algae_measurement.execute()
 
         # Components
         self.chassis.execute()
         self.climber.execute()
         self.coral_placer_component.execute()
-        self.algae_manipulator_component.execute()
+        self.shooter_component.execute()
         if self.gamepad.getStartButton():
             self.vision.zero_servo_()
         else:

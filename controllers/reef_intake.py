@@ -3,19 +3,21 @@ import math
 import wpilib
 from magicbot import StateMachine, feedback, state, tunable
 
-from components.algae_manipulator import AlgaeManipulatorComponent
 from components.chassis import ChassisComponent
+from components.injector import InjectorComponent
 from components.led_component import LightStrip
+from components.shooter import ShooterComponent
 from components.wrist import WristComponent
-from controllers.feeler import Feeler
+from controllers.algae_measurement import AlgaeMeasurement
 from utilities import game
 
 
 class ReefIntake(StateMachine):
-    algae_manipulator_component: AlgaeManipulatorComponent
+    shooter_component: ShooterComponent
+    injector_component: InjectorComponent
     wrist: WristComponent
     chassis: ChassisComponent
-    feeler: Feeler
+    algae_measurement: AlgaeMeasurement
     status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
@@ -52,7 +54,7 @@ class ReefIntake(StateMachine):
                 self.done()
                 return
 
-        if self.algae_manipulator_component.has_algae():
+        if self.injector_component.has_algae():
             self.next_state("safing")
 
         nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]
@@ -72,13 +74,14 @@ class ReefIntake(StateMachine):
                 self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
             self.last_l3 = current_is_L3
 
-        self.algae_manipulator_component.intake()
+        self.shooter_component.intake()
+        self.injector_component.intake()
 
     @state(must_finish=True)
     def safing(self, initial_call: bool):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
-            self.feeler.engage()
+            self.algae_measurement.measure()
             self.chassis.stop_snapping()
 
         robot_pose = self.chassis.get_pose()
@@ -88,11 +91,6 @@ class ReefIntake(StateMachine):
         )
 
         if distance >= self.RETREAT_DISTANCE:
-            self.next_state("feeling")
-
-    @state(must_finish=True)
-    def feeling(self, initial_call):
-        if not self.feeler.is_executing:
             self.done()
 
     def done(self) -> None:

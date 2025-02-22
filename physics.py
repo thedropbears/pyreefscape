@@ -116,12 +116,12 @@ class PhysicsEngine:
         ]
         self.flywheels = [
             Falcon500MotorSim(
-                robot.algae_manipulator_component.top_flywheel,
+                robot.shooter_component.top_flywheel,
                 gearing=1 / 1,
                 moi=0.00105679992,
             ),
             Falcon500MotorSim(
-                robot.algae_manipulator_component.bottom_flywheel,
+                robot.shooter_component.bottom_flywheel,
                 gearing=1 / 1,
                 moi=0.00156014845,
             ),
@@ -160,7 +160,7 @@ class PhysicsEngine:
         self.vision_encoder_sim = DutyCycleEncoderSim(self.visual_localiser.encoder)
 
         self.algae_limit_switch_sim = DIOSim(
-            robot.algae_manipulator_component.algae_limit_switch
+            robot.injector_component.algae_limit_switch
         )
         self.algae_finger_switch_sim = DIOSim(robot.feeler_component.limit_switch)
         self.algae_pickup_counter = 0
