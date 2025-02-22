@@ -19,7 +19,7 @@ class CentreAuto(AutoBase):
 
 
 class AllianceSideAuto(AutoBase):
-    MODE_NAME = "Alliance Start L>KL>AB"
+    MODE_NAME = "Alliance Side L>KL>AB"
 
     def __init__(self):
         super().__init__(
