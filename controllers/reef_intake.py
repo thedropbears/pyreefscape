@@ -91,11 +91,6 @@ class ReefIntake(StateMachine):
         )
 
         if distance >= self.RETREAT_DISTANCE:
-            self.next_state("measuring")
-
-    @state(must_finish=True)
-    def measuring(self):
-        if not self.algae_measurement.is_executing:
             self.done()
 
     def done(self) -> None:

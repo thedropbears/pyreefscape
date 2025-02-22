@@ -7,6 +7,7 @@ from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
 from components.wrist import WristComponent
+from controllers.algae_measurement import AlgaeMeasurement
 
 
 class AlgaeShooter(StateMachine):
@@ -15,6 +16,7 @@ class AlgaeShooter(StateMachine):
     ballistics_component: BallisticsComponent
     chassis: ChassisComponent
     wrist: WristComponent
+    algae_measurement: AlgaeMeasurement
 
     SHOOT_ANGLE = tunable(-50.0)
     TOP_SHOOT_SPEED = tunable(60.0)
@@ -29,6 +31,9 @@ class AlgaeShooter(StateMachine):
 
     @state(first=True, must_finish=True)
     def preparing(self, initial_call: bool):
+        if self.algae_measurement.is_executing:
+            self.done()
+            return
         if self.use_ballistics:
             if initial_call and (
                 not self.ballistics_component.is_in_range()

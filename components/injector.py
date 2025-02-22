@@ -26,6 +26,7 @@ class InjectorComponent:
         injector_config = SparkMaxConfig()
 
         injector_config.inverted(True)
+        injector_config.smartCurrentLimit(20)
         injector_config.closedLoop.maxMotion.maxAcceleration(
             self.INJECTOR_MAX_ACCEL
         ).allowedClosedLoopError(self.INJECTOR_RPS_TOLERANCE)
