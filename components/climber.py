@@ -14,7 +14,7 @@ class ClimberComponent:
     MAX_ANGLE = 90
 
     def __init__(self) -> None:
-        self.encoder = DutyCycleEncoder(DioChannel.INTAKE_ENCODER, math.tau, 0)
+        self.encoder = DutyCycleEncoder(DioChannel.CLIMBER_ENCODER, math.tau, 0)
         self.encoder.setInverted(True)
         self.motor = SparkMax(SparkId.CLIMBER, SparkMax.MotorType.kBrushless)
 
