@@ -59,7 +59,7 @@ class MyRobot(magicbot.MagicRobot):
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
 
-    START_POS_TOLERANCE = 0.5
+    START_POS_TOLERANCE = 0.2
 
     def createObjects(self) -> None:
         self.data_log = wpilib.DataLogManager.getLog()
