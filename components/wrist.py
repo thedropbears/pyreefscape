@@ -13,7 +13,7 @@ from wpimath.trajectory import TrapezoidProfile
 
 from ids import AnalogChannel, SparkId
 from utilities.functions import clamp
-from utilities.rev import configure_spark_ephemeral
+from utilities.rev import configure_spark_ephemeral, configure_spark_reset_and_persist
 
 
 class WristComponent:
@@ -61,7 +61,7 @@ class WristComponent:
             (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
         )
 
-        configure_spark_ephemeral(self.motor, wrist_config)
+        configure_spark_reset_and_persist(self.motor, wrist_config)
 
         self.motor_encoder = self.motor.getEncoder()
 
