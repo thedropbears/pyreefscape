@@ -84,6 +84,17 @@ class WristComponent:
 
         configure_spark_ephemeral(self.motor, wrist_config)
 
+    def toggle_neutral_mode(self) -> None:
+        if self.idle_mode == SparkMaxConfig.IdleMode.kBrake:
+            self.idle_mode = SparkMaxConfig.IdleMode.kCoast
+        else:
+            self.idle_mode = SparkMaxConfig.IdleMode.kBrake
+
+        wrist_config = SparkMaxConfig()
+        wrist_config.setIdleMode(self.idle_mode)
+
+        configure_spark_ephemeral(self.motor, wrist_config)
+
     @feedback
     def raw_encoder(self) -> float:
         return self.wrist_encoder.get()
