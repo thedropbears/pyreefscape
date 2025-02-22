@@ -27,6 +27,7 @@ class AutoBase(AutonomousStateMachine):
     chassis: ChassisComponent
 
     DISTANCE_TOLERANCE = 0.05  # metres
+    ANGLE_TOLERANCE = math.radians(3)
 
     def __init__(self, trajectory_names: list[str]) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
@@ -91,11 +92,14 @@ class AutoBase(AutonomousStateMachine):
             return
 
         distance = current_pose.translation().distance(final_pose.translation())
+        angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
 
         if self.current_leg > 0 and not self.injector_component.has_algae():
             self.reef_intake.intake()
 
-        if distance < self.DISTANCE_TOLERANCE:
+        if distance < self.DISTANCE_TOLERANCE and math.isclose(
+            angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE
+        ):
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:
                 self.next_state("scoring_coral")
