@@ -57,7 +57,10 @@ class ClimberComponent:
 
     @feedback
     def is_retracted(self) -> bool:
-        return self.motor.getReverseLimitSwitch().get()
+        return (
+            math.isclose(self.encoder_angle(), self.MIN_ANGLE, abs_tol=2.0)
+            or self.motor.getReverseLimitSwitch().get()
+        )
 
     def execute(self) -> None:
         self.motor.setVoltage(self.target_speed)
