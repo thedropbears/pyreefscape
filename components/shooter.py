@@ -119,10 +119,16 @@ class ShooterComponent:
         )
 
     def execute(self) -> None:
-        self.top_flywheel.set_control(VelocityVoltage(self.top_desired_flywheel_speed))
+        self.top_flywheel.set_control(
+            VelocityVoltage(
+                self.top_desired_flywheel_speed, override_brake_dur_neutral=True
+            )
+        )
 
         self.bottom_flywheel.set_control(
-            VelocityVoltage(self.bottom_desired_flywheel_speed)
+            VelocityVoltage(
+                self.bottom_desired_flywheel_speed, override_brake_dur_neutral=True
+            )
         )
 
         self.top_desired_flywheel_speed = 0.0
