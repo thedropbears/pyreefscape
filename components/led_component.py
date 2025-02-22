@@ -20,9 +20,9 @@ class LightStrip:
     def __init__(self, strip_length: int = 5) -> None:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
         self.leds.setLength(strip_length)
-        self.right_rear_front_split = 0.212
-        self.halfway_split = 0.433
-        self.left_front_rear_split = 0.792
+        self.right_rear_front_split = 0.25
+        self.halfway_split = 0.5
+        self.left_front_rear_split = 0.75
 
         self.strip_data = [AddressableLED.LEDData() for _ in range(strip_length)]
 

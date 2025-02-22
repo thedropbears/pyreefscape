@@ -89,7 +89,7 @@ class MyRobot(magicbot.MagicRobot):
         )
         self.wrist_mech_root = self.mech.getRoot("Wrist", 1, 1)
 
-        self.status_lights_strip_length = 28 * 3 * 3 + 144 + 3
+        self.status_lights_strip_length = 112 * 4
 
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
