@@ -53,7 +53,7 @@ class SparkId(enum.IntEnum):
 class DioChannel(enum.IntEnum):
     """roboRIO Digital I/O channel number."""
 
-    CLIMBER_ENCODER = 3
+    CLIMBER_ENCODER = 7
 
     FEELER_LIMIT_SWITCH = 0
 
