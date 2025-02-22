@@ -13,6 +13,7 @@ from wpimath.trajectory import TrapezoidProfile
 
 from ids import AnalogChannel, SparkId
 from utilities.functions import clamp
+from utilities.rev import configure_spark_ephemeral
 
 
 class WristComponent:
@@ -59,11 +60,7 @@ class WristComponent:
             (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
         )
 
-        self.motor.configure(
-            wrist_config,
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
+        configure_spark_ephemeral(self.motor, wrist_config)
 
         self.motor_encoder = self.motor.getEncoder()
 
@@ -75,20 +72,14 @@ class WristComponent:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        self.motor.configure(
-            wrist_config,
-            SparkMax.ResetMode.kNoResetSafeParameters,
-            SparkMax.PersistMode.kNoPersistParameters,
-        )
+
+        configure_spark_ephemeral(self.motor, wrist_config)
 
     def on_disable(self):
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
-        self.motor.configure(
-            wrist_config,
-            SparkMax.ResetMode.kNoResetSafeParameters,
-            SparkMax.PersistMode.kNoPersistParameters,
-        )
+
+        configure_spark_ephemeral(self.motor, wrist_config)
 
     @feedback
     def raw_encoder(self) -> float:
