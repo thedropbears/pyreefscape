@@ -265,7 +265,7 @@ class MyRobot(magicbot.MagicRobot):
         # Components
         self.chassis.execute()
         self.climber.execute()
-        self.coral_placer_component.execute()
+        # self.coral_placer_component.execute()
         self.algae_manipulator_component.execute()
         if self.gamepad.getStartButton():
             self.vision.zero_servo_()
