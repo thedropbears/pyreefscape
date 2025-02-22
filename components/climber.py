@@ -1,28 +1,26 @@
-from magicbot import feedback, tunable
-from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
+import math
 
-from ids import SparkId
+from magicbot import feedback, tunable
+from rev import SparkMax, SparkMaxConfig
+from wpilib import DutyCycleEncoder
+
+from ids import DioChannel, SparkId
 
 
 class ClimberComponent:
     target_speed = 0.0
     winch_voltage = tunable(12.0)
+    MIN_ANGLE = 40
+    MAX_ANGLE = 90
 
     def __init__(self) -> None:
+        self.encoder = DutyCycleEncoder(DioChannel.INTAKE_ENCODER, math.tau, 0)
+        self.encoder.setInverted(True)
         self.motor = SparkMax(SparkId.CLIMBER, SparkMax.MotorType.kBrushless)
 
         motor_config = SparkMaxConfig()
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        motor_config.openLoopRampRate(1.5)
-        motor_config.limitSwitch.forwardLimitSwitchType(
-            LimitSwitchConfig.Type.kNormallyOpen
-        )
-        motor_config.limitSwitch.reverseLimitSwitchType(
-            LimitSwitchConfig.Type.kNormallyOpen
-        )
-        motor_config.limitSwitch.forwardLimitSwitchEnabled(True)
-        motor_config.limitSwitch.reverseLimitSwitchEnabled(True)
 
         self.motor.configure(
             motor_config,
@@ -31,22 +29,28 @@ class ClimberComponent:
         )
 
     def deploy(self) -> None:
-        self.target_speed = self.winch_voltage
+        if not self.is_deployed:
+            self.target_speed = self.winch_voltage
 
     def retract(self) -> None:
-        self.target_speed = -self.winch_voltage
+        if not self.is_retracted:
+            self.target_speed = -self.winch_voltage
+
+    @feedback
+    def raw_encoder_val(self) -> float:
+        return self.encoder.get()
+
+    @feedback
+    def encoder_angle(self) -> float:
+        return self.encoder.get() * (180 / math.pi)
 
     @feedback
     def is_deployed(self) -> bool:
-        return self.motor.getForwardLimitSwitch().get()
+        return self.encoder_angle() >= self.MAX_ANGLE
 
     @feedback
     def is_retracted(self) -> bool:
-        return self.motor.getReverseLimitSwitch().get()
-
-    def elevation(self) -> float:
-        return 0.0
-        # current place holder
+        return self.encoder_angle() <= self.MIN_ANGLE
 
     def execute(self) -> None:
         self.motor.setVoltage(self.target_speed)
