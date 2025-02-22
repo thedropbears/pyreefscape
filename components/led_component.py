@@ -84,28 +84,28 @@ class LightStrip:
                     # Rear right
                     (
                         0.0,
-                        Color.kRed
+                        Color.kBlue
                         if translation.x > tol or translation.y > tol
                         else Color.kBlack,
                     ),
                     # Front right
                     (
                         self.right_rear_front_split,
-                        Color.kRed
+                        Color.kBlue
                         if translation.x < -tol or translation.y > tol
                         else Color.kBlack,
                     ),
                     # Front left
                     (
                         self.halfway_split,
-                        Color.kRed
+                        Color.kBlue
                         if translation.x < -tol or translation.y < -tol
                         else Color.kBlack,
                     ),
                     # Rear left
                     (
                         self.left_front_rear_split,
-                        Color.kRed
+                        Color.kBlue
                         if translation.x > tol or translation.y < -tol
                         else Color.kBlack,
                     ),
