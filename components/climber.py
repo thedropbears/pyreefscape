@@ -29,11 +29,11 @@ class ClimberComponent:
         )
 
     def deploy(self) -> None:
-        if not self.is_deployed:
+        if not self.is_deployed():
             self.target_speed = self.winch_voltage
 
     def retract(self) -> None:
-        if not self.is_retracted:
+        if not self.is_retracted():
             self.target_speed = -self.winch_voltage
 
     @feedback
