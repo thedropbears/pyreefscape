@@ -1,7 +1,7 @@
 import math
 
 from magicbot import feedback, tunable
-from rev import SparkMax, SparkMaxConfig
+from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
 from wpilib import DutyCycleEncoder
 
 from ids import DioChannel, SparkId
@@ -12,15 +12,21 @@ class ClimberComponent:
     winch_voltage = tunable(12.0)
     MIN_ANGLE = 40
     MAX_ANGLE = 90
+    ENCODER_OFFSET = 0  # TODO measure correct value
 
     def __init__(self) -> None:
         self.encoder = DutyCycleEncoder(DioChannel.CLIMBER_ENCODER, math.tau, 0)
-        self.encoder.setInverted(True)
+        self.encoder.setInverted(False)  # TODO change to correct value
         self.motor = SparkMax(SparkId.CLIMBER, SparkMax.MotorType.kBrushless)
 
         motor_config = SparkMaxConfig()
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+
+        motor_config.limitSwitch.reverseLimitSwitchType(
+            LimitSwitchConfig.Type.kNormallyOpen
+        )
+        motor_config.limitSwitch.reverseLimitSwitchEnabled(True)
 
         self.motor.configure(
             motor_config,
@@ -42,15 +48,15 @@ class ClimberComponent:
 
     @feedback
     def encoder_angle(self) -> float:
-        return self.encoder.get() * (180 / math.pi)
+        return (self.encoder.get() - self.ENCODER_OFFSET) * (180 / math.pi)
 
     @feedback
     def is_deployed(self) -> bool:
-        return self.encoder_angle() >= self.MAX_ANGLE
+        return math.isclose(self.encoder_angle(), self.MAX_ANGLE, abs_tol=2.0)
 
     @feedback
     def is_retracted(self) -> bool:
-        return self.encoder_angle() <= self.MIN_ANGLE
+        return self.motor.getReverseLimitSwitch().get()
 
     def execute(self) -> None:
         self.motor.setVoltage(self.target_speed)
