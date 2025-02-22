@@ -78,6 +78,12 @@ class InjectorComponent:
             self.injector_2_encoder.getPosition(),
         )
 
+    def get_injector_velocities(self) -> tuple[float, float]:
+        return (
+            self.injector_1_encoder.getVelocity(),
+            self.injector_2_encoder.getVelocity(),
+        )
+
     def execute(self) -> None:
         if self.has_algae():
             self.has_seen_algae = True
