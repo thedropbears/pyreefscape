@@ -43,8 +43,8 @@
      "val":2.82
     },
     "heading":{
-     "exp":"180 deg - AlgaeCD.heading",
-     "val":-1.0471975511965974
+     "exp":"540 deg - AlgaeCD.heading",
+     "val":5.235987755982989
     }
    },
    "AlgaeGH":{
@@ -72,7 +72,7 @@
     },
     "heading":{
      "exp":"360 deg - AlgaeEF.heading",
-     "val":7.330382858376184
+     "val":1.0471975511965974
     }
    },
    "AlgaeKL":{
@@ -113,8 +113,8 @@
      "val":3.86
     },
     "heading":{
-     "exp":"-180 deg",
-     "val":-3.141592653589793
+     "exp":"180 deg",
+     "val":3.141592653589793
     }
    },
    "BranchC":{
@@ -127,8 +127,8 @@
      "val":2.922
     },
     "heading":{
-     "exp":"-120 deg",
-     "val":-2.0943951023931953
+     "exp":"240 deg",
+     "val":4.1887902047863905
     }
    },
    "BranchD":{
@@ -141,8 +141,8 @@
      "val":2.76
     },
     "heading":{
-     "exp":"-120 deg",
-     "val":-2.0943951023931953
+     "exp":"240 deg",
+     "val":4.1887902047863905
     }
    },
    "BranchF":{
@@ -155,8 +155,8 @@
      "val":2.922
     },
     "heading":{
-     "exp":"180 deg - BranchC.heading",
-     "val":5.235987755982988
+     "exp":"540 deg - BranchC.heading",
+     "val":5.235987755982989
     }
    },
    "BranchL":{
@@ -170,7 +170,7 @@
     },
     "heading":{
      "exp":"360 deg - BranchC.heading",
-     "val":8.377580409572781
+     "val":2.0943951023931957
     }
    },
    "CentreStart":{
