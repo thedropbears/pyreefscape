@@ -59,7 +59,7 @@ class MyRobot(magicbot.MagicRobot):
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
 
-    START_POS_TOLERANCE = 0.5
+    START_POS_TOLERANCE = 0.2
 
     def createObjects(self) -> None:
         self.data_log = wpilib.DataLogManager.getLog()
@@ -89,7 +89,7 @@ class MyRobot(magicbot.MagicRobot):
         )
         self.wrist_mech_root = self.mech.getRoot("Wrist", 1, 1)
 
-        self.status_lights_strip_length = 28 * 3 * 3 + 144 + 3
+        self.status_lights_strip_length = 112 * 4
 
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
