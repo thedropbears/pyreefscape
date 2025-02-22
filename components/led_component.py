@@ -16,6 +16,17 @@ def is_off(led_data: AddressableLED.LEDData) -> bool:
     return led_data.b == 0 and led_data.g == 0 and led_data.r == 0
 
 
+# TODO(davo): implement this in WPILib simulation:
+# https://github.com/wpilibsuite/allwpilib/blob/f9307de04c55e437eaf6b9f8320819ba8f7db9bf/hal/src/main/native/sim/HAL.cpp#L342
+def fake_rsl_state() -> bool:
+    if wpilib.DriverStation.isDisabled():
+        return True
+
+    # TODO(davo): check period is correct
+    period = 1_000_000  # us
+    return wpilib.RobotController.getFPGATime() % period < period // 2
+
+
 class LightStrip:
     def __init__(self, strip_length: int = 5) -> None:
         self.leds = AddressableLED(PwmChannel.LIGHT_STRIP)
@@ -33,6 +44,11 @@ class LightStrip:
 
         self.last_update_time = time.monotonic()
         self.is_reef_offset_flashing = False
+
+        if wpilib.RobotBase.isReal():
+            self.get_rsl_state = wpilib.RobotController.getRSLState
+        else:
+            self.get_rsl_state = fake_rsl_state
 
     @feedback
     def is_red_right(self) -> bool:
@@ -58,7 +74,9 @@ class LightStrip:
         self.keep_alive()
 
     def too_close_to_reef(self) -> None:
-        self.pattern = LEDPattern.blink(LEDPattern.solid(wpilib.Color.kOrange), 0.5)
+        self.pattern = LEDPattern.solid(wpilib.Color.kOrange).synchronizedBlink(
+            self.get_rsl_state
+        )
         self.keep_alive()
 
     def rainbow(self) -> None:
