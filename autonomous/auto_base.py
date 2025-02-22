@@ -34,7 +34,7 @@ class AutoBase(AutonomousStateMachine):
         super().__init__()
         self.x_controller = PIDController(3.0, 0.0, 0.0)
         self.y_controller = PIDController(3.0, 0.0, 0.0)
-        self.heading_controller = PIDController(1.0, 0, 0)
+        self.heading_controller = PIDController(3.0, 0, 0)
         self.heading_controller.enableContinuousInput(-math.pi, math.pi)
 
         wpilib.SmartDashboard.putData("AUTO HEADING", self.heading_controller)
@@ -94,11 +94,14 @@ class AutoBase(AutonomousStateMachine):
             return
 
         distance = current_pose.translation().distance(final_pose.translation())
+        angle_error = final_pose.rotation() - current_pose.rotation()
 
         if self.current_leg > 0 and not self.injector_component.has_algae():
             self.reef_intake.intake()
 
-        if distance < self.DISTANCE_TOLERANCE:
+        if distance < self.DISTANCE_TOLERANCE and math.isclose(
+            angle_error.radians(), 0.0, abs_tol=0.1
+        ):
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:
                 self.next_state("scoring_coral")

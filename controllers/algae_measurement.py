@@ -1,13 +1,16 @@
-from magicbot import StateMachine, feedback, state, timed_state
+from magicbot import StateMachine, feedback, state, timed_state, tunable
 
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
+from utilities.functions import clamp
 from utilities.scalers import scale_value
 
 
 class AlgaeMeasurement(StateMachine):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
+
+    measure_speed = tunable(-4.0)
 
     def __init__(self) -> None:
         self.injector_starting_positions = (0.0, 0.0)
@@ -22,23 +25,23 @@ class AlgaeMeasurement(StateMachine):
     def initialising(self) -> None:
         self.measured_sizes = []
         self.measured_raw_sizes = []
-        if all(abs(v) <= 0.0001 for v in self.shooter_component.flywheel_speeds()):
-            self.next_state("calculating")
+        # if all(abs(v) <= 0.0001 for v in self.shooter_component.flywheel_speeds()):
+        self.next_state("calculating")
 
     @timed_state(
-        duration=0.5,
+        duration=0.3,
         next_state="measuring",
         must_finish=True,
     )
     def pre_measure(self) -> None:
-        self.injector_component.desired_injector_voltage = -2.0
+        self.injector_component.desired_injector_voltage = self.measure_speed
 
     @state(must_finish=True)
     def calculating(self) -> None:
-        if len(self.measured_sizes) == 3:
+        if len(self.measured_sizes) == 2:
             # Throw away the first one and average the last two
-            self.shooter_component.algae_size = sum(self.measured_sizes[1:]) / (
-                len(self.measured_sizes) - 1
+            self.shooter_component.algae_size = clamp(
+                sum(self.measured_sizes[1:]) / (len(self.measured_sizes) - 1), 16, 17
             )
             self.next_state("recovering")
         else:
@@ -77,9 +80,9 @@ class AlgaeMeasurement(StateMachine):
 
             self.next_state("calculating")
 
-    @timed_state(duration=0.5, must_finish=True)
+    @timed_state(duration=0.3, must_finish=True)
     def recovering(self) -> None:
-        self.injector_component.desired_injector_voltage = -2.0
+        self.injector_component.desired_injector_voltage = self.measure_speed
 
     @feedback
     def raw_ball_measurments(self) -> list[float]:
