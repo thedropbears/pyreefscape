@@ -64,6 +64,7 @@ class WristComponent:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
+        self.coasting = False
 
         self.motor_encoder = self.motor.getEncoder()
 
@@ -80,10 +81,16 @@ class WristComponent:
             SparkMax.ResetMode.kNoResetSafeParameters,
             SparkMax.PersistMode.kNoPersistParameters,
         )
+        self.coasting = False
 
-    def on_disable(self):
+    def toggle_coast(self):
+        self.coasting = not self.coasting
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
+        wrist_config.setIdleMode(
+            SparkMaxConfig.IdleMode.kCoast
+            if self.coasting
+            else SparkMaxConfig.IdleMode.kBrake
+        )
         self.motor.configure(
             wrist_config,
             SparkMax.ResetMode.kNoResetSafeParameters,

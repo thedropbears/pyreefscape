@@ -321,6 +321,7 @@ class MyRobot(magicbot.MagicRobot):
 
         if not self.coast_button_debouncer.calculate(self.coast_button.get()):
             self.chassis.toggle_coast_in_neutral()
+            self.wrist.toggle_coast()
 
     def robotPeriodic(self) -> None:
         super().robotPeriodic()
