@@ -203,6 +203,10 @@ class PhysicsEngine:
 
         self.imu = robot.chassis.imu.sim_state
 
+        self.injector = rev.SparkMaxSim(
+            robot.injector_component.injector_1, DCMotor.NEO550(1)
+        )
+
         self.vision_sim = VisionSystemSim("main")
         self.vision_sim.addAprilTags(game.apriltag_layout)
         properties = SimCameraProperties.OV9281_1280_720()
@@ -222,9 +226,6 @@ class PhysicsEngine:
             robot.injector_component.algae_limit_switch
         )
         self.algae_pickup_counter = 0
-        self.floor_intake = robot.floor_intake
-        self.reef_intake = robot.reef_intake
-        self.algae_shooter = robot.algae_shooter
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -277,25 +278,35 @@ class PhysicsEngine:
 
         # Update intake arm simulation
         self.intake_arm.update(tm_diff)
+        intake_arm_angle = self.intake_arm.mech_sim.getAngle()
         self.intake_arm_encoder_sim.set(
-            self.intake_arm.mech_sim.getAngle() + IntakeComponent.ARM_ENCODER_OFFSET
+            intake_arm_angle + IntakeComponent.ARM_ENCODER_OFFSET
         )
 
         # Update wrist simulation
         self.wrist.update(tm_diff)
-        self.wrist_encoder_sim.set(
-            self.wrist.mech_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
-        )
+        wrist_angle = self.wrist.mech_sim.getAngle()
+        self.wrist_encoder_sim.set(wrist_angle + WristComponent.ENCODER_ZERO_OFFSET)
 
+        injector_output = self.injector.getAppliedOutput()
         # Simulate algae pick up
-        if self.floor_intake.current_state == "intaking":
+        if (
+            wrist_angle < WristComponent.NEUTRAL_ANGLE
+            and intake_arm_angle < IntakeComponent.RETRACTED_ANGLE
+            and injector_output < 0
+        ):
             # Simulate driving around for a couple of seconds
             self.algae_pickup_counter += 1
             if self.algae_pickup_counter == 100:
                 self.algae_limit_switch_sim.setValue(False)
         else:
             self.algae_pickup_counter = 0
-        if self.reef_intake.current_state == "intaking":
+
+        # Reef intake
+        if (
+            wrist_angle > WristComponent.NEUTRAL_ANGLE + WristComponent.TOLERANCE
+            and injector_output < 0
+        ):
             # Check near reef
             pose = self.physics_controller.get_pose()
             pos = pose.translation()
@@ -304,6 +315,7 @@ class PhysicsEngine:
                 or pos.distance(game.RED_REEF_POS) < 2.0
             ):
                 self.algae_limit_switch_sim.setValue(False)
+
         # Algae shooting
-        if self.algae_shooter.current_state == "shooting":
+        if injector_output > 0:
             self.algae_limit_switch_sim.setValue(True)
