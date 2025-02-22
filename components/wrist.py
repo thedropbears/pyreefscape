@@ -13,6 +13,7 @@ from wpimath.trajectory import TrapezoidProfile
 
 from ids import AnalogChannel, SparkId
 from utilities.functions import clamp
+from utilities.rev import configure_spark_ephemeral, configure_spark_reset_and_persist
 
 
 class WristComponent:
@@ -40,9 +41,10 @@ class WristComponent:
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
+        self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        wrist_config.setIdleMode(self.idle_mode)
 
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
@@ -59,11 +61,7 @@ class WristComponent:
             (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
         )
 
-        self.motor.configure(
-            wrist_config,
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
+        configure_spark_reset_and_persist(self.motor, wrist_config)
 
         self.motor_encoder = self.motor.getEncoder()
 
@@ -73,22 +71,29 @@ class WristComponent:
 
     def on_enable(self):
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
+        self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
-        self.motor.configure(
-            wrist_config,
-            SparkMax.ResetMode.kNoResetSafeParameters,
-            SparkMax.PersistMode.kNoPersistParameters,
-        )
+        wrist_config.setIdleMode(self.idle_mode)
+
+        configure_spark_ephemeral(self.motor, wrist_config)
 
     def on_disable(self):
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
-        self.motor.configure(
-            wrist_config,
-            SparkMax.ResetMode.kNoResetSafeParameters,
-            SparkMax.PersistMode.kNoPersistParameters,
-        )
+        self.idle_mode = SparkMaxConfig.IdleMode.kBrake
+        wrist_config.setIdleMode(self.idle_mode)
+
+        configure_spark_ephemeral(self.motor, wrist_config)
+
+    def toggle_neutral_mode(self) -> None:
+        if self.idle_mode == SparkMaxConfig.IdleMode.kBrake:
+            self.idle_mode = SparkMaxConfig.IdleMode.kCoast
+        else:
+            self.idle_mode = SparkMaxConfig.IdleMode.kBrake
+
+        wrist_config = SparkMaxConfig()
+        wrist_config.setIdleMode(self.idle_mode)
+
+        configure_spark_ephemeral(self.motor, wrist_config)
 
     @feedback
     def raw_encoder(self) -> float:
