@@ -159,6 +159,20 @@
      "val":5.235987755982989
     }
    },
+   "BranchG":{
+    "x":{
+     "exp":"Reef.x * 2 - BranchB.x",
+     "val":5.851999999999999
+    },
+    "y":{
+     "exp":"BranchB.y",
+     "val":3.86
+    },
+    "heading":{
+     "exp":"180 deg - BranchB.heading",
+     "val":0.0
+    }
+   },
    "BranchL":{
     "x":{
      "exp":"BranchC.x",
