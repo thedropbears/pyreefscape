@@ -61,8 +61,12 @@ class VisualLocalizer(HasPerLoopCache):
     should_log = tunable(True)
 
     last_pose_z = tunable(0.0, writeDefault=False)
-    linear_vision_uncertainty = tunable(0.3)
-    rotation_vision_uncertainty = tunable(0.08)
+    linear_vision_uncertainty = tunable(0.15)
+    rotation_vision_uncertainty = tunable(0.6)
+
+    linear_vision_uncertainty_multi_tag = tunable(0.05)
+    rotation_vision_uncertainty_multi_tag = tunable(0.05)
+
     reproj_error_threshold = 0.1
 
     def __init__(
@@ -276,9 +280,9 @@ class VisualLocalizer(HasPerLoopCache):
                         pose,
                         timestamp,
                         (
-                            self.linear_vision_uncertainty,
-                            self.linear_vision_uncertainty,
-                            self.rotation_vision_uncertainty,
+                            self.linear_vision_uncertainty_multi_tag,
+                            self.linear_vision_uncertainty_multi_tag,
+                            self.rotation_vision_uncertainty_multi_tag,
                         ),
                     )
 
