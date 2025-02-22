@@ -41,9 +41,10 @@ class WristComponent:
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
+        self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        wrist_config.setIdleMode(self.idle_mode)
 
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
@@ -70,14 +71,16 @@ class WristComponent:
 
     def on_enable(self):
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
+        self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        wrist_config.setIdleMode(self.idle_mode)
 
         configure_spark_ephemeral(self.motor, wrist_config)
 
     def on_disable(self):
         wrist_config = SparkMaxConfig()
-        wrist_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
+        self.idle_mode = SparkMaxConfig.IdleMode.kBrake
+        wrist_config.setIdleMode(self.idle_mode)
 
         configure_spark_ephemeral(self.motor, wrist_config)
 
