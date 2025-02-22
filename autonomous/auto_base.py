@@ -90,6 +90,9 @@ class AutoBase(AutonomousStateMachine):
 
         distance = current_pose.translation().distance(final_pose.translation())
 
+        if self.current_leg == 0:
+            self.coral_placer.lift()
+
         if self.current_leg > 0 and not self.algae_manipulator_component.has_algae():
             self.reef_intake.intake()
 
@@ -133,6 +136,7 @@ class AutoBase(AutonomousStateMachine):
     @state
     def scoring_coral(self, initial_call: bool) -> None:
         if initial_call:
+            self.coral_placer.done()
             self.coral_placer.place()
         elif not self.coral_placer.is_executing:
             self.next_state("retreating")
