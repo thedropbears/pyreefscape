@@ -1,4 +1,4 @@
-from magicbot import StateMachine, state, timed_state
+from magicbot import StateMachine, feedback, state, timed_state
 
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
@@ -75,3 +75,7 @@ class AlgaeMeasurement(StateMachine):
         self.injector_component.intake()
         if self.injector_component.has_algae():
             self.next_state("calculating")
+
+    @feedback
+    def raw_ball_measurments(self) -> list[float]:
+        return self.measured_sizes
