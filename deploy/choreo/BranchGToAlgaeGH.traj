@@ -17,7 +17,7 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"BranchG.x", "val":5.851999999999999}, "y":{"exp":"BranchG.y", "val":3.86}, "heading":{"exp":"BranchG.heading", "val":0.0}, "intervals":43, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"BranchG.x", "val":5.952}, "y":{"exp":"BranchG.y", "val":3.86}, "heading":{"exp":"BranchG.heading", "val":0.0}, "intervals":43, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"6.961350917816162 m", "val":6.961350917816162}, "y":{"exp":"3.9446654319763184 m", "val":3.9446654319763184}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":43, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"AlgaeGH.x", "val":5.851999999999999}, "y":{"exp":"AlgaeGH.y", "val":4.02}, "heading":{"exp":"AlgaeGH.heading", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
