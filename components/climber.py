@@ -10,8 +10,8 @@ from ids import DioChannel, SparkId
 class ClimberComponent:
     target_speed = 0.0
     winch_voltage = tunable(12.0)
-    MIN_ANGLE = 40
-    MAX_ANGLE = 90
+    MIN_ANGLE = 40.0
+    MAX_ANGLE = 90.0
     ENCODER_OFFSET = 0  # TODO measure correct value
 
     def __init__(self) -> None:
@@ -22,6 +22,7 @@ class ClimberComponent:
         motor_config = SparkMaxConfig()
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        motor_config.openLoopRampRate(1.5)
 
         motor_config.limitSwitch.reverseLimitSwitchType(
             LimitSwitchConfig.Type.kNormallyOpen
