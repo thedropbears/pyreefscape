@@ -8,7 +8,6 @@ from magicbot import feedback
 from wpilib import DriverStation
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
 
-from autonomous.auto_base import AutoBase
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.led_component import LightStrip
@@ -33,8 +32,6 @@ class BallisticsSolution:
 
 
 class BallisticsComponent:
-    auto_base: AutoBase
-
     chassis: ChassisComponent
     status_lights: LightStrip
     shooter_component: ShooterComponent
