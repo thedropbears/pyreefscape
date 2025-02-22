@@ -26,6 +26,11 @@ class FloorIntake(StateMachine):
 
     @state(first=True, must_finish=True)
     def intaking(self, initial_call: bool):
+        # This is different to the regular business logic below because these two things are mutually exclusive unless we have already got something
+        if initial_call and self.injector_component.has_algae():
+            self.done()
+            return
+
         if self.injector_component.has_algae():
             self.next_state("measuring")
             return

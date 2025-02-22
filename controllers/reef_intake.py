@@ -54,6 +54,10 @@ class ReefIntake(StateMachine):
                 self.done()
                 return
 
+            if self.injector_component.has_algae():
+                self.done()
+                return
+
         if self.injector_component.has_algae():
             self.next_state("safing")
 
