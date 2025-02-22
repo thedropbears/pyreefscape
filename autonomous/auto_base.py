@@ -9,6 +9,7 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
 from components.algae_manipulator import AlgaeManipulatorComponent
+from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent
 from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
@@ -23,6 +24,7 @@ class AutoBase(AutonomousStateMachine):
 
     algae_manipulator_component: AlgaeManipulatorComponent
     chassis: ChassisComponent
+    ballistics_component: BallisticsComponent
 
     DISTANCE_TOLERANCE = 0.05  # metres
 
@@ -87,11 +89,15 @@ class AutoBase(AutonomousStateMachine):
         if final_pose is None:
             self.done()
             return
+        self.ballistics_component.set_final_auto_pose(final_pose)
 
         distance = current_pose.translation().distance(final_pose.translation())
 
         if self.current_leg > 0 and not self.algae_manipulator_component.has_algae():
             self.reef_intake.intake()
+
+        if self.current_leg > 0 and self.algae_manipulator_component.has_algae():
+            self.algae_shooter.shoot()
 
         if distance < self.DISTANCE_TOLERANCE:
             # First leg is to score coral, then we run cycles of pick up -> shoot
@@ -143,7 +149,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def intaking_algae(self) -> None:
-        if self.algae_manipulator_component.has_algae():
+        if not self.reef_intake.is_executing:
             self.next_state("tracking_trajectory")
 
     @state
