@@ -10,7 +10,7 @@ from components.wrist import WristComponent
 class CoralPlacer(StateMachine):
     wrist: WristComponent
     chassis: ChassisComponent
-    coral_placer: CoralPlacerComponent
+    coral_placer_component: CoralPlacerComponent
 
     # In degrees for tuning, converted to radians in tilt-to call
     CORAL_PLACE_ANGLE = tunable(0.0)
@@ -58,6 +58,6 @@ class CoralPlacer(StateMachine):
 
     @state(must_finish=True)
     def coral_place_retraction(self) -> None:
-        self.coral_placer.coral_latch_open()
+        self.coral_placer_component.coral_latch_open()
         self.done()
         return
