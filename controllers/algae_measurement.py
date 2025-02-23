@@ -1,4 +1,4 @@
-from magicbot import StateMachine, feedback, state, timed_state
+from magicbot import StateMachine, feedback, state, tunable
 
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
@@ -9,11 +9,15 @@ class AlgaeMeasurement(StateMachine):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
 
+    retraction_voltage = tunable(-4.0)
+    number_of_iterations = tunable(2)
+
     def __init__(self) -> None:
         self.injector_starting_positions = (0.0, 0.0)
         self.flywheel_starting_positions = (0.0, 0.0)
         self.measured_sizes: list[float] = []
         self.measured_raw_sizes: list[float] = []
+        self._tm = 0.0
 
     def measure(self) -> None:
         self.engage()
@@ -25,18 +29,15 @@ class AlgaeMeasurement(StateMachine):
         if all(abs(v) <= 0.0001 for v in self.shooter_component.flywheel_speeds()):
             self.next_state("calculating")
 
-    @timed_state(
-        duration=0.5,
-        next_state="measuring",
-        must_finish=True,
-    )
-    def pre_measure(self) -> None:
-        self.injector_component.desired_injector_voltage = -2.0
+    @state(must_finish=True)
+    def pre_measure(self, initial_call, state_tm) -> None:
+        if self.retract(initial_call, state_tm):
+            self.next_state("measuring")
 
     @state(must_finish=True)
     def calculating(self) -> None:
-        if len(self.measured_sizes) == 3:
-            # Throw away the first one and average the last two
+        if len(self.measured_sizes) == self.number_of_iterations:
+            # Throw away the first one and average the rest
             self.shooter_component.algae_size = sum(self.measured_sizes[1:]) / (
                 len(self.measured_sizes) - 1
             )
@@ -77,9 +78,25 @@ class AlgaeMeasurement(StateMachine):
 
             self.next_state("calculating")
 
-    @timed_state(duration=0.5, must_finish=True)
-    def recovering(self) -> None:
-        self.injector_component.desired_injector_voltage = -2.0
+    @state(must_finish=True)
+    def recovering(self, initial_call, state_tm) -> None:
+        if self.retract(initial_call, state_tm):
+            self.done()
+
+    def retract(self, initial_call, state_tm) -> bool:
+        self.injector_component.desired_injector_voltage = self.retraction_voltage
+        if initial_call:
+            self._tm = state_tm
+            # We cannot be ready on the first iteration
+            return False
+        # TODO determine the correct speed threshold
+        dt = state_tm - self._tm
+        return (
+            all(
+                abs(v) < 0.01 for v in self.injector_component.get_injector_velocities()
+            )
+            or dt > 0.5
+        )
 
     @feedback
     def raw_ball_measurments(self) -> list[float]:
