@@ -277,6 +277,7 @@ class MyRobot(magicbot.MagicRobot):
         self.climber.execute()
         self.coral_placer_component.execute()
         self.shooter_component.execute()
+        self.injector_component.execute()
         if self.gamepad.getStartButton():
             self.vision.zero_servo_()
         else:
