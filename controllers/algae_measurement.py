@@ -10,6 +10,7 @@ class AlgaeMeasurement(StateMachine):
     injector_component: InjectorComponent
 
     retraction_voltage = tunable(-4.0)
+    number_of_iterations = tunable(2)
 
     def __init__(self) -> None:
         self.injector_starting_positions = (0.0, 0.0)
@@ -35,8 +36,8 @@ class AlgaeMeasurement(StateMachine):
 
     @state(must_finish=True)
     def calculating(self) -> None:
-        if len(self.measured_sizes) == 3:
-            # Throw away the first one and average the last two
+        if len(self.measured_sizes) == self.number_of_iterations:
+            # Throw away the first one and average the rest
             self.shooter_component.algae_size = sum(self.measured_sizes[1:]) / (
                 len(self.measured_sizes) - 1
             )
