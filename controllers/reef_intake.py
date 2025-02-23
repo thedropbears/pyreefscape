@@ -95,7 +95,10 @@ class ReefIntake(StateMachine):
             robot_pose.translation()
         )
 
-        if distance >= self.RETREAT_DISTANCE:
+        if (
+            distance >= self.RETREAT_DISTANCE
+            and not self.algae_measurement.is_executing
+        ):
             self.done()
 
     def done(self) -> None:
