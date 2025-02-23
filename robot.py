@@ -6,7 +6,6 @@ import wpilib
 import wpilib.event
 from magicbot import tunable
 from phoenix6.configs import Slot0Configs
-from wpimath.filter import Debouncer
 from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
 
 from autonomous.auto_base import AutoBase
@@ -66,6 +65,7 @@ class MyRobot(magicbot.MagicRobot):
     START_POS_TOLERANCE = 0.2
 
     def createObjects(self) -> None:
+        self.event_loop = wpilib.event.EventLoop()
         self.data_log = wpilib.DataLogManager.getLog()
 
         # Log deploy info to show in AdvantageScope.
@@ -155,7 +155,9 @@ class MyRobot(magicbot.MagicRobot):
             self.vision_encoder_offset = Rotation2d(0.183795)
 
         self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
-        self.coast_button_debouncer = Debouncer(0.3, Debouncer.DebounceType.kBoth)
+        self.coast_button_pressed_event = wpilib.event.BooleanEvent(
+            self.event_loop, self.coast_button.get
+        ).falling()
 
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
@@ -286,6 +288,8 @@ class MyRobot(magicbot.MagicRobot):
         # self.ballistics_component.execute()
 
     def disabledPeriodic(self) -> None:
+        self.event_loop.poll()
+
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
@@ -319,7 +323,7 @@ class MyRobot(magicbot.MagicRobot):
 
         self.status_lights.execute()
 
-        if not self.coast_button_debouncer.calculate(self.coast_button.get()):
+        if self.coast_button_pressed_event.getAsBoolean():
             self.chassis.toggle_coast_in_neutral()
             self.wrist.toggle_neutral_mode()
 
