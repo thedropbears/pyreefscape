@@ -52,9 +52,9 @@ class CoralPlacer(StateMachine):
         distance = self.score_pos.translation().distance(current_pose.translation())
 
         if distance >= self.RETREAT_DISTANCE:
+            self.wrist.go_to_neutral()
             self.done()
             return
 
     def done(self) -> None:
-        self.wrist.go_to_neutral()
         super().done()
