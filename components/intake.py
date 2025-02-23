@@ -21,9 +21,10 @@ class IntakeComponent:
 
     # Offset is measured in the vertical position
     VERTICAL_ENCODER_VALUE = 2.365140
+    ARM_ENCODER_OFFSET = VERTICAL_ENCODER_VALUE - math.pi / 2.0
     # magic offset the deployed angle by 4 degrees to limit damage inflicted on mechanism
-    DEPLOYED_ANGLE = 1.194348 - VERTICAL_ENCODER_VALUE + math.pi / 2.0 + math.radians(4)
-    RETRACTED_ANGLE = 2.365140 - VERTICAL_ENCODER_VALUE + math.pi / 2.0
+    DEPLOYED_ANGLE = 1.194348 - ARM_ENCODER_OFFSET + math.radians(4)
+    RETRACTED_ANGLE = 2.365140 - ARM_ENCODER_OFFSET
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
 
@@ -89,9 +90,7 @@ class IntakeComponent:
         return self.encoder.get()
 
     def position(self):
-        return (
-            self.encoder.get() - IntakeComponent.VERTICAL_ENCODER_VALUE + math.pi / 2.0
-        )
+        return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
 
     def velocity(self) -> float:
         return self.motor_encoder.getVelocity()
