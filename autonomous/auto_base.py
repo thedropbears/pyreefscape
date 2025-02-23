@@ -34,7 +34,7 @@ class AutoBase(AutonomousStateMachine):
     injector_component: InjectorComponent
     chassis: ChassisComponent
 
-    DISTANCE_TOLERANCE = 0.05  # metres
+    DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
 
     def __init__(self, trajectory_names: list[str]) -> None:
