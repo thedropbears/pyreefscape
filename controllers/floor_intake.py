@@ -32,7 +32,7 @@ class FloorIntake(StateMachine):
             return
 
         if self.injector_component.has_algae():
-            self.next_state("measuring")
+            self.next_state(self.measuring)
             return
 
         self.intake_component.intake()

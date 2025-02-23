@@ -29,7 +29,7 @@ class Feeler(StateMachine):
         self.feeler_component.set_angle(self.feeler_component.current_angle)
 
         if self.feeler_component.touching_algae():
-            self.next_state("found")
+            self.next_state(self.found)
             return
 
         self.feeler_component.current_angle += self.DETECT_SPEED
