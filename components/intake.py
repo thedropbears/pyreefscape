@@ -13,6 +13,7 @@ from wpimath.controller import ArmFeedforward, PIDController
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId, TalonId
+from utilities.rev import configure_through_bore_encoder
 
 
 class IntakeComponent:
@@ -38,8 +39,7 @@ class IntakeComponent:
 
         self.arm_motor = SparkMax(SparkId.INTAKE_ARM, SparkMax.MotorType.kBrushless)
         self.encoder = DutyCycleEncoder(DioChannel.INTAKE_ENCODER, math.tau, 0)
-        self.encoder.setAssumedFrequency(975.6)
-        self.encoder.setDutyCycleRange(1 / 1025, 1024 / 1025)
+        configure_through_bore_encoder(self.encoder)
         self.encoder.setInverted(True)
 
         spark_config = SparkMaxConfig()

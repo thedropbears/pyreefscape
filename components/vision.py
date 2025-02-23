@@ -23,6 +23,7 @@ from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 from components.chassis import ChassisComponent
 from utilities.caching import HasPerLoopCache, cache_per_loop
 from utilities.game import APRILTAGS, apriltag_layout
+from utilities.rev import configure_through_bore_encoder
 from utilities.scalers import scale_value
 
 
@@ -88,8 +89,7 @@ class VisualLocalizer(HasPerLoopCache):
         super().__init__()
         self.camera = PhotonCamera(name)
         self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
-        self.encoder.setAssumedFrequency(975.6)
-        self.encoder.setDutyCycleRange(1 / 1025, 1024 / 1025)
+        configure_through_bore_encoder(self.encoder)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
         # This has nothing to do with the servo - do it by hand!!
