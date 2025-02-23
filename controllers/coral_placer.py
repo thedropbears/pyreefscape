@@ -10,9 +10,8 @@ class CoralPlacer(StateMachine):
     wrist: WristComponent
     chassis: ChassisComponent
 
-    CORAL_PLACE_ANGLE = tunable(
-        0.0
-    )  # In degrees for tuning, converted to radians in tilt-to call
+    # In degrees for tuning, converted to radians in tilt-to call
+    CORAL_PLACE_ANGLE = tunable(0.0)
     CORAL_LOWER_ANGLE = tunable(-20.0)
 
     RETREAT_DISTANCE = tunable(0.2)
