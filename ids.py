@@ -72,7 +72,7 @@ class PwmChannel(enum.IntEnum):
 
     LIGHT_STRIP = 2
 
-    FEELER_SERVO = 4
+    CORAL_SERVO = 4
 
 
 @enum.unique

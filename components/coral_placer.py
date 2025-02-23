@@ -1,29 +1,23 @@
-from magicbot import tunable, will_reset_to
-from rev import SparkMax, SparkMaxConfig
+from magicbot import tunable
+from wpilib import Servo
 
-from ids import SparkId
+from ids import PwmChannel
 
 
 class CoralPlacerComponent:
-    voltage_set_point = will_reset_to(0.0)
-    deposit_voltage = tunable(12.0)
+    servo_resting_angle = tunable(70)
+    servo_active_angle = tunable(180)
 
     def __init__(self):
-        self.motor = SparkMax(SparkId.CORAL_PLACER, SparkMax.MotorType.kBrushless)
+        self.servo = Servo(PwmChannel.CORAL_SERVO)
+        self.desired_angle = self.servo_resting_angle
 
-        motor_config = SparkMaxConfig()
-        motor_config.inverted(False)  # TODO Change if needed
-        motor_config.setIdleMode(SparkMaxConfig.IdleMode.kCoast)
+    def unhook_coral_latch(self):
+        self.servo.setAngle(self.servo_active_angle)
 
-        self.motor.configure(
-            motor_config,
-            SparkMax.ResetMode.kResetSafeParameters,
-            SparkMax.PersistMode.kPersistParameters,
-        )
-
-    def place(self):
-        self.voltage_set_point = self.deposit_voltage
+    def coral_latch_rest(self):
+        self.servo.setAngle(self.servo_resting_angle)
 
     def execute(self):
         # set motor
-        self.motor.setVoltage(self.voltage_set_point)
+        self.servo.setAngle(self.desired_angle)
