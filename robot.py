@@ -161,12 +161,14 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self) -> None:
         # Set max speed
+        # TODO Set max speed to something sensible for comp
+        # max_speed = self.max_speed
+        # max_spin_rate = self.max_spin_rate
         max_speed = self.lower_max_speed
-        dpad_max_speed = self.dpad_max_speed
         max_spin_rate = self.lower_max_spin_rate
         if self.gamepad.getRightBumperButton():
-            max_speed = self.max_speed
-            max_spin_rate = self.max_spin_rate
+            max_speed = self.lower_max_speed
+            max_spin_rate = self.lower_max_spin_rate
 
         # Driving
         drive_x = -rescale_js(self.gamepad.getLeftY(), 0.05, 15) * max_speed
@@ -174,10 +176,19 @@ class MyRobot(magicbot.MagicRobot):
         drive_z = (
             -rescale_js(self.gamepad.getRightX(), 0.1, exponential=20) * max_spin_rate
         )
-        local_driving = self.gamepad.getXButton()
+        local_driving = self.gamepad.getRightBumperButton()
 
         if local_driving:
-            self.chassis.drive_local(drive_x, drive_y, drive_z)
+            if (
+                self.injector_component.has_algae()
+                or self.floor_intake.is_executing
+                or self.reef_intake.is_executing
+            ):
+                # Make the shooter behave like the front of the robot
+                self.chassis.drive_local(-drive_x, -drive_y, drive_z)
+            else:
+                # Climber is front as defined in the chassis
+                self.chassis.drive_local(drive_x, drive_y, drive_z)
         else:
             if is_red():
                 drive_x = -drive_x
@@ -187,26 +198,6 @@ class MyRobot(magicbot.MagicRobot):
         # Give rotational access to the driver
         if drive_z != 0:
             self.chassis.stop_snapping()
-
-        dpad = self.gamepad.getPOV()
-
-        if (
-            self.injector_component.has_algae()
-            or self.floor_intake.is_executing
-            or self.reef_intake.is_executing
-        ):
-            inversion_factor = (
-                -1
-            )  # inverts direction through multiplication of this value
-        else:
-            inversion_factor = 1
-
-        if dpad != -1:
-            self.chassis.drive_local(
-                (dpad_max_speed * math.cos(math.radians(dpad))) * inversion_factor,
-                (dpad_max_speed * math.sin(math.radians(dpad))) * -inversion_factor,
-                0,
-            )
 
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
