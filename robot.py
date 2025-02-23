@@ -13,7 +13,6 @@ from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
 from components.coral_placer import CoralPlacerComponent
-from components.feeler import FeelerComponent
 from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
@@ -24,7 +23,6 @@ from controllers.algae_measurement import AlgaeMeasurement
 from controllers.algae_shooter import AlgaeShooter
 from controllers.climber import ClimberStateMachine
 from controllers.coral_placer import CoralPlacer
-from controllers.feeler import Feeler
 from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
@@ -38,7 +36,6 @@ class MyRobot(magicbot.MagicRobot):
     reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
     floor_intake: FloorIntake
-    feeler: Feeler
     climber_state_machine: ClimberStateMachine
     algae_measurement: AlgaeMeasurement
 
@@ -52,7 +49,6 @@ class MyRobot(magicbot.MagicRobot):
     wrist: WristComponent
     intake_component: IntakeComponent
     status_lights: LightStrip
-    feeler_component: FeelerComponent
     ballistics_component: BallisticsComponent
 
     max_speed = tunable(5.0)  # m/s
@@ -279,7 +275,6 @@ class MyRobot(magicbot.MagicRobot):
         self.reef_intake.execute()
         self.algae_shooter.execute()
         self.floor_intake.execute()
-        self.feeler.execute()
         self.climber_state_machine.execute()
         self.algae_measurement.execute()
 
@@ -296,7 +291,6 @@ class MyRobot(magicbot.MagicRobot):
         self.wrist.execute()
         self.intake_component.execute()
         self.status_lights.execute()
-        self.feeler_component.execute()
         # self.ballistics_component.execute()
 
     def disabledPeriodic(self) -> None:
