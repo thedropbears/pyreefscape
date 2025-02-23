@@ -3,12 +3,14 @@ import math
 from magicbot import StateMachine, state, tunable
 
 from components.chassis import ChassisComponent
+from components.coral_placer import CoralPlacerComponent
 from components.wrist import WristComponent
 
 
 class CoralPlacer(StateMachine):
     wrist: WristComponent
     chassis: ChassisComponent
+    coral_placer: CoralPlacerComponent
 
     # In degrees for tuning, converted to radians in tilt-to call
     CORAL_PLACE_ANGLE = tunable(0.0)
@@ -53,5 +55,9 @@ class CoralPlacer(StateMachine):
 
         if distance >= self.RETREAT_DISTANCE:
             self.wrist.go_to_neutral()
-            self.done()
-            return
+
+    @state(must_finish=True)
+    def coral_place_retraction(self) -> None:
+        self.coral_placer.coral_latch_open()
+        self.done()
+        return
