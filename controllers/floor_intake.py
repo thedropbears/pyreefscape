@@ -47,7 +47,7 @@ class FloorIntake(StateMachine):
     def measuring(self, initial_call):
         if initial_call:
             self.algae_measurement.measure()
-        else:
+        elif not self.algae_measurement.is_executing:
             self.done()
 
     def done(self) -> None:
