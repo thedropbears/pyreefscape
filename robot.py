@@ -219,9 +219,10 @@ class MyRobot(magicbot.MagicRobot):
             self.reef_intake.intake()
 
         if self.gamepad.getYButton():
-            self.climber.retract()
+            self.climber.go_to_deploy()
         if self.gamepad.getAButton():
-            self.climber.deploy()
+            self.climber.go_to_start()
+
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
@@ -240,9 +241,6 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.set_coast_in_neutral(True)
 
     def testPeriodic(self) -> None:
-        if self.gamepad.getYButton():
-            self.climber_state_machine.climb()
-
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
@@ -251,6 +249,12 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
+
+        if self.gamepad.getYButtonPressed():
+            if self.climber.is_deployed():
+                self.climber.go_to_retract()
+            else:
+                self.climber.go_to_deploy()
         if self.gamepad.getAButton():
             self.coral_placer.place()
         if self.gamepad.getXButton():
