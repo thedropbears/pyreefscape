@@ -32,6 +32,7 @@ class CoralPlacer(StateMachine):
     @state(first=True, must_finish=True)
     def raising(self, initial_call: bool) -> None:
         if initial_call:
+            self.coral_scored = False
             self.wrist.tilt_to(math.radians(self.CORAL_PLACE_ANGLE))
 
     @state(must_finish=True)
