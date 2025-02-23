@@ -43,7 +43,7 @@ BLUE_REEF_POS = (
 ) / 2
 
 
-def cage_pos(is_red) -> list[Translation2d]:
+def cage_pos(is_red: bool) -> list[Translation2d]:
     if is_red:
         return [
             Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 - 1.054),
