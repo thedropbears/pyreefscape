@@ -101,8 +101,10 @@ class AutoBase(AutonomousStateMachine):
         if self.current_leg > 0 and not self.injector_component.has_algae():
             self.reef_intake.intake()
 
-        if distance < self.DISTANCE_TOLERANCE and math.isclose(
-            angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE
+        if (
+            distance < self.DISTANCE_TOLERANCE
+            and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
+            and state_tm > self.trajectories[self.current_leg].get_total_time() / 2.0
         ):
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:
