@@ -12,10 +12,10 @@ class CoralPlacerComponent:
         self.servo = Servo(PwmChannel.CORAL_SERVO)
         self.desired_angle = self.servo_resting_angle
 
-    def unhook_coral_latch(self):
+    def coral_latch_open(self):
         self.servo.setAngle(self.servo_active_angle)
 
-    def coral_latch_rest(self):
+    def coral_latch_closed(self):
         self.servo.setAngle(self.servo_resting_angle)
 
     def execute(self):

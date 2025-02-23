@@ -265,6 +265,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightBumper():
             self.algae_measurement.engage()
 
+        if self.gamepad.getLeftStickButton():
+            self.coral_placer_component.coral_latch_open()
+        if self.gamepad.getRightStickButton():
+            self.coral_placer_component.coral_latch_closed()
+
         # Controllers
         self.coral_placer.execute()
         self.reef_intake.execute()
