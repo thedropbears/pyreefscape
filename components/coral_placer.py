@@ -5,8 +5,8 @@ from ids import PwmChannel
 
 
 class CoralPlacerComponent:
-    servo_resting_angle = tunable(70)
-    servo_active_angle = tunable(180)
+    servo_resting_angle = tunable(180)
+    servo_active_angle = tunable(0)
 
     def __init__(self) -> None:
         self.servo = Servo(PwmChannel.CORAL_SERVO)
@@ -15,10 +15,10 @@ class CoralPlacerComponent:
         self.desired_angle = self.servo_resting_angle
 
     def coral_latch_open(self) -> None:
-        self.servo.setAngle(self.servo_active_angle)
+        self.desired_angle = self.servo_active_angle
 
     def coral_latch_closed(self) -> None:
-        self.servo.setAngle(self.servo_resting_angle)
+        self.desired_angle = self.servo_resting_angle
 
     def execute(self):
         # set motor
