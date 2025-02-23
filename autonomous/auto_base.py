@@ -1,6 +1,7 @@
 import math
 
 import choreo
+import wpilib
 from choreo.trajectory import SwerveSample
 from magicbot import AutonomousStateMachine, state
 from wpilib import RobotBase
@@ -15,6 +16,15 @@ from controllers.algae_shooter import AlgaeShooter
 from controllers.coral_placer import CoralPlacer
 from controllers.reef_intake import ReefIntake
 from utilities import game
+
+x_controller = PIDController(1.0, 0.0, 0.0)
+y_controller = PIDController(1.0, 0.0, 0.0)
+heading_controller = PIDController(1.0, 0, 0)
+heading_controller.enableContinuousInput(-math.pi, math.pi)
+
+wpilib.SmartDashboard.putData("Auto X PID", x_controller)
+wpilib.SmartDashboard.putData("Auto Y PID", y_controller)
+wpilib.SmartDashboard.putData("Auto Heading PID", heading_controller)
 
 
 class AutoBase(AutonomousStateMachine):
@@ -32,10 +42,6 @@ class AutoBase(AutonomousStateMachine):
     def __init__(self, trajectory_names: list[str]) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
         super().__init__()
-        self.x_controller = PIDController(1.0, 0.0, 0.0)
-        self.y_controller = PIDController(1.0, 0.0, 0.0)
-        self.heading_controller = PIDController(1.0, 0, 0)
-        self.heading_controller.enableContinuousInput(-math.pi, math.pi)
 
         self.current_leg = -1
         self.starting_pose = None
@@ -120,12 +126,10 @@ class AutoBase(AutonomousStateMachine):
 
         # Generate the next speeds for the robot
         speeds = ChassisSpeeds(
-            sample.vx + self.x_controller.calculate(pose.X(), sample.x),
-            sample.vy + self.y_controller.calculate(pose.Y(), sample.y),
+            sample.vx + x_controller.calculate(pose.X(), sample.x),
+            sample.vy + y_controller.calculate(pose.Y(), sample.y),
             sample.omega
-            + self.heading_controller.calculate(
-                pose.rotation().radians(), sample.heading
-            ),
+            + heading_controller.calculate(pose.rotation().radians(), sample.heading),
         )
 
         # Apply the generated speeds
