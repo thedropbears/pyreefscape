@@ -44,7 +44,7 @@ class ClimberComponent:
             SparkMax.PersistMode.kPersistParameters,
         )
 
-    def set_angle(self, angle) -> None:
+    def set_angle(self, angle: float) -> None:
         self.desired_angle = angle
 
     def go_to_start(self) -> None:
