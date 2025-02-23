@@ -177,8 +177,7 @@ class VisualLocalizer(HasPerLoopCache):
             distance = turret_to_tag.norm()
             relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
             if (
-                relative_bearing.radians() >= self.min_rotation
-                and relative_bearing.radians() <= self.max_rotation
+                self.min_rotation <= relative_bearing.radians() <= self.max_rotation
                 and abs(relative_facing.degrees()) > 100
                 and distance < self.CAMERA_MAX_RANGE
             ):
