@@ -45,6 +45,9 @@ class FloorIntake(StateMachine):
 
     @state(must_finish=True)
     def measuring(self, initial_call):
+        self.wrist.go_to_neutral()
+        self.intake_component.retract()
+
         if initial_call:
             self.algae_measurement.measure()
         elif not self.algae_measurement.is_executing:
@@ -52,5 +55,3 @@ class FloorIntake(StateMachine):
 
     def done(self) -> None:
         super().done()
-        self.wrist.go_to_neutral()
-        self.intake_component.retract()
