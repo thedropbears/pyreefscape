@@ -55,6 +55,3 @@ class CoralPlacer(StateMachine):
             self.wrist.go_to_neutral()
             self.done()
             return
-
-    def done(self) -> None:
-        super().done()
