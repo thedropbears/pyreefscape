@@ -150,7 +150,6 @@ class AutoBase(AutonomousStateMachine):
     @state
     def scoring_coral(self, initial_call: bool) -> None:
         if initial_call:
-            self.coral_placer.done()
             self.coral_placer.place()
         elif self.coral_placer.coral_is_scored():
             self.next_state("retreating")

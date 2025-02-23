@@ -252,7 +252,6 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
         if self.gamepad.getAButton():
-            self.coral_placer.done()
             self.coral_placer.place()
         if self.gamepad.getXButton():
             self.coral_placer.lift()

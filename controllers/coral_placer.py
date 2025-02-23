@@ -20,7 +20,7 @@ class CoralPlacer(StateMachine):
         self.coral_scored = False
 
     def place(self) -> None:
-        self.engage("lowering")
+        self.engage("lowering", force=True)
 
     def lift(self) -> None:
         self.engage()
