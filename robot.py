@@ -1,3 +1,4 @@
+import math
 import magicbot
 import ntcore
 import wpilib
@@ -150,8 +151,10 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
-            self.vision_pos = Translation3d(-0.050, -0.300, 0.660)
-            self.vision_rot = Rotation3d.fromDegrees(0, 10.0, -135.0)
+            self.vision_turret_pos = Translation3d(-0.030, -0.300, 0.660)
+            self.vision_turret_rot = Rotation2d.fromDegrees(-135.0)
+            self.vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.vision_camera_pitch = math.radians(10.0)
             self.vision_servo_offset = Rotation2d(6.235)
             self.vision_encoder_offset = Rotation2d(0.183795)
             self.vision_servo_offsets = ServoOffsets(
