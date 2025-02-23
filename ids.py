@@ -55,8 +55,6 @@ class DioChannel(enum.IntEnum):
 
     CLIMBER_ENCODER = 4
 
-    FEELER_LIMIT_SWITCH = 0
-
     VISION_ENCODER = 1
 
     INTAKE_ENCODER = 3
