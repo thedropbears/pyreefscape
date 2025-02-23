@@ -77,9 +77,13 @@ class VisualLocalizer(HasPerLoopCache):
         # The name of the camera in PhotonVision.
         name: str,
         # Position of the camera relative to the center of the robot
-        pos: Translation3d,
-        # The camera rotation at its neutral position (ie centred).
-        rot: Rotation3d,
+        turret_pos: Translation3d,
+        # The turret rotation at its neutral position (ie centred).
+        turret_rot: Rotation2d,
+        # The camera relative to the turret (ie without servo rotation)
+        camera_offset: Translation3d,
+        # The camera pitch on the mount, relative to horizontal
+        camera_pitch: float,
         servo_id: int,
         servo_offsets: ServoOffsets,
         encoder_id: int,
@@ -108,9 +112,12 @@ class VisualLocalizer(HasPerLoopCache):
         self.max_rotation = max(relative_rotations)
 
         self.servo = wpilib.Servo(servo_id)
-        self.pos = pos
-        self.robot_to_turret = Transform3d(pos, rot)
-        self.robot_to_turret_2d = Transform2d(pos.toTranslation2d(), rot.toRotation2d())
+        self.pos = turret_pos
+        self.robot_to_turret = Transform3d(turret_pos, Rotation3d(turret_rot))
+        self.robot_to_turret_2d = Transform2d(turret_pos.toTranslation2d(), turret_rot)
+        self.turret_to_camera = Transform3d(
+            camera_offset, Rotation3d(roll=0.0, pitch=camera_pitch, yaw=0.0)
+        )
         self.turret_rotation_buffer = TimeInterpolatableRotation2dBuffer(2.0)
 
         self.last_timestamp = -1.0
@@ -194,18 +201,18 @@ class VisualLocalizer(HasPerLoopCache):
         return self.raw_encoder_rotation() - self.encoder_offset
 
     def robot_to_camera(self, timestamp: float) -> Transform3d:
-        robot_to_turret_rotation = self.robot_to_turret.rotation()
         turret_rotation = self.turret_rotation_buffer.sample(timestamp)
         if turret_rotation is None:
             return self.robot_to_turret
-        return Transform3d(
-            self.robot_to_turret.translation(),
-            Rotation3d(
-                robot_to_turret_rotation.x,
-                robot_to_turret_rotation.y,
-                robot_to_turret_rotation.z + turret_rotation.radians(),
-            ),
+        r2t = self.robot_to_turret.translation()
+        t2c = self.turret_to_camera.translation().rotateBy(Rotation3d(turret_rotation))
+        trans = Translation3d(r2t.x + t2c.x, r2t.y + t2c.y, r2t.z + t2c.z)
+        rot = (
+            self.robot_to_turret.rotation()
+            .rotateBy(Rotation3d(turret_rotation))
+            .rotateBy(self.turret_to_camera.rotation())
         )
+        return Transform3d(trans, rot)
 
     def zero_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!

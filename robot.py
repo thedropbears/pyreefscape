@@ -120,6 +120,8 @@ class MyRobot(magicbot.MagicRobot):
             self.vision_servo_offset = Rotation2d(3.107)
             self.vision_encoder_offset = Rotation2d(3.052)
             # TODO set on test bot
+            self.vision_camera_offset = Translation3d(0.05, 0, 0)
+            self.vision_camera_pitch = math.radians(-20.0)
             self.vision_servo_offsets = ServoOffsets(
                 neutral=Rotation2d(0.5757), full_range=Rotation2d(1.9234)
             )
