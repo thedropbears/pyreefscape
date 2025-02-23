@@ -219,9 +219,9 @@ class MyRobot(magicbot.MagicRobot):
             self.reef_intake.intake()
 
         if self.gamepad.getYButton():
-            self.climber.go_to_deploy()
+            self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
-            self.climber.go_to_start()
+            self.climber_state_machine.retract()
 
         if self.gamepad.getBButton():
             self.reef_intake.done()
@@ -251,10 +251,10 @@ class MyRobot(magicbot.MagicRobot):
             self.algae_shooter.shoot()
 
         if self.gamepad.getYButtonPressed():
-            if self.climber.is_deployed():
-                self.climber.go_to_retract()
+            if self.climber_state_machine.current_state == "deploying":
+                self.climber_state_machine.retract()
             else:
-                self.climber.go_to_deploy()
+                self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
             self.coral_placer.place()
         if self.gamepad.getXButton():
