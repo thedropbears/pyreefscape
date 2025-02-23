@@ -103,7 +103,11 @@ class AutoBase(AutonomousStateMachine):
         if self.current_leg == 0:
             self.coral_placer.lift()
 
-        if self.current_leg > 0 and not self.injector_component.has_algae():
+        if (
+            self.current_leg > 0
+            and not self.injector_component.has_algae()
+            and not self.coral_placer.is_executing
+        ):
             self.reef_intake.intake()
 
         if distance < self.DISTANCE_TOLERANCE and math.isclose(
@@ -148,7 +152,7 @@ class AutoBase(AutonomousStateMachine):
         if initial_call:
             self.coral_placer.done()
             self.coral_placer.place()
-        elif not self.coral_placer.is_executing:
+        elif self.coral_placer.coral_is_scored():
             self.next_state("retreating")
 
     @state
