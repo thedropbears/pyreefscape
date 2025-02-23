@@ -107,7 +107,7 @@ class VisualLocalizer(HasPerLoopCache):
         # Repeat for full range
         self.servo_offsets = servo_offsets
 
-        relative_rotations = {(r - encoder_offset).radians() for r in rotation_range}
+        relative_rotations = [(r - encoder_offset).radians() for r in rotation_range]
         self.min_rotation = min(relative_rotations)
         self.max_rotation = max(relative_rotations)
 
