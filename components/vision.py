@@ -204,7 +204,11 @@ class VisualLocalizer(HasPerLoopCache):
         if turret_rotation is None:
             return self.robot_to_turret
         r2t = self.robot_to_turret.translation()
-        t2c = self.turret_to_camera.translation().rotateBy(Rotation3d(turret_rotation))
+        t2c = (
+            self.turret_to_camera.translation()
+            .rotateBy(self.turret_to_camera.rotation())
+            .rotateBy(Rotation3d(turret_rotation))
+        )
         trans = r2t + t2c
         rot = (
             self.robot_to_turret.rotation()
