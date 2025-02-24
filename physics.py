@@ -162,9 +162,7 @@ class PhysicsEngine:
         self.algae_limit_switch_sim = DIOSim(
             robot.injector_component.algae_limit_switch
         )
-        self.algae_finger_switch_sim = DIOSim(robot.feeler_component.limit_switch)
         self.algae_pickup_counter = 0
-        self.feeler = robot.feeler
         self.floor_intake = robot.floor_intake
         self.reef_intake = robot.reef_intake
         self.algae_shooter = robot.algae_shooter
@@ -241,11 +239,6 @@ class PhysicsEngine:
                 or pos.distance(game.RED_REEF_POS) < 2.0
             ):
                 self.algae_limit_switch_sim.setValue(False)
-        # Algae feeler
-        if self.feeler.current_state == "searching":
-            self.algae_finger_switch_sim.setValue(True)
-        else:
-            self.algae_finger_switch_sim.setValue(False)
         # Algae shooting
         if self.algae_shooter.current_state == "shooting":
             self.algae_limit_switch_sim.setValue(True)

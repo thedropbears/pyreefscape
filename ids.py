@@ -55,8 +55,6 @@ class DioChannel(enum.IntEnum):
 
     CLIMBER_ENCODER = 4
 
-    FEELER_LIMIT_SWITCH = 0
-
     VISION_ENCODER = 1
 
     INTAKE_ENCODER = 3
@@ -74,7 +72,7 @@ class PwmChannel(enum.IntEnum):
 
     LIGHT_STRIP = 2
 
-    FEELER_SERVO = 4
+    CORAL_SERVO = 4
 
 
 @enum.unique
