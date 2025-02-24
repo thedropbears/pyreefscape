@@ -25,7 +25,7 @@ class ClimberStateMachine(StateMachine):
         if initial_call:
             self.climber.go_to_deploy()
 
-        cage_positions = cage_pos(is_red)
+        cage_positions = cage_pos(is_red())
         closest_cage_position = cage_positions[0]
         closest_cage_dist = 999.0
         robot_position = self.chassis.get_pose().translation()
