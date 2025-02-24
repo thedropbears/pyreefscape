@@ -42,6 +42,23 @@ BLUE_REEF_POS = (
     + get_fiducial_pose(21).translation().toTranslation2d()
 ) / 2
 
+
+def cage_pos(is_red: bool) -> list[Translation2d]:
+    if is_red:
+        return [
+            Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 - 1.054),
+            Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 - 2.144),
+            Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 - 3.234),
+        ]
+
+    else:
+        return [
+            Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 + 1.054),
+            Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 + 2.144),
+            Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2 + 3.234),
+        ]
+
+
 # TODO: write functions for rotational symmetry
 
 
