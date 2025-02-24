@@ -15,7 +15,7 @@ class ClimberComponent:
     winch_voltage = tunable(12.0)
 
     def __init__(self) -> None:
-        self.START_ANGLE = -37.5
+        self.START_ANGLE = -30.0
         self.DEPLOY_ANGLE = 11.0
         self.RETRACT_ANGLE = -49.0
 
