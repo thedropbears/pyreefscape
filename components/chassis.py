@@ -252,7 +252,7 @@ class ChassisComponent:
     ) -> None:
         self.imu = Pigeon2(0)
         self.heading_controller = ProfiledPIDControllerRadians(
-            6, 0.01, 0, TrapezoidProfileRadians.Constraints(100, 100)
+            3, 0, 0, TrapezoidProfileRadians.Constraints(100, 100)
         )
         self.heading_controller.enableContinuousInput(-math.pi, math.pi)
         self.snapping_to_heading = False
