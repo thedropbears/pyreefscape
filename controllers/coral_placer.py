@@ -15,7 +15,7 @@ class CoralPlacer(StateMachine):
     # In degrees for tuning, converted to radians in tilt-to call
     CORAL_PLACE_ANGLE = tunable(0.0)
     CORAL_LOWER_ANGLE = tunable(-20.0)
-    CORAL_REMOVE_ANGLE = tunable(-97.0)
+    CORAL_REMOVE_ANGLE = -113.0
 
     RETREAT_DISTANCE = tunable(0.2)
 
@@ -56,7 +56,8 @@ class CoralPlacer(StateMachine):
 
         if distance >= self.RETREAT_DISTANCE:
             self.wrist.tilt_to(math.radians(self.CORAL_REMOVE_ANGLE))
-            self.next_state("coral_place_retraction")
+            if self.wrist.at_setpoint():
+                self.next_state("coral_place_retraction")
 
     @state(must_finish=True)
     def coral_place_retraction(self) -> None:
