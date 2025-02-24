@@ -57,7 +57,7 @@ class AlgaeShooter(StateMachine):
             and self.shooter_component.top_flywheels_up_to_speed()
             and self.shooter_component.bottom_flywheels_up_to_speed()
         ):
-            self.next_state("shooting")
+            self.next_state(self.shooting)
 
     @timed_state(duration=1, must_finish=True)
     def shooting(self) -> None:

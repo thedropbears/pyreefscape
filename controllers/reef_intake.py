@@ -59,7 +59,7 @@ class ReefIntake(StateMachine):
                 return
 
         if self.injector_component.has_algae():
-            self.next_state("safing")
+            self.next_state(self.safing)
             return
 
         nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]

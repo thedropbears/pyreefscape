@@ -27,12 +27,12 @@ class AlgaeMeasurement(StateMachine):
         self.measured_sizes = []
         self.measured_raw_sizes = []
         if all(abs(v) <= 0.0001 for v in self.shooter_component.flywheel_speeds()):
-            self.next_state("calculating")
+            self.next_state(self.calculating)
 
     @state(must_finish=True)
     def pre_measure(self, initial_call, state_tm) -> None:
         if self.retract(initial_call, state_tm):
-            self.next_state("measuring")
+            self.next_state(self.measuring)
 
     @state(must_finish=True)
     def calculating(self) -> None:
@@ -41,9 +41,9 @@ class AlgaeMeasurement(StateMachine):
             self.shooter_component.algae_size = sum(self.measured_sizes[1:]) / (
                 len(self.measured_sizes) - 1
             )
-            self.next_state("recovering")
+            self.next_state(self.recovering)
         else:
-            self.next_state("pre_measure")
+            self.next_state(self.pre_measure)
 
     @state(must_finish=True)
     def measuring(self, initial_call) -> None:
@@ -76,7 +76,7 @@ class AlgaeMeasurement(StateMachine):
                 scale_value(injector_position_delta, 7.2, 4.9, 16.0, 17.0)
             )
 
-            self.next_state("calculating")
+            self.next_state(self.calculating)
 
     @state(must_finish=True)
     def recovering(self, initial_call, state_tm) -> None:

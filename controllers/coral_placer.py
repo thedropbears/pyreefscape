@@ -40,7 +40,7 @@ class CoralPlacer(StateMachine):
             self.wrist.tilt_to(math.radians(self.CORAL_LOWER_ANGLE))
         if self.wrist.at_setpoint():
             self.coral_scored = True
-            self.next_state("safing")
+            self.next_state(self.safing)
 
     @state(must_finish=True)
     def safing(self, initial_call: bool) -> None:
