@@ -7,6 +7,7 @@ from wpimath.controller import PIDController
 
 from ids import DioChannel, SparkId
 from utilities.functions import constrain_angle
+from utilities.rev import configure_through_bore_encoder
 
 
 class ClimberComponent:
@@ -21,9 +22,8 @@ class ClimberComponent:
         self.desired_angle = math.radians(self.START_ANGLE)
 
         self.encoder = DutyCycleEncoder(DioChannel.CLIMBER_ENCODER, math.tau, 5.4)
-        self.encoder.setAssumedFrequency(975.6)
-        self.encoder.setDutyCycleRange(1 / 1025, 1024 / 1025)
-        self.encoder.setInverted(False)  # TODO change to correct value
+        configure_through_bore_encoder(self.encoder)
+        self.encoder.setInverted(False)
 
         self.pid = PIDController(Kp=40, Ki=0, Kd=0)
         self.pid.enableContinuousInput(0.0, math.tau)
