@@ -145,8 +145,8 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
-            self.vision_pos = Translation3d(-0.050, -0.305, 0.675)
-            self.vision_rot = Rotation3d(0, math.radians(-10.0), math.radians(-135.0))
+            self.vision_pos = Translation3d(-0.050, -0.300, 0.660)
+            self.vision_rot = Rotation3d(0, math.radians(10.0), math.radians(-135.0))
             self.vision_servo_offset = Rotation2d(6.235)
             self.vision_encoder_offset = Rotation2d(0.183795)
 
