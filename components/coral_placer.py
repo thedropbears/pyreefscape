@@ -1,17 +1,17 @@
-from magicbot import tunable
 from wpilib import Servo
 
 from ids import PwmChannel
 
 
 class CoralPlacerComponent:
-    servo_resting_angle = tunable(180)
-    servo_active_angle = tunable(0)
+    servo_resting_angle = 178
+    servo_active_angle = 2
 
     def __init__(self) -> None:
         self.servo = Servo(PwmChannel.CORAL_SERVO)
+        self.desired_angle = self.servo_resting_angle
 
-    def setup(self) -> None:
+    def on_enable(self) -> None:
         self.desired_angle = self.servo_resting_angle
 
     def coral_latch_open(self) -> None:
@@ -22,4 +22,4 @@ class CoralPlacerComponent:
 
     def execute(self):
         # set motor
-        self.servo.setAngle(self.desired_angle)
+        self.servo.set(self.desired_angle / 180.0)
