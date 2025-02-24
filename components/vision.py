@@ -22,9 +22,9 @@ from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 
 from components.chassis import ChassisComponent
 from utilities.caching import HasPerLoopCache, cache_per_loop
+from utilities.functions import clamp
 from utilities.game import APRILTAGS, apriltag_layout
 from utilities.rev import configure_through_bore_encoder
-from utilities.scalers import scale_value
 
 
 @wpiutil.wpistruct.make_wpistruct
@@ -56,7 +56,7 @@ class VisualLocalizer(HasPerLoopCache):
     TIMEOUT = 1.0  # s
 
     CAMERA_FOV = math.radians(
-        65
+        68
     )  # photon vision says 69.8, but we are being conservative
     CAMERA_MAX_RANGE = 4.0  # m
 
@@ -96,7 +96,7 @@ class VisualLocalizer(HasPerLoopCache):
     ) -> None:
         super().__init__()
         self.camera = PhotonCamera(name)
-        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
+        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.pi, -math.pi)
         configure_through_bore_encoder(self.encoder)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
@@ -107,9 +107,8 @@ class VisualLocalizer(HasPerLoopCache):
         # Repeat for full range
         self.servo_offsets = servo_offsets
 
-        relative_rotations = [(r - encoder_offset).radians() for r in rotation_range]
-        self.min_rotation = min(relative_rotations)
-        self.max_rotation = max(relative_rotations)
+        relative_rotations = [(r - encoder_offset) for r in rotation_range]
+        self.min_rotation, self.max_rotation = relative_rotations
 
         self.servo = wpilib.Servo(servo_id)
         self.pos = turret_pos
@@ -177,7 +176,8 @@ class VisualLocalizer(HasPerLoopCache):
             distance = turret_to_tag.norm()
             relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
             if (
-                self.min_rotation <= relative_bearing.radians() <= self.max_rotation
+                (relative_bearing - self.min_rotation).radians() >= -self.CAMERA_FOV
+                and (self.max_rotation - relative_bearing).radians() >= -self.CAMERA_FOV
                 and abs(relative_facing.degrees()) > 100
                 and distance < self.CAMERA_MAX_RANGE
             ):
@@ -191,6 +191,10 @@ class VisualLocalizer(HasPerLoopCache):
     def desired_turret_rotation(self) -> Rotation2d:
         # Read encoder angle and account for offset
         return self.relative_bearing_to_best_cluster()
+
+    @feedback
+    def desired_servo_rotation(self) -> Rotation2d:
+        return self.turret_to_servo(self.desired_turret_rotation())
 
     def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
         return turret - (self.servo_offsets.neutral - self.encoder_offset)
@@ -228,14 +232,13 @@ class VisualLocalizer(HasPerLoopCache):
         self.servo.set(1.0)
 
     def execute(self) -> None:
+        target = self.turret_to_servo(self.desired_turret_rotation())
+        neutral = self.servo_offsets.neutral
+        full = self.servo_offsets.full_range
+        half_range = full - neutral
+        delta = target - neutral
         self.servo.set(
-            scale_value(
-                self.turret_to_servo(self.desired_turret_rotation()).radians(),
-                (self.servo_offsets.neutral - self.encoder_offset).radians(),
-                (self.servo_offsets.full_range - self.encoder_offset).radians(),
-                0.5,
-                1.0,
-            )
+            clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.0, 1.0)
         )
 
         self.turret_rotation_buffer.addSample(
