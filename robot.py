@@ -1,5 +1,3 @@
-import math
-
 import magicbot
 import ntcore
 import wpilib
@@ -119,7 +117,7 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis_wheel_base = 0.467
 
             self.vision_pos = Translation3d(0.22, 0, 0.295)
-            self.vision_rot = Rotation3d(0, -math.radians(20), 0)
+            self.vision_rot = Rotation3d.fromDegrees(0, -20.0, 0)
             self.vision_servo_offset = Rotation2d(3.107)
             self.vision_encoder_offset = Rotation2d(3.052)
         else:
@@ -146,7 +144,7 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis_wheel_base = 0.517
 
             self.vision_pos = Translation3d(-0.050, -0.300, 0.660)
-            self.vision_rot = Rotation3d(0, math.radians(10.0), math.radians(-135.0))
+            self.vision_rot = Rotation3d.fromDegrees(0, 10.0, -135.0)
             self.vision_servo_offset = Rotation2d(6.235)
             self.vision_encoder_offset = Rotation2d(0.183795)
 
