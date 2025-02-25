@@ -137,7 +137,7 @@ class VisualLocalizer(HasPerLoopCache):
         relative_bearings = [tag.relative_bearing for tag in tags]
         relative_bearings.sort(key=Rotation2d.radians)
         for offset in range(len(relative_bearings) - 1, 0, -1):
-            bearing_pairs = zip(relative_bearings, relative_bearings[offset:-1])
+            bearing_pairs = zip(relative_bearings, relative_bearings[offset:])
             for pair in bearing_pairs:
                 if abs((pair[0] - pair[1]).radians()) < self.CAMERA_FOV:
                     return (pair[1] - pair[0]) * 0.5 + pair[0]
