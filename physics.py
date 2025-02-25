@@ -22,6 +22,7 @@ from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
+from components.intake import IntakeComponent
 from components.wrist import WristComponent
 from utilities import game
 from utilities.functions import constrain_angle
@@ -78,6 +79,18 @@ class Falcon500MotorSim:
             )
 
 
+class SparkArmSim:
+    def __init__(self, mech_sim: SingleJointedArmSim, motor_sim: rev.SparkSim) -> None:
+        self.mech_sim = mech_sim
+        self.motor_sim = motor_sim
+
+    def update(self, dt: float) -> None:
+        vbus = self.motor_sim.getBusVoltage()
+        self.mech_sim.setInputVoltage(self.motor_sim.getAppliedOutput() * vbus)
+        self.mech_sim.update(dt)
+        self.motor_sim.iterate(self.mech_sim.getVelocity(), vbus, dt)
+
+
 # class ServoEncoderSim:
 #     def __init__(self, pwm, encoder):
 #         self.pwm_sim = PWMSim(pwm)
@@ -127,11 +140,33 @@ class PhysicsEngine:
             ),
         ]
 
+        # Intake arm simulation
+        intake_arm_gearbox = DCMotor.NEO(1)
+        self.intake_arm_motor = rev.SparkMaxSim(
+            robot.intake_component.arm_motor, intake_arm_gearbox
+        )
+        self.intake_arm_encoder_sim = DutyCycleEncoderSim(
+            robot.intake_component.encoder
+        )
+        self.intake_arm = SparkArmSim(
+            SingleJointedArmSim(
+                intake_arm_gearbox,
+                IntakeComponent.gear_ratio,
+                moi=0.035579622,
+                armLength=0.22,
+                minAngle=IntakeComponent.DEPLOYED_ANGLE,
+                maxAngle=IntakeComponent.RETRACTED_ANGLE,
+                simulateGravity=True,
+                startingAngle=IntakeComponent.RETRACTED_ANGLE,
+            ),
+            self.intake_arm_motor,
+        )
+
         wrist_gearbox = DCMotor.NEO(1)
-        self.wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
+        wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
         self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
 
-        self.wrist_sim = SingleJointedArmSim(
+        wrist_sim = SingleJointedArmSim(
             wrist_gearbox,
             WristComponent.wrist_gear_ratio,
             moi=0.295209215,
@@ -141,6 +176,7 @@ class PhysicsEngine:
             simulateGravity=True,
             startingAngle=WristComponent.MAXIMUM_DEPRESSION,
         )
+        self.wrist = SparkArmSim(wrist_sim, wrist_motor)
 
         self.imu = robot.chassis.imu.sim_state
 
@@ -166,7 +202,6 @@ class PhysicsEngine:
         self.floor_intake = robot.floor_intake
         self.reef_intake = robot.reef_intake
         self.algae_shooter = robot.algae_shooter
-        self.wrist_component = robot.wrist
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -214,13 +249,17 @@ class PhysicsEngine:
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
 
-        # Update wrist simulation
-        self.wrist_sim.setInputVoltage(self.wrist_motor.getAppliedOutput() * 12.0)
-        self.wrist_sim.update(tm_diff)
-        self.wrist_encoder_sim.set(
-            self.wrist_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
+        # Update intake arm simulation
+        self.intake_arm.update(tm_diff)
+        self.intake_arm_encoder_sim.set(
+            self.intake_arm.mech_sim.getAngle() + IntakeComponent.ARM_ENCODER_OFFSET
         )
-        self.wrist_motor.iterate(self.wrist_sim.getVelocity(), vbus=12.0, dt=tm_diff)
+
+        # Update wrist simulation
+        self.wrist.update(tm_diff)
+        self.wrist_encoder_sim.set(
+            self.wrist.mech_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
+        )
 
         # Simulate algae pick up
         if self.floor_intake.current_state == "intaking":
