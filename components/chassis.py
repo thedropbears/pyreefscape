@@ -519,6 +519,7 @@ class ChassisComponent:
             self.module_fr.get_position(),
         )
 
+    @feedback
     def get_pose(self) -> Pose2d:
         """Get the current location of the robot relative to ???"""
         return self.estimator.getEstimatedPosition()
