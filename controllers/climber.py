@@ -36,7 +36,7 @@ class ClimberStateMachine(StateMachine):
                 closest_cage_dist = dist
                 closest_cage_position = cage_position
 
-        if closest_cage_dist > 1.0:
+        if closest_cage_dist > 0.5:
             self.heading_to_cage = math.atan2(
                 closest_cage_position.y - robot_position.y,
                 closest_cage_position.x - robot_position.x,
@@ -45,7 +45,10 @@ class ClimberStateMachine(StateMachine):
 
     @state(must_finish=True)
     def retracting(self) -> None:
+        self.chassis.stop_snapping()
         self.climber.go_to_retract()
+        if self.climber.is_retracted():
+            self.done()
 
     def done(self) -> None:
         super().done()
