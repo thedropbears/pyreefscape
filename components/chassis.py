@@ -16,7 +16,7 @@ from phoenix6.controls import PositionVoltage, VelocityVoltage, VoltageOut
 from phoenix6.hardware import CANcoder, Pigeon2, TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 from wpimath.controller import (
-    ProfiledPIDControllerRadians,
+    PIDController,
     SimpleMotorFeedforwardMeters,
 )
 from wpimath.estimator import SwerveDrive4PoseEstimator
@@ -27,7 +27,6 @@ from wpimath.kinematics import (
     SwerveModulePosition,
     SwerveModuleState,
 )
-from wpimath.trajectory import TrapezoidProfileRadians
 
 from ids import CancoderId, TalonId
 from utilities.ctre import FALCON_FREE_RPS
@@ -251,9 +250,7 @@ class ChassisComponent:
         self, track_width: float, wheel_base: float, swerve_config: SwerveConfig
     ) -> None:
         self.imu = Pigeon2(0)
-        self.heading_controller = ProfiledPIDControllerRadians(
-            3, 0, 0, TrapezoidProfileRadians.Constraints(100, 100)
-        )
+        self.heading_controller = PIDController(3.0, 0.0, 0.0)
         self.heading_controller.enableContinuousInput(-math.pi, math.pi)
         self.snapping_to_heading = False
         self.heading_controller.setTolerance(self.HEADING_TOLERANCE)
@@ -384,7 +381,7 @@ class ChassisComponent:
     def snap_to_heading(self, heading: float) -> None:
         """set a heading target for the heading controller"""
         self.snapping_to_heading = True
-        self.heading_controller.setGoal(heading)
+        self.heading_controller.setSetpoint(heading)
 
     def stop_snapping(self) -> None:
         """stops the heading_controller"""
@@ -399,9 +396,7 @@ class ChassisComponent:
                 self.get_rotation().radians()
             )
         else:
-            self.heading_controller.reset(
-                self.get_rotation().radians(), self.get_rotational_velocity()
-            )
+            self.heading_controller.reset()
 
         desired_speed_translation = Translation2d(
             self.chassis_speeds.vx, self.chassis_speeds.vy
@@ -529,7 +524,7 @@ class ChassisComponent:
 
     @feedback
     def at_desired_heading(self) -> bool:
-        return self.heading_controller.atGoal()
+        return abs(self.heading_controller.getError()) <= self.HEADING_TOLERANCE
 
     def set_coast_in_neutral(self, coast_mode: bool = True) -> None:
         mode = NeutralModeValue.COAST if coast_mode else NeutralModeValue.BRAKE
