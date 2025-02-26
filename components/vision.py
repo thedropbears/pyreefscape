@@ -232,11 +232,11 @@ class VisualLocalizer(HasPerLoopCache):
         self.servo.set(1.0)
 
     def execute(self) -> None:
-        target = self.turret_to_servo(self.desired_turret_rotation())
+        desired = self.turret_to_servo(self.desired_turret_rotation())
         neutral = self.servo_offsets.neutral
         full = self.servo_offsets.full_range
         half_range = full - neutral
-        delta = target - neutral
+        delta = desired - neutral
         self.servo.set(
             clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.0, 1.0)
         )
