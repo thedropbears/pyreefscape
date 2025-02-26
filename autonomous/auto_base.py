@@ -13,7 +13,6 @@ from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
 from controllers.algae_shooter import AlgaeShooter
-from controllers.coral_placer import CoralPlacer
 from controllers.reef_intake import ReefIntake
 from utilities import game
 
@@ -29,7 +28,6 @@ wpilib.SmartDashboard.putData("Auto Heading PID", heading_controller)
 
 class AutoBase(AutonomousStateMachine):
     algae_shooter: AlgaeShooter
-    coral_placer: CoralPlacer
     reef_intake: ReefIntake
 
     shooter_component: ShooterComponent
@@ -100,14 +98,7 @@ class AutoBase(AutonomousStateMachine):
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
 
-        if self.current_leg == 0:
-            self.coral_placer.lift()
-
-        if (
-            self.current_leg > 0
-            and not self.injector_component.has_algae()
-            and not self.coral_placer.is_executing
-        ):
+        if self.current_leg > 0 and not self.injector_component.has_algae():
             self.reef_intake.intake()
 
         if distance < self.DISTANCE_TOLERANCE and math.isclose(
