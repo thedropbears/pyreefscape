@@ -1,5 +1,6 @@
 import math
 
+import wpilib
 from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
@@ -12,6 +13,7 @@ from phoenix6.hardware import TalonFX
 from phoenix6.signals import InvertedValue, NeutralModeValue
 
 from ids import TalonId
+from utilities.game import ALGAE_MAX_DIAMETER, ALGAE_MIN_DIAMETER
 
 
 class ShooterComponent:
@@ -72,7 +74,20 @@ class ShooterComponent:
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
 
-        self.algae_size = 0.0
+        self._algae_size = 0.0
+
+    @property
+    def algae_size(self) -> float:
+        return (
+            self._algae_size
+            if not wpilib.DriverStation.isAutonomous()
+            or not wpilib.RobotBase.isSimulation()
+            else (ALGAE_MIN_DIAMETER + ALGAE_MAX_DIAMETER) / 2.0
+        )
+
+    @algae_size.setter
+    def algae_size(self, value: float) -> None:
+        self._algae_size = value
 
     def spin_flywheels(
         self, top_flywheel_shoot_speed: float, bottom_flywheel_shoot_speed: float
