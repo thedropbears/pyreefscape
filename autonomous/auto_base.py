@@ -16,9 +16,9 @@ from controllers.algae_shooter import AlgaeShooter
 from controllers.reef_intake import ReefIntake
 from utilities import game
 
-x_controller = PIDController(1.0, 0.0, 0.0)
-y_controller = PIDController(1.0, 0.0, 0.0)
-heading_controller = PIDController(1.0, 0, 0)
+x_controller = PIDController(0.5, 0.0, 0.0)
+y_controller = PIDController(0.5, 0.0, 0.0)
+heading_controller = PIDController(3.0, 0, 0)
 heading_controller.enableContinuousInput(-math.pi, math.pi)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
@@ -34,7 +34,7 @@ class AutoBase(AutonomousStateMachine):
     injector_component: InjectorComponent
     chassis: ChassisComponent
 
-    DISTANCE_TOLERANCE = 0.05  # metres
+    DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
 
     def __init__(self, trajectory_names: list[str]) -> None:
@@ -101,8 +101,10 @@ class AutoBase(AutonomousStateMachine):
         if self.current_leg > 0 and not self.injector_component.has_algae():
             self.reef_intake.intake()
 
-        if distance < self.DISTANCE_TOLERANCE and math.isclose(
-            angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE
+        if (
+            distance < self.DISTANCE_TOLERANCE
+            and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
+            and state_tm > self.trajectories[self.current_leg].get_total_time() / 2.0
         ):
             # First leg is to score coral, then we run cycles of pick up -> shoot
             if self.current_leg == 0:

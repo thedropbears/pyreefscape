@@ -3,20 +3,133 @@
  "version":1,
  "type":"Swerve",
  "variables":{
-  "expressions":{},
+  "expressions":{
+   "MaxAcceleration":{
+    "dimension":"LinAcc",
+    "var":{
+     "exp":"1 m / s ^ 2",
+     "val":1.0
+    }
+   },
+   "MaxVelocity":{
+    "dimension":"LinVel",
+    "var":{
+     "exp":"1 m / s",
+     "val":1.0
+    }
+   }
+  },
   "poses":{
-   "BranchB":{
+   "AlgaeAB":{
     "x":{
      "exp":"3.13 m",
      "val":3.13
+    },
+    "y":{
+     "exp":"4.02 m",
+     "val":4.02
+    },
+    "heading":{
+     "exp":"180 deg",
+     "val":3.141592653589793
+    }
+   },
+   "AlgaeCD":{
+    "x":{
+     "exp":"3.81 m",
+     "val":3.81
+    },
+    "y":{
+     "exp":"2.82 m",
+     "val":2.82
+    },
+    "heading":{
+     "exp":"240 deg",
+     "val":4.1887902047863905
+    }
+   },
+   "AlgaeEF":{
+    "x":{
+     "exp":"Reef.x * 2 - AlgaeCD.x",
+     "val":5.171999999999999
+    },
+    "y":{
+     "exp":"AlgaeCD.y",
+     "val":2.82
+    },
+    "heading":{
+     "exp":"540 deg - AlgaeCD.heading",
+     "val":5.235987755982989
+    }
+   },
+   "AlgaeGH":{
+    "x":{
+     "exp":"Reef.x * 2 - AlgaeAB.x",
+     "val":5.851999999999999
+    },
+    "y":{
+     "exp":"AlgaeAB.y",
+     "val":4.02
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "AlgaeIJ":{
+    "x":{
+     "exp":"AlgaeEF.x",
+     "val":5.171999999999999
+    },
+    "y":{
+     "exp":"Reef.y * 2 - AlgaeEF.y",
+     "val":5.231999999999999
+    },
+    "heading":{
+     "exp":"360 deg - AlgaeEF.heading",
+     "val":1.0471975511965974
+    }
+   },
+   "AlgaeKL":{
+    "x":{
+     "exp":"AlgaeCD.x",
+     "val":3.81
+    },
+    "y":{
+     "exp":"Reef.y * 2 - AlgaeCD.y",
+     "val":5.231999999999999
+    },
+    "heading":{
+     "exp":"360 deg - AlgaeCD.heading",
+     "val":2.0943951023931957
+    }
+   },
+   "AllianceStart":{
+    "x":{
+     "exp":"7.5 m",
+     "val":7.5
+    },
+    "y":{
+     "exp":"5.5 m",
+     "val":5.5
+    },
+    "heading":{
+     "exp":"0 deg",
+     "val":0.0
+    }
+   },
+   "BranchB":{
+    "x":{
+     "exp":"3.03 m",
+     "val":3.03
     },
     "y":{
      "exp":"3.86 m",
      "val":3.86
     },
     "heading":{
-     "exp":"-180 deg",
-     "val":-3.141592653589793
+     "exp":"180 deg",
+     "val":3.141592653589793
     }
    },
    "BranchC":{
@@ -29,8 +142,8 @@
      "val":2.922
     },
     "heading":{
-     "exp":"-120 deg",
-     "val":-2.0943951023931953
+     "exp":"240 deg",
+     "val":4.1887902047863905
     }
    },
    "BranchD":{
@@ -43,8 +156,78 @@
      "val":2.76
     },
     "heading":{
-     "exp":"-120 deg",
-     "val":-2.0943951023931953
+     "exp":"240 deg",
+     "val":4.1887902047863905
+    }
+   },
+   "BranchF":{
+    "x":{
+     "exp":"Reef.x * 2 - BranchC.x",
+     "val":5.321
+    },
+    "y":{
+     "exp":"BranchC.y",
+     "val":2.922
+    },
+    "heading":{
+     "exp":"540 deg - BranchC.heading",
+     "val":5.235987755982989
+    }
+   },
+   "BranchG":{
+    "x":{
+     "exp":"Reef.x * 2 - BranchB.x",
+     "val":5.952
+    },
+    "y":{
+     "exp":"BranchB.y",
+     "val":3.86
+    },
+    "heading":{
+     "exp":"180 deg - BranchB.heading",
+     "val":0.0
+    }
+   },
+   "BranchL":{
+    "x":{
+     "exp":"BranchC.x",
+     "val":3.661
+    },
+    "y":{
+     "exp":"Reef.y * 2 - BranchC.y",
+     "val":5.129999999999999
+    },
+    "heading":{
+     "exp":"360 deg - BranchC.heading",
+     "val":2.0943951023931957
+    }
+   },
+   "CentreStart":{
+    "x":{
+     "exp":"7.5 m",
+     "val":7.5
+    },
+    "y":{
+     "exp":"4 m",
+     "val":4.0
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "OppositionStart":{
+    "x":{
+     "exp":"7.5 m",
+     "val":7.5
+    },
+    "y":{
+     "exp":"2 m",
+     "val":2.0
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
     }
    },
    "Reef":{
@@ -63,26 +246,12 @@
    },
    "Shoot":{
     "x":{
-     "exp":"7.827007293701172 m - 1 m",
-     "val":6.827007293701172
+     "exp":"6.898591041564941 m",
+     "val":6.898591041564941
     },
     "y":{
-     "exp":"7 m",
-     "val":7.0
-    },
-    "heading":{
-     "exp":"-220 deg",
-     "val":-3.839724354387525
-    }
-   },
-   "Start":{
-    "x":{
-     "exp":"7.58 m",
-     "val":7.58
-    },
-    "y":{
-     "exp":"5.08 m",
-     "val":5.08
+     "exp":"5.13 m",
+     "val":5.13
     },
     "heading":{
      "exp":"180 deg",
@@ -94,27 +263,27 @@
  "config":{
   "frontLeft":{
    "x":{
-    "exp":"11 in",
-    "val":0.2794
+    "exp":"0.517 m / 2",
+    "val":0.2585
    },
    "y":{
-    "exp":"11 in",
-    "val":0.2794
+    "exp":"0.517 m / 2",
+    "val":0.2585
    }
   },
   "backLeft":{
    "x":{
-    "exp":"-11 in",
-    "val":-0.2794
+    "exp":"-0.517 m / 2",
+    "val":-0.2585
    },
    "y":{
-    "exp":"11 in",
-    "val":0.2794
+    "exp":"0.517 m / 2",
+    "val":0.2585
    }
   },
   "mass":{
-   "exp":"150 lbs",
-   "val":68.0388555
+   "exp":"50 kg",
+   "val":50.0
   },
   "inertia":{
    "exp":"6 kg m ^ 2",
