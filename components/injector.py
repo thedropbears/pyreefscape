@@ -55,11 +55,11 @@ class InjectorComponent:
         self.desired_injector_voltage = 0.0
 
     @feedback
-    def has_algae(self) -> bool:
+    def _algae_limit_switch_pressed(self) -> bool:
         return not self.algae_limit_switch.get()
 
     @feedback
-    def should_be_holding_algae(self) -> bool:
+    def has_algae(self) -> bool:
         return self.has_seen_algae
 
     def inject(self) -> None:
@@ -85,10 +85,10 @@ class InjectorComponent:
         )
 
     def execute(self) -> None:
-        if self.has_algae():
+        if self._algae_limit_switch_pressed():
             self.has_seen_algae = True
 
-        if math.isclose(self.desired_injector_voltage, 0.0) and self.has_seen_algae:
+        if math.isclose(self.desired_injector_voltage, 0.0) and self.has_algae():
             self.desired_injector_voltage = self.INJECTOR_BACKDRIVE_VOLTAGE
 
         if self.should_measure:
