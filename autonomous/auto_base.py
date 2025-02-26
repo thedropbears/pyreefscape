@@ -9,6 +9,7 @@ from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
+from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
@@ -35,6 +36,7 @@ class AutoBase(AutonomousStateMachine):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     chassis: ChassisComponent
+    ballistics_component: BallisticsComponent
 
     DISTANCE_TOLERANCE = 0.05  # metres
     ANGLE_TOLERANCE = math.radians(3)
@@ -96,6 +98,7 @@ class AutoBase(AutonomousStateMachine):
         if final_pose is None:
             self.done()
             return
+        self.ballistics_component.set_final_auto_pose(final_pose)
 
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
@@ -109,6 +112,9 @@ class AutoBase(AutonomousStateMachine):
             and not self.coral_placer.is_executing
         ):
             self.reef_intake.intake()
+
+        if self.current_leg > 0 and self.injector_component.should_be_holding_algae():
+            self.algae_shooter.shoot()
 
         if distance < self.DISTANCE_TOLERANCE and math.isclose(
             angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE
@@ -158,7 +164,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def intaking_algae(self) -> None:
-        if self.injector_component.has_algae():
+        if not self.reef_intake.is_executing:
             self.next_state("tracking_trajectory")
 
     @state
