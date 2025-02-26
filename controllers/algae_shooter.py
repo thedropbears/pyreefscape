@@ -56,6 +56,8 @@ class AlgaeShooter(StateMachine):
             self.wrist.at_setpoint()
             and self.shooter_component.top_flywheels_up_to_speed()
             and self.shooter_component.bottom_flywheels_up_to_speed()
+            and math.isclose(self.chassis.get_velocity().vx, 0)
+            and math.isclose(self.chassis.get_velocity().vy, 0)
         ):
             self.next_state(self.shooting)
 
