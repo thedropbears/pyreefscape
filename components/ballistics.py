@@ -14,7 +14,13 @@ from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.led_component import LightStrip
 from components.shooter import ShooterComponent
-from utilities.game import FIELD_LENGTH, FIELD_WIDTH, is_red
+from utilities.game import (
+    ALGAE_MAX_DIAMETER,
+    ALGAE_MIN_DIAMETER,
+    FIELD_LENGTH,
+    FIELD_WIDTH,
+    is_red,
+)
 
 
 @wpiutil.wpistruct.make_wpistruct
@@ -42,16 +48,16 @@ class BallisticsComponent:
     # Tuples are values corresponding to the distances above
     # fmt: off
     FLYWHEEL_TOP_SPEED_LOOKUP = {
-        16.0: (30, 32.5, 38.0),  # , 90
+        ALGAE_MIN_DIAMETER: (30, 32.5, 38.0),  # , 90
         # 16.5: (60, 80),
-        17.0: (33, 36, 39.0), # , 50
+        ALGAE_MAX_DIAMETER: (33, 36, 39.0), # , 50
     }
     # Currently we use the same speed top and bottom, but this could be seperate
     FLYWHEEL_BOTTOM_SPEED_LOOKUP = FLYWHEEL_TOP_SPEED_LOOKUP
     FLYWHEEL_ANGLE_LOOKUP = {
-        16.0: (math.radians(-10), math.radians(-12), math.radians(-19)), # , math.radians(-25)
+        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-12), math.radians(-19)), # , math.radians(-25)
         # 16.5: (math.radians(-15), math.radians(-20)),
-        17.0: (math.radians(-10), math.radians(-12), math.radians(-19)), # , math.radians(-25)
+        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-12), math.radians(-19)), # , math.radians(-25)
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())

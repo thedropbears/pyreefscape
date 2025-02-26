@@ -2,6 +2,7 @@ from magicbot import StateMachine, feedback, state, tunable
 
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
+from utilities.game import ALGAE_MAX_DIAMETER, ALGAE_MIN_DIAMETER
 from utilities.scalers import scale_value
 
 
@@ -73,7 +74,13 @@ class AlgaeMeasurement(StateMachine):
             ) - sum(self.injector_starting_positions)
             self.measured_raw_sizes.append(injector_position_delta)
             self.measured_sizes.append(
-                scale_value(injector_position_delta, 7.2, 4.9, 16.0, 17.0)
+                scale_value(
+                    injector_position_delta,
+                    7.2,
+                    4.9,
+                    ALGAE_MIN_DIAMETER,
+                    ALGAE_MAX_DIAMETER,
+                )
             )
 
             self.next_state(self.calculating)

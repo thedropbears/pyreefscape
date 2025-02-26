@@ -42,6 +42,9 @@ BLUE_REEF_POS = (
     + get_fiducial_pose(21).translation().toTranslation2d()
 ) / 2
 
+ALGAE_MIN_DIAMETER = 16.0  # inches
+ALGAE_MAX_DIAMETER = 16.5  # inches
+
 
 def cage_pos(is_red: bool) -> list[Translation2d]:
     if is_red:
