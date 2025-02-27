@@ -268,7 +268,6 @@ class MyRobot(magicbot.MagicRobot):
         self.algae_measurement.execute()
 
         # Components
-        self.chassis.execute()
         self.climber.execute()
         # self.coral_placer_component.execute()
         self.shooter_component.execute()
