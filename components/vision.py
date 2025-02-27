@@ -61,6 +61,7 @@ class VisualLocalizer(HasPerLoopCache):
     CAMERA_MAX_RANGE = 4.0  # m
 
     add_to_estimator = tunable(True)
+    only_use_multitag = tunable(True)
     should_log = tunable(True)
 
     last_pose_z = tunable(0.0, writeDefault=False)
@@ -70,7 +71,7 @@ class VisualLocalizer(HasPerLoopCache):
     linear_vision_uncertainty_multi_tag = tunable(0.05)
     rotation_vision_uncertainty_multi_tag = tunable(0.05)
 
-    reproj_error_threshold = 0.1
+    reproj_error_threshold = tunable(0.2)
 
     def __init__(
         self,
@@ -262,6 +263,9 @@ class VisualLocalizer(HasPerLoopCache):
             wpilib.Timer.getFPGATimestamp(), self.turret_rotation
         )
 
+        if not self.add_to_estimator:
+            return
+
         all_results = self.camera.getAllUnreadResults()
         for results in all_results:
             # if results didn't see any targets
@@ -273,12 +277,12 @@ class VisualLocalizer(HasPerLoopCache):
 
             if timestamp == self.last_timestamp:
                 return
-            self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
-            self.last_timestamp = timestamp
 
             camera_to_robot = self.robot_to_camera(timestamp).inverse()
 
             if results.multitagResult:
+                self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
+                self.last_timestamp = timestamp
                 self.has_multitag = True
                 p = results.multitagResult.estimatedPose
                 pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
@@ -287,10 +291,7 @@ class VisualLocalizer(HasPerLoopCache):
 
                 self.field_pos_obj.setPose(pose)
 
-                if (
-                    self.add_to_estimator
-                    and self.current_reproj < self.reproj_error_threshold
-                ):
+                if self.current_reproj < self.reproj_error_threshold:
                     self.chassis.estimator.addVisionMeasurement(
                         pose,
                         timestamp,
@@ -306,6 +307,10 @@ class VisualLocalizer(HasPerLoopCache):
                     self.best_log.setPose(pose)
             else:
                 self.has_multitag = False
+                if self.only_use_multitag:
+                    return
+                self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
+                self.last_timestamp = timestamp
                 for target in results.getTargets():
                     # filter out likely bad targets
                     if target.getPoseAmbiguity() > 0.25:
