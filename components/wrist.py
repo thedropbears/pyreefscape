@@ -17,7 +17,7 @@ from utilities.rev import configure_spark_ephemeral, configure_spark_reset_and_p
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = 2.982438
+    ENCODER_ZERO_OFFSET = 5.686758
     MAXIMUM_DEPRESSION = math.radians(-113.0)
     MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
