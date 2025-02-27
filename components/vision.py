@@ -71,7 +71,7 @@ class VisualLocalizer(HasPerLoopCache):
     linear_vision_uncertainty_multi_tag = tunable(0.05)
     rotation_vision_uncertainty_multi_tag = tunable(0.05)
 
-    reproj_error_threshold = tunable(0.2)
+    reproj_error_threshold = tunable(2.0)
 
     def __init__(
         self,
