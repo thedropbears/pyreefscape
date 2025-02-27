@@ -250,9 +250,9 @@ class VisualLocalizer(HasPerLoopCache):
                         pose,
                         timestamp,
                         (
-                            self.linear_vision_uncertainty,
-                            self.linear_vision_uncertainty,
-                            self.rotation_vision_uncertainty,
+                            self.linear_vision_uncertainty_multi_tag,
+                            self.linear_vision_uncertainty_multi_tag,
+                            self.rotation_vision_uncertainty_multi_tag,
                         ),
                     )
 
@@ -280,9 +280,9 @@ class VisualLocalizer(HasPerLoopCache):
                         pose,
                         timestamp,
                         (
-                            self.linear_vision_uncertainty_multi_tag,
-                            self.linear_vision_uncertainty_multi_tag,
-                            self.rotation_vision_uncertainty_multi_tag,
+                            self.linear_vision_uncertainty,
+                            self.linear_vision_uncertainty,
+                            self.rotation_vision_uncertainty,
                         ),
                     )
 
