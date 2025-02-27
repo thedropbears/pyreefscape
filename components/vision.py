@@ -8,7 +8,6 @@ import wpiutil.wpistruct
 from magicbot import feedback, tunable
 from photonlibpy.photonCamera import PhotonCamera
 from photonlibpy.targeting.photonTrackedTarget import PhotonTrackedTarget
-from wpimath import objectToRobotPose
 from wpimath.geometry import (
     Pose2d,
     Pose3d,
@@ -136,6 +135,7 @@ class VisualLocalizer(HasPerLoopCache):
             camera_offset, Rotation3d(roll=0.0, pitch=camera_pitch, yaw=0.0)
         )
         self.turret_rotation_buffer = TimeInterpolatableRotation2dBuffer(2.0)
+        self.heading_buffer = TimeInterpolatableRotation2dBuffer(2.0)
 
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
@@ -259,9 +259,9 @@ class VisualLocalizer(HasPerLoopCache):
             clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.01, 0.99)
         )
 
-        self.turret_rotation_buffer.addSample(
-            wpilib.Timer.getFPGATimestamp(), self.turret_rotation
-        )
+        now = wpilib.Timer.getFPGATimestamp()
+        self.turret_rotation_buffer.addSample(now, self.turret_rotation)
+        self.heading_buffer.addSample(now, self.chassis.get_rotation())
 
         if not self.add_to_estimator:
             return
@@ -316,14 +316,19 @@ class VisualLocalizer(HasPerLoopCache):
                     if target.getPoseAmbiguity() > 0.25:
                         continue
 
+                    heading = self.heading_buffer.sample(results.getTimestampSeconds())
+                    if heading is None:
+                        heading = self.chassis.get_rotation()
                     poses = estimate_poses_from_apriltag(
-                        self.robot_to_camera(results.getTimestampSeconds()), target
+                        self.robot_to_camera(results.getTimestampSeconds()),
+                        heading,
+                        target,
                     )
                     if poses is None:
                         # tag doesn't exist
                         continue
 
-                    pose, _, __ = poses
+                    pose, _ = poses
 
                     self.field_pos_obj.setPose(pose)
                     self.chassis.estimator.addVisionMeasurement(
@@ -347,20 +352,26 @@ class VisualLocalizer(HasPerLoopCache):
 
 
 def estimate_poses_from_apriltag(
-    robot_to_camera: Transform3d, target: PhotonTrackedTarget
-) -> tuple[Pose2d, Pose2d, float] | None:
+    robot_to_camera: Transform3d, robot_heading: Rotation2d, target: PhotonTrackedTarget
+) -> tuple[Pose2d, Pose2d] | None:
     tag_id = target.getFiducialId()
     tag_pose = apriltag_layout.getTagPose(tag_id)
     if tag_pose is None:
         return None
 
-    best_pose = objectToRobotPose(
-        tag_pose, target.getBestCameraToTarget(), robot_to_camera
+    best_transform = robot_to_camera + target.getBestCameraToTarget()
+    alternate_transform = robot_to_camera + target.getAlternateCameraToTarget()
+
+    best_pos = (
+        tag_pose.translation().toTranslation2d()
+        - best_transform.translation().toTranslation2d().rotateBy(robot_heading)
     )
-    alternate_pose = objectToRobotPose(
-        tag_pose, target.getAlternateCameraToTarget(), robot_to_camera
+    alt_pos = (
+        tag_pose.translation().toTranslation2d()
+        - alternate_transform.translation().toTranslation2d().rotateBy(robot_heading)
     )
-    return best_pose.toPose2d(), alternate_pose.toPose2d(), best_pose.z
+
+    return Pose2d(best_pos, robot_heading), Pose2d(alt_pos, robot_heading)
 
 
 def get_target_skew(target: PhotonTrackedTarget) -> float:
