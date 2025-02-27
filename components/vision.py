@@ -96,7 +96,7 @@ class VisualLocalizer(HasPerLoopCache):
     ) -> None:
         super().__init__()
         self.camera = PhotonCamera(name)
-        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.pi, -math.pi)
+        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0.0)
         configure_through_bore_encoder(self.encoder)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
@@ -107,8 +107,25 @@ class VisualLocalizer(HasPerLoopCache):
         # Repeat for full range
         self.servo_offsets = servo_offsets
 
+        relative_servo_rotations = [
+            (r - encoder_offset)
+            for r in [
+                servo_offsets.neutral
+                - (servo_offsets.full_range - servo_offsets.neutral),
+                servo_offsets.full_range,
+            ]
+        ]
         relative_rotations = [(r - encoder_offset) for r in rotation_range]
-        self.min_rotation, self.max_rotation = relative_rotations
+        self.min_rotation = (
+            relative_rotations[0]
+            if relative_rotations[0].radians() > relative_servo_rotations[0].radians()
+            else relative_servo_rotations[0]
+        )
+        self.max_rotation = (
+            relative_rotations[1]
+            if relative_rotations[1].radians() < relative_servo_rotations[1].radians()
+            else relative_servo_rotations[1]
+        )
 
         self.servo = wpilib.Servo(servo_id)
         self.pos = turret_pos
@@ -229,7 +246,7 @@ class VisualLocalizer(HasPerLoopCache):
     def full_range_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!
         # This is used to put the servo to the full range position to record the encoder value at that point
-        self.servo.set(1.0)
+        self.servo.set(0.99)
 
     def execute(self) -> None:
         desired = self.turret_to_servo(self.desired_turret_rotation())
@@ -238,7 +255,7 @@ class VisualLocalizer(HasPerLoopCache):
         half_range = full - neutral
         delta = desired - neutral
         self.servo.set(
-            clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.0, 1.0)
+            clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.01, 0.99)
         )
 
         self.turret_rotation_buffer.addSample(
