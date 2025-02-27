@@ -6,7 +6,7 @@ import wpilib
 import wpilib.event
 from magicbot import tunable
 from phoenix6.configs import Slot0Configs
-from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
+from wpimath.geometry import Rotation2d, Translation3d
 
 from autonomous.auto_base import AutoBase
 from components.ballistics import BallisticsComponent
@@ -117,17 +117,15 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.467
 
-            self.vision_pos = Translation3d(0.22, 0, 0.295)
-            self.vision_rot = Rotation3d.fromDegrees(0, -20.0, 0)
-            self.vision_servo_offset = Rotation2d(3.107)
-            self.vision_encoder_offset = Rotation2d(3.052)
-            # TODO set on test bot
-            self.vision_camera_offset = Translation3d(0.05, 0, 0)
+            self.vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
+            self.vision_turret_rot = Rotation2d.fromDegrees(0.0)
+            self.vision_camera_offset = Translation3d(0.021, 0, 0)
             self.vision_camera_pitch = math.radians(-20.0)
+            self.vision_encoder_offset = Rotation2d(0.0)
             self.vision_servo_offsets = ServoOffsets(
-                neutral=Rotation2d(0.5757), full_range=Rotation2d(1.9234)
+                neutral=Rotation2d(0.0), full_range=Rotation2d(1.377)
             )
-            self.vision_rotation_range = (Rotation2d(1.525), Rotation2d(4.33))
+            self.vision_rotation_range = (Rotation2d(-1.377), Rotation2d(1.377))
 
         else:
             self.chassis_swerve_config = SwerveConfig(
