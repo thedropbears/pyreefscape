@@ -245,7 +245,6 @@ class ChassisComponent:
     swerve_lock = magicbot.tunable(False)
 
     # TODO: Read from positions.py once autonomous is finished
-
     def __init__(
         self, track_width: float, wheel_base: float, swerve_config: SwerveConfig
     ) -> None:

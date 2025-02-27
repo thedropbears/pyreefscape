@@ -18,12 +18,9 @@ from utilities import game
 
 x_controller = PIDController(0.5, 0.0, 0.0)
 y_controller = PIDController(0.5, 0.0, 0.0)
-heading_controller = PIDController(3.0, 0, 0)
-heading_controller.enableContinuousInput(-math.pi, math.pi)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
 wpilib.SmartDashboard.putData("Auto Y PID", y_controller)
-wpilib.SmartDashboard.putData("Auto Heading PID", heading_controller)
 
 
 class AutoBase(AutonomousStateMachine):
@@ -129,7 +126,9 @@ class AutoBase(AutonomousStateMachine):
             sample.vx + x_controller.calculate(pose.X(), sample.x),
             sample.vy + y_controller.calculate(pose.Y(), sample.y),
             sample.omega
-            + heading_controller.calculate(pose.rotation().radians(), sample.heading),
+            + self.chassis.heading_controller.calculate(
+                pose.rotation().radians(), sample.heading
+            ),
         )
 
         # Apply the generated speeds
