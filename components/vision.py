@@ -22,9 +22,9 @@ from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 
 from components.chassis import ChassisComponent
 from utilities.caching import HasPerLoopCache, cache_per_loop
+from utilities.functions import clamp
 from utilities.game import APRILTAGS, apriltag_layout
 from utilities.rev import configure_through_bore_encoder
-from utilities.scalers import scale_value
 
 
 @wpiutil.wpistruct.make_wpistruct
@@ -35,6 +35,12 @@ class VisibleTag:
     tag_id: int
     relative_bearing: Rotation2d
     range: float
+
+
+@dataclass
+class ServoOffsets:
+    neutral: Rotation2d
+    full_range: Rotation2d
 
 
 class VisualLocalizer(HasPerLoopCache):
@@ -49,16 +55,13 @@ class VisualLocalizer(HasPerLoopCache):
     # Time since the last target sighting we allow before informing drivers
     TIMEOUT = 1.0  # s
 
-    # Calibration constants for servo and encoder
-    # range between +/-135 deg
-    SERVO_HALF_ANGLE = math.radians(135)
-
     CAMERA_FOV = math.radians(
-        65
+        68
     )  # photon vision says 69.8, but we are being conservative
     CAMERA_MAX_RANGE = 4.0  # m
 
     add_to_estimator = tunable(True)
+    only_use_multitag = tunable(True)
     should_log = tunable(True)
 
     last_pose_z = tunable(0.0, writeDefault=False)
@@ -68,40 +71,70 @@ class VisualLocalizer(HasPerLoopCache):
     linear_vision_uncertainty_multi_tag = tunable(0.05)
     rotation_vision_uncertainty_multi_tag = tunable(0.05)
 
-    reproj_error_threshold = 0.1
+    reproj_error_threshold = tunable(2.0)
 
     def __init__(
         self,
         # The name of the camera in PhotonVision.
         name: str,
         # Position of the camera relative to the center of the robot
-        pos: Translation3d,
-        # The camera rotation at its neutral position (ie centred).
-        rot: Rotation3d,
+        turret_pos: Translation3d,
+        # The turret rotation at its neutral position (ie centred).
+        turret_rot: Rotation2d,
+        # The camera relative to the turret (ie without servo rotation)
+        camera_offset: Translation3d,
+        # The camera pitch on the mount, relative to horizontal
+        camera_pitch: float,
         servo_id: int,
-        servo_offset: Rotation2d,
+        servo_offsets: ServoOffsets,
         encoder_id: int,
         encoder_offset: Rotation2d,
+        # Encoder rotations at min and max of desired rotation range
+        rotation_range: tuple[Rotation2d, Rotation2d],
         field: wpilib.Field2d,
         data_log: wpiutil.log.DataLog,
         chassis: ChassisComponent,
     ) -> None:
         super().__init__()
         self.camera = PhotonCamera(name)
-        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0)
+        self.encoder = wpilib.DutyCycleEncoder(encoder_id, math.tau, 0.0)
         configure_through_bore_encoder(self.encoder)
         # Offset of encoder in radians when facing forwards (the desired zero)
         # To find this value, manually point the camera forwards and record the encoder value
         # This has nothing to do with the servo - do it by hand!!
         self.encoder_offset = encoder_offset
 
-        # To find the servo offset, command the servo to neutral in test mode and record the encoder value
-        self.servo_offset = servo_offset
+        # To find the servo offsets, command the servo to neutral in test mode and record the encoder value
+        # Repeat for full range
+        self.servo_offsets = servo_offsets
+
+        relative_servo_rotations = [
+            (r - encoder_offset)
+            for r in [
+                servo_offsets.neutral
+                - (servo_offsets.full_range - servo_offsets.neutral),
+                servo_offsets.full_range,
+            ]
+        ]
+        relative_rotations = [(r - encoder_offset) for r in rotation_range]
+        self.min_rotation = (
+            relative_rotations[0]
+            if relative_rotations[0].radians() > relative_servo_rotations[0].radians()
+            else relative_servo_rotations[0]
+        )
+        self.max_rotation = (
+            relative_rotations[1]
+            if relative_rotations[1].radians() < relative_servo_rotations[1].radians()
+            else relative_servo_rotations[1]
+        )
 
         self.servo = wpilib.Servo(servo_id)
-        self.pos = pos
-        self.robot_to_turret = Transform3d(pos, rot)
-        self.robot_to_turret_2d = Transform2d(pos.toTranslation2d(), rot.toRotation2d())
+        self.pos = turret_pos
+        self.robot_to_turret = Transform3d(turret_pos, Rotation3d(turret_rot))
+        self.robot_to_turret_2d = Transform2d(turret_pos.toTranslation2d(), turret_rot)
+        self.turret_to_camera = Transform3d(
+            camera_offset, Rotation3d(roll=0.0, pitch=camera_pitch, yaw=0.0)
+        )
         self.turret_rotation_buffer = TimeInterpolatableRotation2dBuffer(2.0)
 
         self.last_timestamp = -1.0
@@ -161,7 +194,8 @@ class VisualLocalizer(HasPerLoopCache):
             distance = turret_to_tag.norm()
             relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
             if (
-                abs(relative_bearing.radians()) <= self.SERVO_HALF_ANGLE
+                (relative_bearing - self.min_rotation).radians() >= 0.0
+                and (self.max_rotation - relative_bearing).radians() >= 0.0
                 and abs(relative_facing.degrees()) > 100
                 and distance < self.CAMERA_MAX_RANGE
             ):
@@ -176,46 +210,61 @@ class VisualLocalizer(HasPerLoopCache):
         # Read encoder angle and account for offset
         return self.relative_bearing_to_best_cluster()
 
+    @feedback
+    def desired_servo_rotation(self) -> Rotation2d:
+        return self.turret_to_servo(self.desired_turret_rotation())
+
     def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
-        return turret - (self.servo_offset - self.encoder_offset)
+        return turret - (self.servo_offsets.neutral - self.encoder_offset)
 
     @property
     def turret_rotation(self) -> Rotation2d:
         return self.raw_encoder_rotation() - self.encoder_offset
 
     def robot_to_camera(self, timestamp: float) -> Transform3d:
-        robot_to_turret_rotation = self.robot_to_turret.rotation()
         turret_rotation = self.turret_rotation_buffer.sample(timestamp)
         if turret_rotation is None:
             return self.robot_to_turret
-        return Transform3d(
-            self.robot_to_turret.translation(),
-            Rotation3d(
-                robot_to_turret_rotation.x,
-                robot_to_turret_rotation.y,
-                robot_to_turret_rotation.z + turret_rotation.radians(),
-            ),
+        r2t = self.robot_to_turret.translation()
+        t2c = (
+            self.turret_to_camera.translation()
+            .rotateBy(self.turret_to_camera.rotation())
+            .rotateBy(Rotation3d(turret_rotation))
         )
+        trans = r2t + t2c
+        rot = (
+            self.robot_to_turret.rotation()
+            .rotateBy(Rotation3d(turret_rotation))
+            .rotateBy(self.turret_to_camera.rotation())
+        )
+        return Transform3d(trans, rot)
 
     def zero_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!
         # This is used to put the servo in a neutral position to record the encoder value at that point
         self.servo.set(0.5)
 
+    def full_range_servo_(self) -> None:
+        # ONLY CALL THIS IN TEST MODE!
+        # This is used to put the servo to the full range position to record the encoder value at that point
+        self.servo.set(0.99)
+
     def execute(self) -> None:
+        desired = self.turret_to_servo(self.desired_turret_rotation())
+        neutral = self.servo_offsets.neutral
+        full = self.servo_offsets.full_range
+        half_range = full - neutral
+        delta = desired - neutral
         self.servo.set(
-            scale_value(
-                self.turret_to_servo(self.desired_turret_rotation()).radians(),
-                -self.SERVO_HALF_ANGLE,
-                self.SERVO_HALF_ANGLE,
-                0.0,
-                1.0,
-            )
+            clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.01, 0.99)
         )
 
         self.turret_rotation_buffer.addSample(
             wpilib.Timer.getFPGATimestamp(), self.turret_rotation
         )
+
+        if not self.add_to_estimator:
+            return
 
         all_results = self.camera.getAllUnreadResults()
         for results in all_results:
@@ -228,12 +277,12 @@ class VisualLocalizer(HasPerLoopCache):
 
             if timestamp == self.last_timestamp:
                 return
-            self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
-            self.last_timestamp = timestamp
 
             camera_to_robot = self.robot_to_camera(timestamp).inverse()
 
             if results.multitagResult:
+                self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
+                self.last_timestamp = timestamp
                 self.has_multitag = True
                 p = results.multitagResult.estimatedPose
                 pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
@@ -242,10 +291,7 @@ class VisualLocalizer(HasPerLoopCache):
 
                 self.field_pos_obj.setPose(pose)
 
-                if (
-                    self.add_to_estimator
-                    and self.current_reproj < self.reproj_error_threshold
-                ):
+                if self.current_reproj < self.reproj_error_threshold:
                     self.chassis.estimator.addVisionMeasurement(
                         pose,
                         timestamp,
@@ -261,6 +307,10 @@ class VisualLocalizer(HasPerLoopCache):
                     self.best_log.setPose(pose)
             else:
                 self.has_multitag = False
+                if self.only_use_multitag:
+                    return
+                self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
+                self.last_timestamp = timestamp
                 for target in results.getTargets():
                     # filter out likely bad targets
                     if target.getPoseAmbiguity() > 0.25:

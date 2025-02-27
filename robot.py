@@ -1,10 +1,12 @@
+import math
+
 import magicbot
 import ntcore
 import wpilib
 import wpilib.event
 from magicbot import tunable
 from phoenix6.configs import Slot0Configs
-from wpimath.geometry import Rotation2d, Rotation3d, Translation3d
+from wpimath.geometry import Rotation2d, Translation3d
 
 from autonomous.auto_base import AutoBase
 from components.ballistics import BallisticsComponent
@@ -15,7 +17,7 @@ from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
 from components.shooter import ShooterComponent
-from components.vision import VisualLocalizer
+from components.vision import ServoOffsets, VisualLocalizer
 from components.wrist import WristComponent
 from controllers.algae_measurement import AlgaeMeasurement
 from controllers.algae_shooter import AlgaeShooter
@@ -92,7 +94,6 @@ class MyRobot(magicbot.MagicRobot):
         self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
         self.vision_servo_id = PwmChannel.VISION_SERVO
-
         if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
@@ -116,10 +117,16 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.467
 
-            self.vision_pos = Translation3d(0.22, 0, 0.295)
-            self.vision_rot = Rotation3d.fromDegrees(0, -20.0, 0)
-            self.vision_servo_offset = Rotation2d(3.107)
-            self.vision_encoder_offset = Rotation2d(3.052)
+            self.vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
+            self.vision_turret_rot = Rotation2d.fromDegrees(0.0)
+            self.vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.vision_camera_pitch = math.radians(-20.0)
+            self.vision_encoder_offset = Rotation2d(0.0)
+            self.vision_servo_offsets = ServoOffsets(
+                neutral=Rotation2d(0.0), full_range=Rotation2d(1.377)
+            )
+            self.vision_rotation_range = (Rotation2d(-1.377), Rotation2d(1.377))
+
         else:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
@@ -143,10 +150,15 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
-            self.vision_pos = Translation3d(-0.050, -0.300, 0.660)
-            self.vision_rot = Rotation3d.fromDegrees(0, 10.0, -135.0)
-            self.vision_servo_offset = Rotation2d(6.235)
-            self.vision_encoder_offset = Rotation2d(0.183795)
+            self.vision_turret_pos = Translation3d(-0.030, -0.300, 0.660)
+            self.vision_turret_rot = Rotation2d.fromDegrees(-90.0)
+            self.vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.vision_camera_pitch = math.radians(10.0)
+            self.vision_encoder_offset = Rotation2d(0.942)
+            self.vision_servo_offsets = ServoOffsets(
+                neutral=Rotation2d(0.006), full_range=Rotation2d(1.377)
+            )
+            self.vision_rotation_range = (Rotation2d(4.76), Rotation2d(1.87))
 
         self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
         self.coast_button_pressed_event = wpilib.event.BooleanEvent(
@@ -273,8 +285,10 @@ class MyRobot(magicbot.MagicRobot):
         # self.coral_placer_component.execute()
         self.shooter_component.execute()
         self.injector_component.execute()
-        if self.gamepad.getStartButton():
+        if self.gamepad.getLeftStickButton():
             self.vision.zero_servo_()
+        elif self.gamepad.getRightStickButton():
+            self.vision.full_range_servo_()
         else:
             self.vision.execute()
         self.wrist.execute()
