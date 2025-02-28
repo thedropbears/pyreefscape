@@ -20,6 +20,7 @@ class ClimberComponent:
         self.RETRACT_ANGLE = -49.0
 
         self.desired_angle = math.radians(self.START_ANGLE)
+        self.update_pid = True
 
         self.encoder = DutyCycleEncoder(DioChannel.CLIMBER_ENCODER, math.tau, 5.4)
         configure_through_bore_encoder(self.encoder)
@@ -43,6 +44,15 @@ class ClimberComponent:
             SparkMax.ResetMode.kResetSafeParameters,
             SparkMax.PersistMode.kPersistParameters,
         )
+
+    def on_disable(self) -> None:
+        self.update_pid = True
+
+    def stop_pid_update(self) -> None:
+        self.update_pid = False
+
+    def start_pid_update(self) -> None:
+        self.update_pid = True
 
     def set_angle(self, angle: float) -> None:
         self.desired_angle = angle
@@ -77,4 +87,6 @@ class ClimberComponent:
 
     def execute(self) -> None:
         pid_result = self.pid.calculate(self.raw_encoder_val(), self.desired_angle)
-        self.motor.setVoltage(pid_result)
+
+        if self.update_pid:
+            self.motor.setVoltage(pid_result)

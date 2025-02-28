@@ -25,6 +25,9 @@ class ClimberStateMachine(StateMachine):
         if initial_call:
             self.climber.go_to_deploy()
 
+        if self.climber.is_deployed():
+            self.climber.stop_pid_update()
+
         cage_positions = cage_pos(is_red())
         closest_cage_position = cage_positions[0]
         closest_cage_dist = 999.0
@@ -45,6 +48,7 @@ class ClimberStateMachine(StateMachine):
 
     @state(must_finish=True)
     def retracting(self) -> None:
+        self.climber.start_pid_update()
         self.chassis.stop_snapping()
         self.climber.go_to_retract()
         if self.climber.is_retracted():
