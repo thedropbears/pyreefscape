@@ -12,7 +12,7 @@ from autonomous.auto_base import AutoBase
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
-from components.coral_placer import CoralPlacerComponent
+from components.coral_depositor import CoralDepositorComponent
 from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
@@ -22,7 +22,6 @@ from components.wrist import WristComponent
 from controllers.algae_measurement import AlgaeMeasurement
 from controllers.algae_shooter import AlgaeShooter
 from controllers.climber import ClimberStateMachine
-from controllers.coral_placer import CoralPlacer
 from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 from ids import DioChannel, PwmChannel, RioSerialNumber
@@ -32,7 +31,6 @@ from utilities.scalers import rescale_js
 
 class MyRobot(magicbot.MagicRobot):
     # Controllers
-    coral_placer: CoralPlacer
     reef_intake: ReefIntake
     algae_shooter: AlgaeShooter
     floor_intake: FloorIntake
@@ -42,7 +40,7 @@ class MyRobot(magicbot.MagicRobot):
     # Components
     chassis: ChassisComponent
     climber: ClimberComponent
-    coral_placer_component: CoralPlacerComponent
+    coral_depositor_component: CoralDepositorComponent
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     vision: VisualLocalizer
@@ -252,10 +250,11 @@ class MyRobot(magicbot.MagicRobot):
                 self.climber_state_machine.retract()
             else:
                 self.climber_state_machine.deploy()
-        if self.gamepad.getAButton():
-            self.coral_placer.place()
+
         if self.gamepad.getXButton():
-            self.coral_placer.lift()
+            self.coral_depositor_component.deposit()
+        elif self.gamepad.getAButton():
+            self.coral_depositor_component.retract()
 
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
@@ -266,13 +265,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightBumper():
             self.algae_measurement.engage()
 
-        if self.gamepad.getLeftStickButton():
-            self.coral_placer_component.coral_latch_open()
-        if self.gamepad.getRightStickButton():
-            self.coral_placer_component.coral_latch_closed()
-
         # Controllers
-        self.coral_placer.execute()
         self.reef_intake.execute()
         self.algae_shooter.execute()
         self.floor_intake.execute()
@@ -282,7 +275,7 @@ class MyRobot(magicbot.MagicRobot):
         # Components
         self.chassis.execute()
         self.climber.execute()
-        # self.coral_placer_component.execute()
+        self.coral_depositor_component.execute()
         self.shooter_component.execute()
         self.injector_component.execute()
         if self.gamepad.getLeftStickButton():

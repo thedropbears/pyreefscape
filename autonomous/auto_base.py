@@ -10,6 +10,7 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
 from components.chassis import ChassisComponent
+from components.coral_depositor import CoralDepositorComponent
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
 from controllers.algae_shooter import AlgaeShooter
@@ -27,6 +28,7 @@ class AutoBase(AutonomousStateMachine):
     algae_shooter: AlgaeShooter
     reef_intake: ReefIntake
 
+    coral_depositor_component: CoralDepositorComponent
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     chassis: ChassisComponent
@@ -74,7 +76,7 @@ class AutoBase(AutonomousStateMachine):
     @state(first=True)
     def initialising(self) -> None:
         # Add any tasks that need doing first
-        self.next_state("driving_to_coral")
+        self.next_state("tracking_trajectory")
 
     @state
     def tracking_trajectory(self, initial_call, state_tm) -> None:
@@ -95,7 +97,7 @@ class AutoBase(AutonomousStateMachine):
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
 
-        if self.current_leg > 0 and not self.injector_component.has_algae():
+        if self.current_leg > -1 and not self.injector_component.has_algae():
             self.reef_intake.intake()
 
         if (
@@ -103,10 +105,8 @@ class AutoBase(AutonomousStateMachine):
             and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
             and state_tm > self.trajectories[self.current_leg].get_total_time() / 2.0
         ):
-            # First leg is to score coral, then we run cycles of pick up -> shoot
-            if self.current_leg == 0:
-                self.next_state("scoring_coral")
-            elif self.injector_component.has_algae():
+            # run cycles of pick up -> shoot
+            if self.injector_component.has_algae():
                 self.next_state("shooting_algae")
             else:
                 self.next_state("intaking_algae")
@@ -135,22 +135,10 @@ class AutoBase(AutonomousStateMachine):
         self.chassis.drive_field(speeds.vx, speeds.vy, speeds.omega)
 
     @state
-    def driving_to_coral(self) -> None:
-        # TODO - Set up coral placer in correct position
-        self.next_state("tracking_trajectory")
-
-    @state
-    def scoring_coral(self, initial_call: bool) -> None:
-        # TODO: ADD CORAL BACK WHEN ITS FUNCTIONAL
-        self.next_state("retreating")
-
-    @state
-    def retreating(self) -> None:
-        self.next_state("tracking_trajectory")
-
-    @state
     def intaking_algae(self) -> None:
+        self.coral_depositor_component.deposit()
         if self.injector_component.has_algae():
+            self.coral_depositor_component.retract()
             self.next_state("tracking_trajectory")
 
     @state

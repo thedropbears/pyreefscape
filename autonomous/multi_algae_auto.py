@@ -7,8 +7,7 @@ class CentreAuto(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "StartToBranchG",
-                "BranchGToAlgaeGH",
+                "StartToAlgaeGH",
                 "AlgaeGHToShoot",
                 "ShootToAlgaeIJ",
                 "AlgaeIJToShoot",
@@ -24,8 +23,7 @@ class AllianceSideAuto(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "StartToBranchL",
-                "BranchLToAlgaeKL",
+                "StartToAlgaeKL",
                 "AlgaeKLToShoot",
                 "ShootToAlgaeAB",
                 "AlgaeABToShoot",
@@ -39,8 +37,7 @@ class OppositionSideAuto(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "StartToBranchC",
-                "BranchCToAlgaeCD",
+                "StartToAlgaeCD",
                 "AlgaeCDToShoot",
                 "ShootToAlgaeKL",
                 "AlgaeKLToShoot",
