@@ -5,7 +5,7 @@ from ids import PwmChannel
 
 class CoralDepositorComponent:
     holding_angle = 0
-    depositing_angle = 90
+    depositing_angle = 180
 
     def __init__(self) -> None:
         self.servo = Servo(PwmChannel.CORAL_SERVO)
