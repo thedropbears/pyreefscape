@@ -86,7 +86,8 @@ class ClimberComponent:
         )
 
     def execute(self) -> None:
-        pid_result = self.pid.calculate(self.raw_encoder_val(), self.desired_angle)
-
         if self.update_pid:
+            pid_result = self.pid.calculate(self.raw_encoder_val(), self.desired_angle)
             self.motor.setVoltage(pid_result)
+        else:
+            self.motor.setVoltage(0)
