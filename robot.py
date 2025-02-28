@@ -302,7 +302,7 @@ class MyRobot(magicbot.MagicRobot):
 
         self.vision.execute()
 
-        if self.vision.sees_target():
+        if self.vision.sees_multi_tag_target():
             selected_auto = self._automodes.chooser.getSelected()
             if isinstance(selected_auto, AutoBase):
                 intended_start_pose = selected_auto.get_starting_pose()

@@ -350,6 +350,10 @@ class VisualLocalizer(HasPerLoopCache):
             wpilib.Timer.getFPGATimestamp() - self.last_recieved_timestep < self.TIMEOUT
         )
 
+    @feedback
+    def sees_multi_tag_target(self):
+        return self.has_multitag and self.sees_target()
+
 
 def estimate_poses_from_apriltag(
     robot_to_camera: Transform3d, robot_heading: Rotation2d, target: PhotonTrackedTarget
