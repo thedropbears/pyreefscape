@@ -195,6 +195,8 @@ class SwerveModule:
     def stop(self):
         self.drive.set_control(self.drive_request.with_velocity(0).with_feed_forward(0))
         self.steer.set_control(self.stop_request)
+        # Also reset the state to prevent the smoothing from thinking we're still moving
+        self.state = SwerveModuleState(0, self.get_rotation())
 
     def sync_steer_encoder(self) -> None:
         self.steer.set_position(self.get_angle_absolute())
@@ -447,8 +449,6 @@ class ChassisComponent:
     def on_disable(self) -> None:
         for module in self.modules:
             module.stop()
-            # Also reset the state to account for the internal smoothing
-            module.state = SwerveModuleState(0, module.get_rotation())
         self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
 
