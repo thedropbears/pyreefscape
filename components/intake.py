@@ -96,8 +96,7 @@ class IntakeComponent:
         return self.motor_encoder.getVelocity()
 
     def on_enable(self) -> None:
-        self.last_setpoint_update_time = time.monotonic()
-        self.desired_angle = self.position()
+        self.retract()
         self.desired_output = 0.0
 
     def execute(self) -> None:
