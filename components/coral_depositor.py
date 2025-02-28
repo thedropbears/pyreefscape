@@ -4,8 +4,9 @@ from ids import PwmChannel
 
 
 class CoralDepositorComponent:
-    holding_angle = 0
+    holding_angle = 90
     depositing_angle = 180
+    tucked_angle = 0
 
     def __init__(self) -> None:
         self.servo = Servo(PwmChannel.CORAL_SERVO)
@@ -16,6 +17,13 @@ class CoralDepositorComponent:
 
     def deposit(self):
         self.desired_angle = self.depositing_angle
+        # TODO: write code to tuck after deposit
+        # We might want to make this a state machine:
+        # we need to wait a bit after depositing before
+        # tucking the hooks back in
+
+    def tuck(self):
+        self.desired_angle = self.tucked_angle
 
     def retract(self):
         self.desired_angle = self.holding_angle
