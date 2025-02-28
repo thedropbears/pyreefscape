@@ -251,6 +251,11 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.climber_state_machine.deploy()
 
+        if self.gamepad.getXButton():
+            self.coral_depositor_component.deposit()
+        elif self.gamepad.getAButton():
+            self.coral_depositor_component.retract()
+
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
 

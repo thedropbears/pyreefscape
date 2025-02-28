@@ -11,6 +11,9 @@ class CoralDepositorComponent:
         self.servo = Servo(PwmChannel.CORAL_SERVO)
         self.retract()
 
+    def on_disable(self):
+        self.retract()
+
     def deposit(self):
         self.desired_angle = self.depositing_angle
 
