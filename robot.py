@@ -255,6 +255,8 @@ class MyRobot(magicbot.MagicRobot):
             self.coral_depositor_component.deposit()
         elif self.gamepad.getAButton():
             self.coral_depositor_component.retract()
+        elif self.gamepad.getBackButton():
+            self.coral_depositor_component.tuck()
 
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
