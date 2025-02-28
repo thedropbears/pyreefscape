@@ -447,6 +447,7 @@ class ChassisComponent:
     def on_disable(self) -> None:
         for module in self.modules:
             module.stop()
+        self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
 
     def get_rotational_velocity(self) -> float:
