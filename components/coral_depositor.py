@@ -17,10 +17,6 @@ class CoralDepositorComponent:
 
     def deposit(self):
         self.desired_angle = self.depositing_angle
-        # TODO: write code to tuck after deposit
-        # We might want to make this a state machine:
-        # we need to wait a bit after depositing before
-        # tucking the hooks back in
 
     def tuck(self):
         self.desired_angle = self.tucked_angle
