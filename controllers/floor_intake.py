@@ -59,4 +59,5 @@ class FloorIntake(StateMachine):
             self.done()
 
     def done(self) -> None:
+        self.intake_component.retract()
         super().done()
