@@ -447,6 +447,8 @@ class ChassisComponent:
     def on_disable(self) -> None:
         for module in self.modules:
             module.stop()
+            # Also reset the state to account for the internal smoothing
+            module.state = SwerveModuleState(0, module.get_rotation())
         self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
 
