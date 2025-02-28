@@ -136,6 +136,8 @@ class VisualLocalizer(HasPerLoopCache):
         )
         self.turret_rotation_buffer = TimeInterpolatableRotation2dBuffer(2.0)
         self.heading_buffer = TimeInterpolatableRotation2dBuffer(2.0)
+        self.turret_setpoint = 0.5
+        self.min_servo_movement = 5.0 / 180.0  # In duty cycle between 0.0 and 1.0
 
         self.last_timestamp = -1.0
         self.last_recieved_timestep = -1.0
@@ -255,9 +257,18 @@ class VisualLocalizer(HasPerLoopCache):
         full = self.servo_offsets.full_range
         half_range = full - neutral
         delta = desired - neutral
-        self.servo.set(
-            clamp((delta.radians() / half_range.radians() + 1.0) / 2.0, 0.01, 0.99)
+        new_turret_setpoint = clamp(
+            (delta.radians() / half_range.radians() + 1.0) / 2.0, 0.01, 0.99
         )
+        # Only move if the new setpoint is far enough away from our current setpoint, or at the ends of the range
+        # This means the servo is stationary for longer periods of time, giving more stable results
+        if (
+            abs(self.turret_setpoint - new_turret_setpoint) > self.min_servo_movement
+            or new_turret_setpoint < self.min_servo_movement
+            or 0.99 - new_turret_setpoint < self.min_servo_movement
+        ):
+            self.turret_setpoint = new_turret_setpoint
+        self.servo.set(self.turret_setpoint)
 
         now = wpilib.Timer.getFPGATimestamp()
         self.turret_rotation_buffer.addSample(now, self.turret_rotation)
