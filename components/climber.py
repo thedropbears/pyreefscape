@@ -47,6 +47,7 @@ class ClimberComponent:
 
     def on_disable(self) -> None:
         self.update_pid = True
+        self.go_to_neutral()
 
     def stop_pid_update(self) -> None:
         self.update_pid = False
@@ -57,7 +58,7 @@ class ClimberComponent:
     def set_angle(self, angle: float) -> None:
         self.desired_angle = angle
 
-    def go_to_start(self) -> None:
+    def go_to_neutral(self) -> None:
         self.set_angle(math.radians(self.START_ANGLE))
 
     def go_to_deploy(self) -> None:
