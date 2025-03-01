@@ -48,11 +48,13 @@ class ClimberStateMachine(StateMachine):
 
     @state(must_finish=True)
     def retracting(self) -> None:
-        self.climber.start_pid_update()
         self.chassis.stop_snapping()
+        self.climber.start_pid_update()
         self.climber.go_to_retract()
         if self.climber.is_retracted():
             self.done()
 
     def done(self) -> None:
+        self.chassis.stop_snapping()
+        self.climber.stop()
         super().done()
