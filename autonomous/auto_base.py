@@ -97,7 +97,9 @@ class AutoBase(AutonomousStateMachine):
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
 
-        if self.current_leg > -1 and not self.injector_component.has_algae():
+        if self.current_leg % 2 != 0:
+            self.algae_shooter.shoot()
+        else:
             self.reef_intake.intake()
 
         if (
