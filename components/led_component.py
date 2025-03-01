@@ -158,7 +158,35 @@ class LightStrip:
         self.keep_alive()
 
     def climber_retracting(self) -> None:
-        self.pattern = LEDPattern.blink(LEDPattern.solid(Color.kMagenta), 0.15)
+        colour = Color.kRed if is_red() else Color.kBlue
+        steps = []
+        stripes = 16
+        increment = 1.0 / 16
+        for v in range(0, stripes, 2):
+            steps.append((v * increment, colour))
+            steps.append(((v + 1) * increment, Color.kBlack))
+
+        forward_pattern = (
+            LEDPattern.steps(steps).scrollAtAbsoluteSpeed(1.0, LED_SPACING).reversed()
+        )
+
+        def remapper(length: int, idx: int) -> int:
+            idx = int(idx)
+            splits = [
+                0,
+                int(length * self.right_rear_front_split),
+                int(length * self.halfway_split),
+                int(length * self.left_front_rear_split),
+            ]
+            if splits[0] <= int(idx) < splits[1]:
+                return int(splits[1] - splits[0]) - idx
+            elif splits[2] <= int(idx) < splits[3]:
+                return int(splits[3] - splits[2]) - (idx - splits[2]) + splits[2]
+            else:
+                return int(idx)
+
+        forward = forward_pattern.mapIndex(remapper)
+        self.pattern = forward
         self.keep_alive()
 
     def execute(self) -> None:

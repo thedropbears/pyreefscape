@@ -5,12 +5,15 @@ from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
 from wpilib import DutyCycleEncoder
 from wpimath.controller import PIDController
 
+from components.led_component import LightStrip
 from ids import DioChannel, SparkId
 from utilities.functions import constrain_angle
 from utilities.rev import configure_through_bore_encoder
 
 
 class ClimberComponent:
+    status_lights: LightStrip
+
     target_speed = 0.0
     winch_voltage = tunable(12.0)
 
@@ -90,6 +93,8 @@ class ClimberComponent:
         )
 
     def execute(self) -> None:
+        if self.is_retracted():
+            self.status_lights.climber_retracting()
         if self.update_pid:
             pid_result = self.pid.calculate(self.raw_encoder_val(), self.desired_angle)
             self.motor.setVoltage(pid_result)
