@@ -18,6 +18,7 @@ class ClimberComponent:
     winch_voltage = tunable(12.0)
 
     def __init__(self) -> None:
+        self.has_deployed = False
         self.START_ANGLE = -30.0
         self.DEPLOY_ANGLE = 11.0
         self.RETRACT_ANGLE = -52.0
@@ -48,12 +49,13 @@ class ClimberComponent:
             SparkMax.PersistMode.kPersistParameters,
         )
 
-    def stop(self) -> None:
-        self.set_angle(math.radians(self.encoder_angle()))
-
     def on_disable(self) -> None:
         self.update_pid = True
+        self.has_deployed = False
         self.go_to_neutral()
+
+    def stop(self) -> None:
+        self.set_angle(math.radians(self.encoder_angle()))
 
     def stop_pid_update(self) -> None:
         self.update_pid = False
@@ -71,7 +73,8 @@ class ClimberComponent:
         self.set_angle(math.radians(self.DEPLOY_ANGLE))
 
     def go_to_retract(self) -> None:
-        self.set_angle(math.radians(self.RETRACT_ANGLE))
+        if self.has_deployed:
+            self.set_angle(math.radians(self.RETRACT_ANGLE))
 
     @feedback
     def raw_encoder_val(self) -> float:
