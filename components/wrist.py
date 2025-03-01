@@ -27,7 +27,7 @@ class WristComponent:
         12.0 / 20.0
     ) * 350.628  # not remeasured and just adjusted by the change in gear reduction
     TOLERANCE = math.radians(3.0)
-    VEL_TOLERANCE = 0.05
+    VEL_TOLERANCE = math.radians(6.0)
 
     def __init__(self, mech_root: wpilib.MechanismRoot2d):
         self.wrist_ligament = mech_root.appendLigament(
@@ -49,8 +49,8 @@ class WristComponent:
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
         )
-        # theoretical max pos 0.01 max velocity 0.1
-        self.pid = PIDController(Kp=37.129, Ki=0, Kd=0.091477)
+        # theoretical max pos 0.01 max velocity 0.05
+        self.pid = PIDController(Kp=19.508, Ki=0, Kd=0.048599)
 
         # https://www.reca.lc/arm?armMass=%7B%22s%22%3A8%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.15%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A-10%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A432%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A-110%2C%22u%22%3A%22deg%22%7D
         self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.45, kV=4.10, kA=0.01)
