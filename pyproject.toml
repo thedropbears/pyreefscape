@@ -57,6 +57,8 @@ select = [
     "T20",
     # perflint
     "PERF",
+    # ruff specific
+    "RUF021", # parenthesise chained and/or
 ]
 ignore = [
     "E501", # long lines
