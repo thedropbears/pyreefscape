@@ -8,6 +8,8 @@ from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
 from components.wrist import WristComponent
 from controllers.algae_measurement import AlgaeMeasurement
+from controllers.floor_intake import FloorIntake
+from controllers.reef_intake import ReefIntake
 
 
 class AlgaeShooter(StateMachine):
@@ -17,6 +19,8 @@ class AlgaeShooter(StateMachine):
     chassis: ChassisComponent
     wrist: WristComponent
     algae_measurement: AlgaeMeasurement
+    floor_intake: FloorIntake
+    reef_intake: ReefIntake
 
     SHOOT_ANGLE = tunable(-50.0)
     TOP_SHOOT_SPEED = tunable(60.0)
@@ -27,20 +31,21 @@ class AlgaeShooter(StateMachine):
         pass
 
     def shoot(self) -> None:
+        if self.floor_intake.is_executing:
+            return
+        if self.reef_intake.is_executing:
+            return
+        if (
+            self.use_ballistics
+            and not self.ballistics_component.is_in_range()
+            or not self.ballistics_component.is_aligned()
+        ):
+            return
         self.engage()
 
     @state(first=True, must_finish=True)
-    def preparing(self, initial_call: bool):
-        if self.algae_measurement.is_executing:
-            self.done()
-            return
+    def preparing(self):
         if self.use_ballistics:
-            if initial_call and (
-                not self.ballistics_component.is_in_range()
-                or not self.ballistics_component.is_aligned()
-            ):
-                self.done()
-                return
             solution = self.ballistics_component.current_solution()
             self.wrist.tilt_to(solution.inclination)
             self.shooter_component.spin_flywheels(
