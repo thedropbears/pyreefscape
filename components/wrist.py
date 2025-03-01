@@ -27,6 +27,7 @@ class WristComponent:
         12.0 / 20.0
     ) * 350.628  # not remeasured and just adjusted by the change in gear reduction
     TOLERANCE = math.radians(3.0)
+    VEL_TOLERANCE = 0.05
 
     def __init__(self, mech_root: wpilib.MechanismRoot2d):
         self.wrist_ligament = mech_root.appendLigament(
@@ -122,7 +123,9 @@ class WristComponent:
         return (
             abs(self.desired_state.position - self.inclination())
             < WristComponent.TOLERANCE
-        )
+        ) and abs(
+            self.desired_state.velocity - self.current_velocity()
+        ) < WristComponent.VEL_TOLERANCE
 
     def tilt_to(self, pos: float) -> None:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
