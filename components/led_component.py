@@ -153,7 +153,12 @@ class LightStrip:
         self.is_reef_offset_flashing = True
 
     def climber_deploying(self) -> None:
-        self.pattern = LEDPattern.blink(LEDPattern.solid(Color.kYellowGreen), 0.5)
+        colour = Color.kRed
+
+        if not is_red:
+            colour = Color.kBlue
+
+        self.pattern = LEDPattern.blink(LEDPattern.solid(colour), 0.5)
         self.keep_alive()
 
     def climber_retracting(self) -> None:
