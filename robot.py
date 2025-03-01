@@ -250,10 +250,8 @@ class MyRobot(magicbot.MagicRobot):
             self.algae_shooter.shoot()
 
         if self.gamepad.getYButtonPressed():
-            if self.climber_state_machine.current_state == "deploying":
-                self.climber_state_machine.retract()
-            else:
-                self.climber_state_machine.deploy()
+            self.climber.go_to_deploy()
+            self.climber.start_pid_update()
 
         if self.gamepad.getXButton():
             self.coral_depositor_component.deposit()
