@@ -35,9 +35,10 @@ class AlgaeShooter(StateMachine):
             return
         if self.reef_intake.is_executing:
             return
-        if (
-            self.use_ballistics and not self.ballistics_component.is_in_range()
-        ) or not self.ballistics_component.is_aligned():
+        if self.use_ballistics and (
+            not self.ballistics_component.is_in_range()
+            or not self.ballistics_component.is_aligned()
+        ):
             return
         self.engage()
 
