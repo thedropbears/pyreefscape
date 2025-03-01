@@ -381,6 +381,10 @@ class ChassisComponent:
         """Robot oriented drive commands"""
         self.chassis_speeds = ChassisSpeeds(vx, vy, omega)
 
+    def limit_to_longitudinal_velocity(self) -> None:
+        self.chassis_speeds.vy = 0.0
+        self.chassis_speeds.omega = 0.0
+
     def snap_to_heading(self, heading: float) -> None:
         """set a heading target for the heading controller"""
         self.snapping_to_heading = True

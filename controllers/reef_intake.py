@@ -99,6 +99,9 @@ class ReefIntake(StateMachine):
             robot_pose.translation()
         )
 
+        if not wpilib.DriverStation.isAutonomous() and distance < self.RETREAT_DISTANCE:
+            self.chassis.limit_to_longitudinal_velocity()
+
         if (
             distance >= self.RETREAT_DISTANCE
             and not self.algae_measurement.is_executing
