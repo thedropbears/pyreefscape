@@ -45,6 +45,9 @@ class ClimberComponent:
             SparkMax.PersistMode.kPersistParameters,
         )
 
+    def stop(self) -> None:
+        self.set_angle(math.radians(self.encoder_angle()))
+
     def on_disable(self) -> None:
         self.update_pid = True
         self.go_to_neutral()
