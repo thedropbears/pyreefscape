@@ -2,17 +2,17 @@ from autonomous.auto_base import AutoBase
 
 
 class CentreAuto(AutoBase):
-    MODE_NAME = "Centre G>GH>IJ>EF"
+    MODE_NAME = "Centre G>EF>GH>IJ"
 
     def __init__(self):
         super().__init__(
             [
-                "StartToAlgaeGH",
+                "StartToAlgaeEF",
+                "AlgaeEFToShoot",
+                "ShootToAlgaeGH",
                 "AlgaeGHToShoot",
                 "ShootToAlgaeIJ",
                 "AlgaeIJToShoot",
-                "ShootToAlgaeEF",
-                "AlgaeEFToShoot",
             ]
         )
 
