@@ -1,5 +1,4 @@
 import math
-import time
 
 import wpilib
 from magicbot import feedback
@@ -65,9 +64,12 @@ class WristComponent:
 
         self.motor_encoder = self.motor.getEncoder()
 
-        self.desired_angle = WristComponent.NEUTRAL_ANGLE
+        self.desired_state = TrapezoidProfile.State(WristComponent.NEUTRAL_ANGLE, 0.0)
 
-        self.last_setpoint_update_time = time.monotonic()
+        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+        self.initial_state = TrapezoidProfile.State(
+            self.inclination(), self.current_velocity()
+        )
 
     def on_enable(self):
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
@@ -117,15 +119,21 @@ class WristComponent:
 
     @feedback
     def at_setpoint(self) -> bool:
-        return abs(self.desired_angle - self.inclination()) < WristComponent.TOLERANCE
+        return (
+            abs(self.desired_state.position - self.inclination())
+            < WristComponent.TOLERANCE
+        )
 
     def tilt_to(self, pos: float) -> None:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 
         # If the new setpoint is within the tolerance we wouldn't move anyway
-        if abs(clamped_angle - self.desired_angle) > self.TOLERANCE:
-            self.desired_angle = clamped_angle
-            self.last_setpoint_update_time = time.monotonic()
+        if abs(clamped_angle - self.desired_state.position) > self.TOLERANCE:
+            self.desired_state = TrapezoidProfile.State(clamped_angle, 0.0)
+            self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+            self.initial_state = TrapezoidProfile.State(
+                self.inclination(), self.current_velocity()
+            )
 
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
@@ -134,15 +142,15 @@ class WristComponent:
         self.tilt_to(self.inclination())
 
     def execute(self) -> None:
-        desired_state = self.wrist_profile.calculate(
-            time.monotonic() - self.last_setpoint_update_time,
-            TrapezoidProfile.State(self.inclination(), self.current_velocity()),
-            TrapezoidProfile.State(self.desired_angle, 0.0),
+        tracked_state = self.wrist_profile.calculate(
+            wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
+            self.initial_state,
+            self.desired_state,
         )
-        ff = self.wrist_ff.calculate(desired_state.position, desired_state.velocity)
+        ff = self.wrist_ff.calculate(tracked_state.position, tracked_state.velocity)
 
         self.motor.setVoltage(
-            self.pid.calculate(self.inclination(), desired_state.position) + ff
+            self.pid.calculate(self.inclination(), tracked_state.position) + ff
         )
 
         self.wrist_ligament.setAngle(self.inclination_deg())
