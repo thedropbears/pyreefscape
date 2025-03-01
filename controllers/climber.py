@@ -4,10 +4,12 @@ from magicbot import StateMachine, state
 
 from components.chassis import ChassisComponent
 from components.climber import ClimberComponent
+from components.led_component import LightStrip
 from utilities.game import cage_pos, is_red
 
 
 class ClimberStateMachine(StateMachine):
+    status_lights: LightStrip
     climber: ClimberComponent
     chassis: ChassisComponent
 
@@ -22,6 +24,7 @@ class ClimberStateMachine(StateMachine):
 
     @state(first=True, must_finish=True)
     def deploying(self, initial_call) -> None:
+        self.status_lights.climber_deploying()
         if initial_call:
             self.climber.go_to_deploy()
 
@@ -48,8 +51,9 @@ class ClimberStateMachine(StateMachine):
 
     @state(must_finish=True)
     def retracting(self) -> None:
-        self.chassis.stop_snapping()
+        self.status_lights.climber_retracting()
         self.climber.start_pid_update()
+        self.chassis.stop_snapping()
         self.climber.go_to_retract()
         if self.climber.is_retracted():
             self.done()
