@@ -390,6 +390,15 @@ class ChassisComponent:
         """stops the heading_controller"""
         self.snapping_to_heading = False
 
+    @feedback
+    def is_stationary(self) -> bool:
+        velocity = self.get_velocity()
+        return (
+            math.isclose(velocity.vx, 0.0)
+            and math.isclose(velocity.vy, 0.0)
+            and math.isclose(velocity.omega, 0.0)
+        )
+
     def execute(self) -> None:
         # rotate desired velocity to compensate for skew caused by discretization
         # see https://www.chiefdelphi.com/t/field-relative-swervedrive-drift-even-with-simulated-perfect-modules/413892/
