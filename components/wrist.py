@@ -27,7 +27,7 @@ class WristComponent:
         12.0 / 20.0
     ) * 350.628  # not remeasured and just adjusted by the change in gear reduction
     TOLERANCE = math.radians(3.0)
-    VEL_TOLERANCE = 0.05
+    VEL_TOLERANCE = math.radians(6.0)
 
     def __init__(self, mech_root: wpilib.MechanismRoot2d):
         self.wrist_ligament = mech_root.appendLigament(
