@@ -1,5 +1,4 @@
 import math
-import time
 
 import wpilib
 from magicbot import feedback, tunable
@@ -67,23 +66,37 @@ class IntakeComponent:
 
         self.motor_encoder = self.arm_motor.getEncoder()
 
-        self.desired_angle = IntakeComponent.RETRACTED_ANGLE
-
-        self.last_setpoint_update_time = time.monotonic()
+        self.desired_state = TrapezoidProfile.State(
+            IntakeComponent.RETRACTED_ANGLE, 0.0
+        )
+        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+        self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
 
     def intake(self):
         if not math.isclose(
-            self.desired_angle, IntakeComponent.DEPLOYED_ANGLE, abs_tol=0.1
+            self.desired_state.position, IntakeComponent.DEPLOYED_ANGLE, abs_tol=0.1
         ):
-            self.desired_angle = IntakeComponent.DEPLOYED_ANGLE
-            self.last_setpoint_update_time = time.monotonic()
+            self.desired_state = TrapezoidProfile.State(
+                IntakeComponent.DEPLOYED_ANGLE, 0.0
+            )
+            self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+            self.initial_state = TrapezoidProfile.State(
+                self.position(), self.velocity()
+            )
 
         self.desired_output = self.intake_output
 
     def retract(self):
-        if not math.isclose(self.desired_angle, self.RETRACTED_ANGLE, abs_tol=0.1):
-            self.desired_angle = IntakeComponent.RETRACTED_ANGLE
-            self.last_setpoint_update_time = time.monotonic()
+        if not math.isclose(
+            self.desired_state.position, self.RETRACTED_ANGLE, abs_tol=0.1
+        ):
+            self.desired_state = TrapezoidProfile.State(
+                IntakeComponent.RETRACTED_ANGLE, 0.0
+            )
+            self.initial_state = TrapezoidProfile.State(
+                self.position(), self.velocity()
+            )
+            self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
 
     @feedback
     def raw_encoder(self) -> float:
@@ -104,18 +117,18 @@ class IntakeComponent:
 
         self.desired_output = 0.0
 
-        desired_state = self.motion_profile.calculate(
-            time.monotonic() - self.last_setpoint_update_time,
-            TrapezoidProfile.State(self.position(), self.velocity()),
-            TrapezoidProfile.State(self.desired_angle, 0.0),
+        tracked_state = self.motion_profile.calculate(
+            wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
+            self.initial_state,
+            self.desired_state,
         )
-        ff = self.arm_ff.calculate(desired_state.position, desired_state.velocity)
+        ff = self.arm_ff.calculate(tracked_state.position, tracked_state.velocity)
 
         if not math.isclose(
-            self.desired_angle, self.position(), abs_tol=math.radians(5)
+            self.desired_state.position, self.position(), abs_tol=math.radians(5)
         ):
             self.arm_motor.setVoltage(
-                self.pid.calculate(self.position(), desired_state.position) + ff
+                self.pid.calculate(self.position(), tracked_state.position) + ff
             )
         else:
             self.arm_motor.setVoltage(0.0)
