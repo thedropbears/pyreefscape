@@ -17,7 +17,7 @@ class ClimberComponent:
     def __init__(self) -> None:
         self.START_ANGLE = -30.0
         self.DEPLOY_ANGLE = 11.0
-        self.RETRACT_ANGLE = -52.0
+        self.RETRACT_ANGLE = -49.0
 
         self.desired_angle = math.radians(self.START_ANGLE)
         self.update_pid = True
