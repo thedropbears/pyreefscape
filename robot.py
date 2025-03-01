@@ -251,6 +251,7 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getYButtonPressed():
             self.climber.go_to_deploy()
+            self.climber.start_pid_update()
 
         if self.gamepad.getXButton():
             self.coral_depositor_component.deposit()
