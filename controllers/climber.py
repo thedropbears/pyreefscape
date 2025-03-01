@@ -14,13 +14,18 @@ class ClimberStateMachine(StateMachine):
     chassis: ChassisComponent
 
     def __init__(self):
+        self.has_deployed = False
         self.heading_to_cage = 0.0
+
+    def on_disable(self) -> None:
+        self.has_deployed = False
 
     def deploy(self) -> None:
         self.engage("deploying")
 
     def retract(self) -> None:
-        self.engage("retracting", force=True)
+        if self.has_deployed:
+            self.engage("retracting", force=True)
 
     @state(first=True, must_finish=True)
     def deploying(self, initial_call) -> None:
@@ -30,6 +35,7 @@ class ClimberStateMachine(StateMachine):
 
         if self.climber.is_deployed():
             self.climber.stop_pid_update()
+            self.has_deployed = True
 
         cage_positions = cage_pos(is_red())
         closest_cage_position = cage_positions[0]
