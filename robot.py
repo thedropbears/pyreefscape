@@ -207,10 +207,13 @@ class MyRobot(magicbot.MagicRobot):
         if drive_z != 0:
             self.chassis.stop_snapping()
 
-        if self.gamepad.getLeftTriggerAxis() > 0.5:
+        if (
+            self.gamepad.getLeftTriggerAxis() > 0.5
+            and not self.reef_intake.is_executing
+        ):
             self.floor_intake.intake()
 
-        if self.gamepad.getLeftBumperButton():
+        if self.gamepad.getLeftBumperButton() and not self.floor_intake.is_executing:
             self.reef_intake.intake()
 
         if self.gamepad.getYButton():
