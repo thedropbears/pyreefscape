@@ -31,6 +31,22 @@ if typing.TYPE_CHECKING:
     from robot import MyRobot
 
 
+class RollingBuffer:
+    def __init__(self, max_length: int):
+        self.max_length = max_length
+
+        self.buffer_: list[float] = []
+
+    def average(self) -> float:
+        return sum(self.buffer_) / len(self.buffer_) if len(self.buffer_) > 0 else 0.0
+
+    def add_sample(self, sample: float):
+        self.buffer_.append(sample)
+
+        if len(self.buffer_) > self.max_length:
+            self.buffer_.pop(0)
+
+
 class SimpleTalonFXMotorSim:
     def __init__(
         self, motor: phoenix6.hardware.TalonFX, units_per_rev: float, kV: float
@@ -39,9 +55,16 @@ class SimpleTalonFXMotorSim:
         self.sim_state.set_supply_voltage(12.0)
         self.kV = kV  # volt seconds per unit
         self.units_per_rev = units_per_rev
+        self.voltage_buffer = RollingBuffer(10)
 
     def update(self, dt: float) -> None:
         voltage = self.sim_state.motor_voltage
+
+        self.voltage_buffer.add_sample(voltage)
+
+        if math.isclose(self.voltage_buffer.average(), 0.0, abs_tol=0.1):
+            voltage = 0.0
+
         velocity = voltage / self.kV  # units per second
         velocity_rps = velocity * self.units_per_rev
         self.sim_state.set_rotor_velocity(velocity_rps)
