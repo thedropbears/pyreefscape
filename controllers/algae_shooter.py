@@ -65,7 +65,7 @@ class AlgaeShooter(StateMachine):
         ):
             self.next_state(self.shooting)
 
-    @timed_state(duration=1, must_finish=True)
+    @timed_state(duration=0.2, must_finish=True)
     def shooting(self) -> None:
         if self.use_ballistics:
             solution = self.ballistics_component.current_solution()
