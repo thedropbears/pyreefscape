@@ -394,9 +394,9 @@ class ChassisComponent:
     def is_stationary(self) -> bool:
         velocity = self.get_velocity()
         return (
-            math.isclose(velocity.vx, 0.0)
-            and math.isclose(velocity.vy, 0.0)
-            and math.isclose(velocity.omega, 0.0)
+            math.isclose(velocity.vx, 0.0, abs_tol=0.1)
+            and math.isclose(velocity.vy, 0.0, abs_tol=0.1)
+            and math.isclose(velocity.omega, 0.0, abs_tol=math.radians(3))
         )
 
     def execute(self) -> None:
