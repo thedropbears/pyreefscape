@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import typing
+from collections.abc import Callable
 
 import phoenix6
 import phoenix6.unmanaged
@@ -100,6 +101,33 @@ class Falcon500MotorSim:
             sim_state.set_rotor_velocity(
                 self.motor_sim.getAngularVelocity() * motor_rev_per_mechanism_rad
             )
+
+
+class SparkMotorSim:
+    """Simulates Spark MAX/Flex with brushless motors."""
+
+    def __init__(
+        self,
+        # DCMotor gearbox factory, e.g. DCMotor.NEO
+        gearbox_motor: Callable[[int], DCMotor],
+        *motors: rev.SparkBase,
+        gearing: float,
+        moi: kilogram_square_meters,
+        velocity_units_per_rad_per_sec: float = 60 / math.tau,
+    ) -> None:
+        gearbox = gearbox_motor(len(motors))
+        self.plant = LinearSystemId.DCMotorSystem(gearbox, moi, gearing)
+        self.motors = [rev.SparkSim(motor, gearbox) for motor in motors]
+        self.motor_sim = DCMotorSim(self.plant, gearbox)
+        self.velocity_conversion_factor = velocity_units_per_rad_per_sec
+
+    def update(self, dt: float) -> None:
+        vbus = self.motors[0].getBusVoltage()
+        self.motor_sim.setInputVoltage(self.motors[0].getAppliedOutput() * vbus)
+        self.motor_sim.update(dt)
+        velocity = self.motor_sim.getAngularVelocity() * self.velocity_conversion_factor
+        for motor in self.motors:
+            motor.iterate(velocity, vbus, dt)
 
 
 class SparkArmSim:
@@ -203,8 +231,12 @@ class PhysicsEngine:
 
         self.imu = robot.chassis.imu.sim_state
 
-        self.injector = rev.SparkMaxSim(
-            robot.injector_component.injector_1, DCMotor.NEO550(1)
+        self.injector = SparkMotorSim(
+            DCMotor.NEO550,
+            robot.injector_component.injector_1,
+            robot.injector_component.injector_2,
+            gearing=1 / 1,
+            moi=0.000105679992,  # TODO: measure
         )
 
         self.vision_sim = VisionSystemSim("main")
@@ -288,7 +320,9 @@ class PhysicsEngine:
         wrist_angle = self.wrist.mech_sim.getAngle()
         self.wrist_encoder_sim.set(wrist_angle + WristComponent.ENCODER_ZERO_OFFSET)
 
-        injector_output = self.injector.getAppliedOutput()
+        self.injector.update(tm_diff)
+        injector_output = self.injector.motor_sim.getAngularVelocity()
+
         # Simulate algae pick up
         if (
             wrist_angle < WristComponent.NEUTRAL_ANGLE
