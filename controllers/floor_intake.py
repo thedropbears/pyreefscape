@@ -38,8 +38,7 @@ class FloorIntake(StateMachine):
 
         self.intake_component.intake()
 
-        if initial_call:
-            self.wrist.tilt_to(self.HANDOFF_POSITION)
+        self.wrist.tilt_to(self.HANDOFF_POSITION)
 
         self.shooter_component.intake()
         self.injector_component.intake()
