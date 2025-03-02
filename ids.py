@@ -63,6 +63,8 @@ class DioChannel(enum.IntEnum):
 
     SWERVE_COAST_SWITCH = 2
 
+    WRIST_ENCODER = 6
+
 
 @enum.unique
 class PwmChannel(enum.IntEnum):
@@ -87,4 +89,4 @@ class RioSerialNumber(enum.StrEnum):
 class AnalogChannel(enum.IntEnum):
     """roboRIO Analog input channel number"""
 
-    WRIST_ENCODER = 0
+    pass
