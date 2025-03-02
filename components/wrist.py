@@ -53,7 +53,7 @@ class WristComponent:
         self.pid = PIDController(Kp=19.508, Ki=0, Kd=0.048599)
 
         # https://www.reca.lc/arm?armMass=%7B%22s%22%3A8%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.15%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A-10%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A432%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A-110%2C%22u%22%3A%22deg%22%7D
-        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.45, kV=4.10, kA=0.01)
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.48, kV=4.10, kA=0.02)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
