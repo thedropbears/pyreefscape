@@ -85,8 +85,8 @@ requires-python = ">=3.12,<3.14"
 
 dependencies = [
     "numpy~=2.2",
-    "phoenix6~=25.1.0",
-    "robotpy-ctre==2025.0.0",
+    "phoenix6~=25.3.1",
+    "robotpy-ctre~=2025.0.0",
     "robotpy[apriltag]==2025.3.1.0",
     "robotpy-rev~=2025.0.1",
     "robotpy-wpilib-utilities==2025.0.0",
