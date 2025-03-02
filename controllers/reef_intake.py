@@ -1,7 +1,7 @@
 import math
 
 import wpilib
-from magicbot import StateMachine, feedback, state, tunable
+from magicbot import StateMachine, feedback, state, timed_state, tunable
 
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
@@ -26,8 +26,11 @@ class ReefIntake(StateMachine):
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
 
+    DEPOSIT_ANGLE = tunable(math.radians(-50.0))
+
     def __init__(self):
         self.last_l3 = False
+        self.must_deposit_coral = False
 
     def intake(self) -> None:
         self.engage()
@@ -79,8 +82,16 @@ class ReefIntake(StateMachine):
                 self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
             self.last_l3 = current_is_L3
 
+        if self.must_deposit_coral:
+            self.must_deposit_coral = False
+            self.next_state(self.deposit_coral_delay)
+
         self.shooter_component.intake()
         self.injector_component.intake()
+
+    @timed_state(duration=1, next_state="intaking")
+    def deposit_coral_delay(self):
+        self.wrist.tilt_to(self.DEPOSIT_ANGLE)
 
     @state(must_finish=True)
     def safing(self, initial_call: bool):
