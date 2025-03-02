@@ -83,14 +83,14 @@ class ReefIntake(StateMachine):
             self.last_l3 = current_is_L3
 
         if self.must_deposit_coral:
-            self.must_deposit_coral = False
             self.next_state(self.deposit_coral_delay)
+        else:
+            self.shooter_component.intake()
+            self.injector_component.intake()
 
-        self.shooter_component.intake()
-        self.injector_component.intake()
-
-    @timed_state(duration=1, next_state="intaking")
+    @timed_state(duration=0.6, next_state="intaking")
     def deposit_coral_delay(self):
+        self.must_deposit_coral = False
         self.wrist.tilt_to(self.DEPOSIT_ANGLE)
 
     @state(must_finish=True)
