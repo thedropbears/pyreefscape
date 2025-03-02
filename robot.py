@@ -118,7 +118,7 @@ class MyRobot(magicbot.MagicRobot):
             self.vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
             self.vision_turret_rot = Rotation2d.fromDegrees(0.0)
             self.vision_camera_offset = Translation3d(0.021, 0, 0)
-            self.vision_camera_pitch = math.radians(-20.0)
+            self.vision_camera_pitch = math.radians(0.0)
             self.vision_encoder_offset = Rotation2d(0.0)
             self.vision_servo_offsets = ServoOffsets(
                 neutral=Rotation2d(0.0), full_range=Rotation2d(1.377)
