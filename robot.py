@@ -49,9 +49,9 @@ class MyRobot(magicbot.MagicRobot):
     status_lights: LightStrip
     ballistics_component: BallisticsComponent
 
-    max_speed = tunable(5.0)  # m/s
+    max_speed = tunable(0.6 * 5.0)  # m/s
     lower_max_speed = tunable(2.0)  # m/s
-    max_spin_rate = tunable(4.0)  # m/s
+    max_spin_rate = tunable(0.6 * 4.0)  # m/s
     lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
@@ -169,11 +169,8 @@ class MyRobot(magicbot.MagicRobot):
 
     def teleopPeriodic(self) -> None:
         # Set max speed
-        # TODO Set max speed to something sensible for comp
-        # max_speed = self.max_speed
-        # max_spin_rate = self.max_spin_rate
-        max_speed = self.lower_max_speed
-        max_spin_rate = self.lower_max_spin_rate
+        max_speed = self.max_speed
+        max_spin_rate = self.max_spin_rate
         if self.gamepad.getRightBumperButton():
             max_speed = self.lower_max_speed
             max_spin_rate = self.lower_max_spin_rate
