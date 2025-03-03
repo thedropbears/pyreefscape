@@ -28,6 +28,7 @@ class ReefIntake(StateMachine):
 
     def __init__(self):
         self.last_l3 = False
+        self.holding_coral = False
 
     def intake(self) -> None:
         self.engage()
@@ -78,7 +79,8 @@ class ReefIntake(StateMachine):
             self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
         self.last_l3 = current_is_L3
 
-        self.shooter_component.intake()
+        if not self.holding_coral:
+            self.shooter_component.intake()
         self.injector_component.intake()
 
     @state(must_finish=True)
@@ -108,3 +110,4 @@ class ReefIntake(StateMachine):
         super().done()
         self.wrist.go_to_neutral()
         self.chassis.stop_snapping()
+        self.holding_coral = False
