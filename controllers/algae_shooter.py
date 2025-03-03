@@ -78,5 +78,5 @@ class AlgaeShooter(StateMachine):
         self.injector_component.inject()
 
     def done(self) -> None:
-        super().done()
         self.wrist.go_to_neutral()
+        super().done()
