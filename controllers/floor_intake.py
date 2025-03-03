@@ -52,12 +52,9 @@ class FloorIntake(StateMachine):
                 and not wpilib.RobotBase.isSimulation()
             ):
                 self.algae_measurement.measure()
-            self.wrist.go_to_neutral()
-            self.intake_component.retract()
-
-        if not self.algae_measurement.is_executing:
             self.done()
 
     def done(self) -> None:
+        self.wrist.go_to_neutral()
         self.intake_component.retract()
         super().done()

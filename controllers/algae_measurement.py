@@ -2,6 +2,7 @@ from magicbot import StateMachine, feedback, state, tunable
 
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
+from utilities.functions import clamp
 from utilities.game import ALGAE_MAX_DIAMETER, ALGAE_MIN_DIAMETER
 from utilities.scalers import scale_value
 
@@ -11,7 +12,7 @@ class AlgaeMeasurement(StateMachine):
     injector_component: InjectorComponent
 
     retraction_voltage = tunable(-4.0)
-    number_of_iterations = tunable(2)
+    number_of_iterations = tunable(1)
 
     def __init__(self) -> None:
         self.injector_starting_positions = (0.0, 0.0)
@@ -38,9 +39,9 @@ class AlgaeMeasurement(StateMachine):
     @state(must_finish=True)
     def calculating(self) -> None:
         if len(self.measured_sizes) == self.number_of_iterations:
-            # Throw away the first one and average the rest
-            self.shooter_component.algae_size = sum(self.measured_sizes[1:]) / (
-                len(self.measured_sizes) - 1
+            # Simple average
+            self.shooter_component.algae_size = sum(self.measured_sizes) / (
+                len(self.measured_sizes)
             )
             self.next_state(self.recovering)
         else:
@@ -74,10 +75,14 @@ class AlgaeMeasurement(StateMachine):
             ) - sum(self.injector_starting_positions)
             self.measured_raw_sizes.append(injector_position_delta)
             self.measured_sizes.append(
-                scale_value(
-                    injector_position_delta,
-                    7.2,
-                    4.9,
+                clamp(
+                    scale_value(
+                        injector_position_delta,
+                        7.5,
+                        5.5,
+                        ALGAE_MIN_DIAMETER,
+                        ALGAE_MAX_DIAMETER,
+                    ),
                     ALGAE_MIN_DIAMETER,
                     ALGAE_MAX_DIAMETER,
                 )
