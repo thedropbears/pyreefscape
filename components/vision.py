@@ -32,7 +32,7 @@ class VisibleTag:
     WPIStruct: ClassVar
 
     tag_id: int
-    relative_bearing: Rotation2d
+    relative_bearing: float
     range: float
 
 
@@ -106,26 +106,35 @@ class VisualLocalizer(HasPerLoopCache):
         # To find the servo offsets, command the servo to neutral in test mode and record the encoder value
         # Repeat for full range
         self.servo_offsets = servo_offsets
+        self.servo_half_range = (
+            servo_offsets.full_range - servo_offsets.neutral
+        ).radians()
+        while self.servo_half_range < 0.0:
+            self.servo_half_range += math.tau
 
-        relative_servo_rotations = [
-            (r - encoder_offset)
-            for r in [
-                servo_offsets.neutral
-                - (servo_offsets.full_range - servo_offsets.neutral),
-                servo_offsets.full_range,
+        def fix_signs(angles: list[float]) -> list[float]:
+            # First value should be negative, and the second positive
+            if angles[0] > 0.0:
+                angles[0] -= math.tau
+            if angles[1] < 0.0:
+                angles[1] += math.tau
+            return angles
+
+        relative_servo_rotations = fix_signs(
+            [
+                (r - encoder_offset).radians()
+                for r in [
+                    servo_offsets.neutral
+                    - (servo_offsets.full_range - servo_offsets.neutral),
+                    servo_offsets.full_range,
+                ]
             ]
-        ]
-        relative_rotations = [(r - encoder_offset) for r in rotation_range]
-        self.min_rotation = (
-            relative_rotations[0]
-            if relative_rotations[0].radians() > relative_servo_rotations[0].radians()
-            else relative_servo_rotations[0]
         )
-        self.max_rotation = (
-            relative_rotations[1]
-            if relative_rotations[1].radians() < relative_servo_rotations[1].radians()
-            else relative_servo_rotations[1]
+        relative_rotations = fix_signs(
+            [(r - encoder_offset).radians() for r in rotation_range]
         )
+        self.min_rotation = max(relative_rotations[0], relative_servo_rotations[0])
+        self.max_rotation = min(relative_rotations[1], relative_servo_rotations[1])
 
         self.servo = wpilib.Servo(servo_id)
         self.pos = turret_pos
@@ -140,7 +149,6 @@ class VisualLocalizer(HasPerLoopCache):
         self.min_servo_movement = 5.0 / 180.0  # In duty cycle between 0.0 and 1.0
 
         self.last_timestamp = -1.0
-        self.last_recieved_timestep = -1.0
         self.best_log = field.getObject(name + "_best_log")
         self.field_pos_obj = field.getObject(name + "_vision_pose")
         self.pose_log_entry = wpiutil.log.FloatArrayLogEntry(
@@ -150,6 +158,12 @@ class VisualLocalizer(HasPerLoopCache):
         self.chassis = chassis
         self.current_reproj = 0.0
         self.has_multitag = False
+
+        self._has_pairs = False
+
+    @feedback
+    def rotation_limits(self) -> list[float]:
+        return [self.min_rotation, self.max_rotation]
 
     @feedback
     def reproj(self) -> float:
@@ -164,19 +178,26 @@ class VisualLocalizer(HasPerLoopCache):
         # The encoder has been set up to return values in the interval [0, 2pi]
         return Rotation2d(self.encoder.get())
 
+    @feedback
+    def has_pairs(self) -> bool:
+        return self._has_pairs
+
+    @feedback
     @cache_per_loop
-    def relative_bearing_to_best_cluster(self) -> Rotation2d:
+    def relative_bearing_to_best_cluster(self) -> float:
         tags = self.visible_tags()
         if len(tags) == 0:
-            return Rotation2d(0.0)
+            return 0.0
         relative_bearings = [tag.relative_bearing for tag in tags]
-        relative_bearings.sort(key=Rotation2d.radians)
+        relative_bearings.sort()
         for offset in range(len(relative_bearings) - 1, 0, -1):
             bearing_pairs = zip(relative_bearings, relative_bearings[offset:])
             for pair in bearing_pairs:
-                if abs((pair[0] - pair[1]).radians()) < self.CAMERA_FOV:
-                    return (pair[1] - pair[0]) * 0.5 + pair[0]
+                if abs(pair[0] - pair[1]) < self.CAMERA_FOV:
+                    self._has_pairs = True
+                    return (pair[1] + pair[0]) * 0.5
         # If we get here there are no pairs, so choose the closest
+        self._has_pairs = False
         tags.sort(key=lambda v: v.range)
         return tags[0].relative_bearing
 
@@ -195,29 +216,43 @@ class VisualLocalizer(HasPerLoopCache):
             relative_bearing = turret_to_tag.angle() - turret_pose.rotation()
             distance = turret_to_tag.norm()
             relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
+            relative_bearing_rad = relative_bearing.radians()
+            # Make the angle less than the max rotation, then see if we are above the min too
+            in_rotation_range = False
+            while relative_bearing_rad > self.max_rotation:
+                relative_bearing_rad -= math.tau
+            if relative_bearing_rad > self.min_rotation:
+                # We are good
+                in_rotation_range = True
+            # Try in the other direction in case we started below the min
+            while relative_bearing_rad < self.min_rotation:
+                relative_bearing_rad += math.tau
+            if relative_bearing_rad < self.max_rotation:
+                # We are good
+                in_rotation_range = True
+
             if (
-                (relative_bearing - self.min_rotation).radians() >= 0.0
-                and (self.max_rotation - relative_bearing).radians() >= 0.0
+                in_rotation_range
                 and abs(relative_facing.degrees()) > 100
                 and distance < self.CAMERA_MAX_RANGE
             ):
                 # Test for relative facing is more than 90 degrees because we don't want to be too
                 # close to parallel to the tag
-                tags_in_view.append(VisibleTag(tag.ID, relative_bearing, distance))
+                tags_in_view.append(VisibleTag(tag.ID, relative_bearing_rad, distance))
 
         return tags_in_view
 
     @feedback
-    def desired_turret_rotation(self) -> Rotation2d:
+    def desired_turret_rotation(self) -> float:
         # Read encoder angle and account for offset
         return self.relative_bearing_to_best_cluster()
 
     @feedback
-    def desired_servo_rotation(self) -> Rotation2d:
+    def desired_servo_rotation(self) -> float:
         return self.turret_to_servo(self.desired_turret_rotation())
 
-    def turret_to_servo(self, turret: Rotation2d) -> Rotation2d:
-        return turret - (self.servo_offsets.neutral - self.encoder_offset)
+    def turret_to_servo(self, turret: float) -> float:
+        return turret - (self.servo_offsets.neutral - self.encoder_offset).radians()
 
     @property
     def turret_rotation(self) -> Rotation2d:
@@ -253,12 +288,8 @@ class VisualLocalizer(HasPerLoopCache):
 
     def execute(self) -> None:
         desired = self.turret_to_servo(self.desired_turret_rotation())
-        neutral = self.servo_offsets.neutral
-        full = self.servo_offsets.full_range
-        half_range = full - neutral
-        delta = desired - neutral
         new_turret_setpoint = clamp(
-            (delta.radians() / half_range.radians() + 1.0) / 2.0, 0.01, 0.99
+            (desired / self.servo_half_range + 1.0) / 2.0, 0.01, 0.99
         )
         # Only move if the new setpoint is far enough away from our current setpoint, or at the ends of the range
         # This means the servo is stationary for longer periods of time, giving more stable results
@@ -292,7 +323,6 @@ class VisualLocalizer(HasPerLoopCache):
             camera_to_robot = self.robot_to_camera(timestamp).inverse()
 
             if results.multitagResult:
-                self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
                 self.last_timestamp = timestamp
                 self.has_multitag = True
                 p = results.multitagResult.estimatedPose
@@ -320,7 +350,6 @@ class VisualLocalizer(HasPerLoopCache):
                 self.has_multitag = False
                 if self.only_use_multitag:
                     return
-                self.last_recieved_timestep = wpilib.Timer.getFPGATimestamp()
                 self.last_timestamp = timestamp
                 for target in results.getTargets():
                     # filter out likely bad targets
@@ -357,9 +386,7 @@ class VisualLocalizer(HasPerLoopCache):
 
     @feedback
     def sees_target(self):
-        return (
-            wpilib.Timer.getFPGATimestamp() - self.last_recieved_timestep < self.TIMEOUT
-        )
+        return wpilib.Timer.getFPGATimestamp() - self.last_timestamp < self.TIMEOUT
 
     @feedback
     def sees_multi_tag_target(self):
