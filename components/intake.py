@@ -22,7 +22,7 @@ class IntakeComponent:
     VERTICAL_ENCODER_VALUE = 2.477382
     ARM_ENCODER_OFFSET = VERTICAL_ENCODER_VALUE - math.pi / 2.0
     # magic offset the deployed angle by 4 degrees to limit damage inflicted on mechanism
-    DEPLOYED_ANGLE = 1.284172 - ARM_ENCODER_OFFSET + math.radians(4)
+    DEPLOYED_ANGLE = 1.232018 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 2.477382 - ARM_ENCODER_OFFSET
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
