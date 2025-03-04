@@ -89,7 +89,6 @@ class MyRobot(magicbot.MagicRobot):
 
         self.status_lights_strip_length = 112 * 4
 
-        self.vision_name = "ardu_cam"
         self.vision_encoder_id = DioChannel.VISION_ENCODER
         self.vision_servo_id = PwmChannel.VISION_SERVO
         if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
@@ -115,6 +114,7 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.467
 
+            self.vision_name = "ardu_cam"
             self.vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
             self.vision_turret_rot = Rotation2d.fromDegrees(0.0)
             self.vision_camera_offset = Translation3d(0.021, 0, 0)
@@ -148,6 +148,7 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
+            self.vision_name = "starboard_turret"
             self.vision_turret_pos = Translation3d(-0.030, -0.300, 0.660)
             self.vision_turret_rot = Rotation2d.fromDegrees(-90.0)
             self.vision_camera_offset = Translation3d(0.021, 0, 0)
