@@ -89,6 +89,8 @@ class IntakeComponent:
     def retract(self):
         if not math.isclose(
             self.desired_state.position, self.RETRACTED_ANGLE, abs_tol=0.1
+        ) or self.motion_profile.isFinished(
+            wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time
         ):
             self.desired_state = TrapezoidProfile.State(
                 IntakeComponent.RETRACTED_ANGLE, 0.0

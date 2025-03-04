@@ -137,7 +137,11 @@ class WristComponent:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 
         # If the new setpoint is within the tolerance we wouldn't move anyway
-        if abs(clamped_angle - self.desired_state.position) > self.TOLERANCE:
+        if abs(
+            clamped_angle - self.desired_state.position
+        ) > self.TOLERANCE or self.wrist_profile.isFinished(
+            wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time
+        ):
             self.desired_state = TrapezoidProfile.State(clamped_angle, 0.0)
             self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
             self.initial_state = TrapezoidProfile.State(
