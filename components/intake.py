@@ -21,8 +21,7 @@ class IntakeComponent:
     # Offset is measured in the vertical position
     VERTICAL_ENCODER_VALUE = 2.477382
     ARM_ENCODER_OFFSET = VERTICAL_ENCODER_VALUE - math.pi / 2.0
-    # magic offset the deployed angle by 4 degrees to limit damage inflicted on mechanism
-    DEPLOYED_ANGLE = 1.284172 - ARM_ENCODER_OFFSET + math.radians(4)
+    DEPLOYED_ANGLE = 1.232018 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 2.477382 - ARM_ENCODER_OFFSET
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
@@ -46,13 +45,12 @@ class IntakeComponent:
         spark_config.inverted(False)
         spark_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
-        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(0.7, 0.5))
-        self.pid = PIDController(Kp=2.1741, Ki=0, Kd=0.18444 / 8.0)
+        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(4.0, 8.0))
+        self.pid = PIDController(Kp=5.9679, Ki=0, Kd=0.0)
 
-        # CG is at 220mm, 2.7kg
-        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A2.7%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.22%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A48%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A30%2C%22u%22%3A%22deg%22%7D
-        self.arm_ff = ArmFeedforward(kS=0.0, kG=0.4, kV=0.94, kA=0.01)
-
+        # CG is at 220mm, 2.9kg
+        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A2.9%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.22%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A24%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A15%2C%22u%22%3A%22deg%22%7D
+        self.arm_ff = ArmFeedforward(kS=0.0, kG=0.86, kV=0.47, kA=0.02)
         spark_config.encoder.positionConversionFactor(math.tau * (1 / self.gear_ratio))
         spark_config.encoder.velocityConversionFactor(
             (1 / 60) * math.tau * (1 / self.gear_ratio)
@@ -103,6 +101,10 @@ class IntakeComponent:
     @feedback
     def raw_encoder(self) -> float:
         return self.encoder.get()
+
+    @feedback
+    def position_degrees(self) -> float:
+        return math.degrees(self.position())
 
     def position(self):
         return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
