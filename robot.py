@@ -153,11 +153,11 @@ class MyRobot(magicbot.MagicRobot):
             self.vision_turret_rot = Rotation2d.fromDegrees(-90.0)
             self.vision_camera_offset = Translation3d(0.021, 0, 0)
             self.vision_camera_pitch = math.radians(10.0)
-            self.vision_encoder_offset = Rotation2d(0.942)
+            self.vision_encoder_offset = Rotation2d(4.08)
             self.vision_servo_offsets = ServoOffsets(
-                neutral=Rotation2d(0.006), full_range=Rotation2d(1.377)
+                neutral=Rotation2d(2.922), full_range=Rotation2d(5.03)
             )
-            self.vision_rotation_range = (Rotation2d(4.76), Rotation2d(1.87))
+            self.vision_rotation_range = (Rotation2d(0.8), Rotation2d(5.03))
 
         self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
         self.coast_button_pressed_event = wpilib.event.BooleanEvent(
