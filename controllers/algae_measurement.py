@@ -1,3 +1,5 @@
+import statistics
+
 from magicbot import StateMachine, feedback, state, tunable
 
 from components.injector import InjectorComponent
@@ -39,10 +41,7 @@ class AlgaeMeasurement(StateMachine):
     @state(must_finish=True)
     def calculating(self) -> None:
         if len(self.measured_sizes) == self.number_of_iterations:
-            # Simple average
-            self.shooter_component.algae_size = sum(self.measured_sizes) / (
-                len(self.measured_sizes)
-            )
+            self.shooter_component.algae_size = statistics.fmean(self.measured_sizes)
             self.next_state(self.recovering)
         else:
             self.next_state(self.pre_measure)
