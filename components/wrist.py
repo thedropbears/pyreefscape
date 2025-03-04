@@ -3,6 +3,7 @@ import math
 import wpilib
 from magicbot import feedback
 from rev import (
+    LimitSwitchConfig,
     SparkMax,
     SparkMaxConfig,
 )
@@ -45,6 +46,10 @@ class WristComponent:
         wrist_config = SparkMaxConfig()
         wrist_config.inverted(False)
         wrist_config.setIdleMode(self.idle_mode)
+        wrist_config.limitSwitch.reverseLimitSwitchType(
+            LimitSwitchConfig.Type.kNormallyOpen
+        )
+        wrist_config.limitSwitch.reverseLimitSwitchEnabled(True)
 
         self.wrist_profile = TrapezoidProfile(
             TrapezoidProfile.Constraints(self.WRIST_MAX_VEL, self.WRIST_MAX_ACC)
@@ -144,6 +149,10 @@ class WristComponent:
 
     def reset_windup(self) -> None:
         self.tilt_to(self.inclination())
+
+    @feedback
+    def at_limit(self) -> bool:
+        return self.motor.getReverseLimitSwitch().get()
 
     def execute(self) -> None:
         tracked_state = self.wrist_profile.calculate(
