@@ -103,6 +103,10 @@ class IntakeComponent:
     def raw_encoder(self) -> float:
         return self.encoder.get()
 
+    @feedback
+    def position_degrees(self) -> float:
+        return math.degrees(self.position())
+
     def position(self):
         return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
 
