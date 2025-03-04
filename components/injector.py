@@ -54,6 +54,9 @@ class InjectorComponent:
 
         self.desired_injector_voltage = 0.0
 
+    def on_enable(self) -> None:
+        self.has_seen_algae = False
+
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:
         return not self.algae_limit_switch.get()
