@@ -177,6 +177,10 @@ class BallisticsComponent:
 
     def execute(self) -> None:
         if self.injector_component.has_algae():
+            if not self.shooter_component.has_measured:
+                self.status_lights.not_measured()
+                return
+
             if self.is_in_range():
                 if self.is_aligned():
                     self.status_lights.facing_in_range()

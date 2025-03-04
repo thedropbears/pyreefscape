@@ -78,6 +78,7 @@ class AlgaeShooter(StateMachine):
                 self.TOP_SHOOT_SPEED, self.BOTTOM_SHOOT_SPEED
             )
         self.injector_component.inject()
+        self.shooter_component.has_measured = False
 
     def done(self) -> None:
         self.wrist.go_to_neutral()

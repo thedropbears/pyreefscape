@@ -61,6 +61,10 @@ class LightStrip:
         self.pattern = LEDPattern.blink(LEDPattern.solid(wpilib.Color.kOrange), 0.5)
         self.keep_alive()
 
+    def not_measured(self) -> None:
+        self.pattern = LEDPattern.blink(LEDPattern.solid(wpilib.Color.kPurple), 0.125)
+        self.keep_alive()
+
     def rainbow(self) -> None:
         self.pattern = LEDPattern.rainbow(255, 100).scrollAtAbsoluteSpeed(
             0.1, LED_SPACING
