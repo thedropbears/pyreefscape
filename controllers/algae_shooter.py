@@ -35,6 +35,8 @@ class AlgaeShooter(StateMachine):
             return
         if self.reef_intake.is_executing:
             return
+        if self.algae_measurement.is_executing:
+            return
         if self.use_ballistics and (
             not self.ballistics_component.is_in_range()
             or not self.ballistics_component.is_aligned()
@@ -76,6 +78,7 @@ class AlgaeShooter(StateMachine):
                 self.TOP_SHOOT_SPEED, self.BOTTOM_SHOOT_SPEED
             )
         self.injector_component.inject()
+        self.shooter_component.has_measured = False
 
     def done(self) -> None:
         self.wrist.go_to_neutral()
