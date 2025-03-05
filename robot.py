@@ -217,7 +217,13 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getYButton():
             self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
-            self.climber_state_machine.retract()
+            if (
+                self.climber_state_machine.current_state == "pre_climbing"
+                and self.climber_state_machine.is_ready_to_climb()
+            ) or self.climber_state_machine.current_state == "retracting":
+                self.climber_state_machine.retract()
+            else:
+                self.climber_state_machine.pre_climb()
 
         if self.gamepad.getBButton():
             self.reef_intake.done()

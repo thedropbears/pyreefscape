@@ -156,9 +156,28 @@ class LightStrip:
         self.keep_alive()
         self.is_reef_offset_flashing = True
 
-    def climber_deploying(self) -> None:
-        colour = Color.kRed if is_red() else Color.kBlue
-        self.pattern = LEDPattern.blink(LEDPattern.solid(colour), 0.15)
+    def climber_deploying(self, left_okay: bool, right_okay: bool) -> None:
+        self.pattern = LEDPattern.breathe(
+            LEDPattern.steps(
+                [
+                    (0.0, Color.kGreen if left_okay else Color.kRed),
+                    (self.halfway_split, Color.kGreen if right_okay else Color.kRed),
+                ]
+            ),
+            0.5,
+        )
+        self.keep_alive()
+
+    def climber_pre_climb(self, left_okay: bool, right_okay: bool) -> None:
+        self.pattern = LEDPattern.blink(
+            LEDPattern.steps(
+                [
+                    (0.0, Color.kGreen if left_okay else Color.kRed),
+                    (self.halfway_split, Color.kGreen if right_okay else Color.kRed),
+                ]
+            ),
+            0.125,
+        )
         self.keep_alive()
 
     def climber_retracting(self) -> None:
