@@ -11,8 +11,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    permissions:
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +23,24 @@ jobs:
           uv pip install coverage pytest-github-actions-annotate-failures
       - run: uv run robotpy coverage test
       - run: uv run coverage xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-data
+          path: |
+            coverage.xml
+            .coverage*
+          include-hidden-files: true
+
+  report-coverage:
+    needs: [test]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: coverage-data
       - uses: codecov/codecov-action@v4
         with:
           use_oidc: true
