@@ -19,6 +19,7 @@ class ClimberStateMachine(StateMachine):
 
     def on_disable(self) -> None:
         self.has_deployed = False
+        super().on_disable()
 
     def deploy(self) -> None:
         self.engage("deploying", force=True)
