@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 import numpy
+import wpilib
 import wpiutil.wpistruct
 from magicbot import feedback
 from wpimath.geometry import (
@@ -177,7 +178,10 @@ class BallisticsComponent:
 
     def execute(self) -> None:
         if self.injector_component.has_algae():
-            if not self.shooter_component.has_measured:
+            if (
+                not self.shooter_component.has_measured
+                and not wpilib.DriverStation.isAutonomous()
+            ):
                 self.status_lights.not_measured()
                 return
 
