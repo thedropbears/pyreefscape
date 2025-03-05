@@ -2,7 +2,7 @@ import math
 
 from magicbot import feedback, tunable
 from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
-from wpilib import DutyCycleEncoder
+from wpilib import DigitalInput, DutyCycleEncoder
 from wpimath.controller import PIDController
 
 from components.led_component import LightStrip
@@ -19,8 +19,12 @@ class ClimberComponent:
 
     def __init__(self) -> None:
         self.START_ANGLE = -30.0
+        self.PRE_CLIMB_ANGLE = -20.0
         self.DEPLOY_ANGLE = 11.0
         self.RETRACT_ANGLE = -52.0
+
+        self.left_limit_switch = DigitalInput(DioChannel.LEFT_CLIMBER_SWITCH)
+        self.right_limit_switch = DigitalInput(DioChannel.RIGHT_CLIMBER_SWITCH)
 
         self.desired_angle = math.radians(self.START_ANGLE)
         self.update_pid = True
@@ -55,6 +59,12 @@ class ClimberComponent:
     def stop(self) -> None:
         self.set_angle(math.radians(self.encoder_angle()))
 
+    def is_left_engaged(self) -> bool:
+        return not self.left_limit_switch.get()
+
+    def is_right_engaged(self) -> bool:
+        return not self.right_limit_switch.get()
+
     def stop_pid_update(self) -> None:
         self.update_pid = False
 
@@ -66,6 +76,9 @@ class ClimberComponent:
 
     def go_to_neutral(self) -> None:
         self.set_angle(math.radians(self.START_ANGLE))
+
+    def go_to_pre_climb(self) -> None:
+        self.set_angle(math.radians(self.PRE_CLIMB_ANGLE))
 
     def go_to_deploy(self) -> None:
         self.set_angle(math.radians(self.DEPLOY_ANGLE))
