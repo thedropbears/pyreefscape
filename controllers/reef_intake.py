@@ -99,7 +99,7 @@ class ReefIntake(StateMachine):
         )
 
         if not wpilib.DriverStation.isAutonomous() and distance < self.RETREAT_DISTANCE:
-            self.chassis.limit_to_longitudinal_velocity()
+            self.chassis.limit_to_positive_longitudinal_velocity()
 
         if distance >= self.RETREAT_DISTANCE:
             self.done()
