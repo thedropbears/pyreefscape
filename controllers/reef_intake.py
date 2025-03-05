@@ -20,8 +20,8 @@ class ReefIntake(StateMachine):
     algae_measurement: AlgaeMeasurement
     status_lights: LightStrip
 
-    L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
-    L3_INTAKE_ANGLE = tunable(math.radians(-5.0))
+    L2_INTAKE_ANGLE = tunable(math.radians(-60.0))
+    L3_INTAKE_ANGLE = tunable(math.radians(-15.0))
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
