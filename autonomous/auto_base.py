@@ -151,8 +151,8 @@ class AutoBase(AutonomousStateMachine):
             self.next_state("tracking_trajectory")
 
     @state
-    def shooting_algae(self, initial_call: bool) -> None:
-        if initial_call:
-            self.algae_shooter.shoot()
-        elif not self.algae_shooter.is_executing:
+    def shooting_algae(self) -> None:
+        self.algae_shooter.shoot()
+
+        if not self.algae_shooter.is_executing:
             self.next_state("tracking_trajectory")
