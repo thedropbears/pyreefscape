@@ -78,6 +78,7 @@ class AutoBase(AutonomousStateMachine):
     def initialising(self) -> None:
         # Add any tasks that need doing first
         self.reef_intake.holding_coral = True
+        self.chassis.do_smooth = False
         self.next_state("tracking_trajectory")
 
     @state

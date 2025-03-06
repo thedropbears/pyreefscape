@@ -467,6 +467,7 @@ class ChassisComponent:
             module.state = SwerveModuleState(0, module.get_rotation())
         self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
+        self.do_smooth = True
 
     def get_rotational_velocity(self) -> float:
         return math.radians(
