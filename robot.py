@@ -225,9 +225,6 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.climber_state_machine.pre_climb()
 
-        if self.gamepad.getStartButton():
-            self.climber_state_machine.retract()
-
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
@@ -236,12 +233,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
 
-        # Set current robot direction to forward
-        if self.gamepad.getBackButton():
-            self.chassis.reset_yaw()
-        # Reset Odometry
+        # Override Climber Retract
         if self.gamepad.getStartButton():
-            self.chassis.reset_odometry()
+            self.climber_state_machine.retract()
 
     def testInit(self) -> None:
         self.chassis.set_coast_in_neutral(True)
