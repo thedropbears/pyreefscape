@@ -59,9 +59,11 @@ class ClimberComponent:
     def stop(self) -> None:
         self.set_angle(math.radians(self.encoder_angle()))
 
+    @feedback
     def is_left_engaged(self) -> bool:
         return not self.left_limit_switch.get()
 
+    @feedback
     def is_right_engaged(self) -> bool:
         return not self.right_limit_switch.get()
 
