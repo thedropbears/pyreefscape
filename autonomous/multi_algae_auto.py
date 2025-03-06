@@ -59,3 +59,19 @@ class CentreAllianceSide(AutoBase):
                 "AlgaeKLToShoot",
             ]
         )
+
+
+class QuickPath(AutoBase):
+    MODE_NAME = "Quick Centre Alliance GH>IJ>KL"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "StartToAlgaeGH",
+                "AlgaeGHToShoot",
+                "ShootToAlgaeIJ",
+                "AlgaeIJToShootIJ",
+                "ShootIJToAlgaeKL",
+                "AlgaeKLToShootKL",
+            ]
+        )
