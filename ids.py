@@ -53,15 +53,18 @@ class SparkId(enum.IntEnum):
 class DioChannel(enum.IntEnum):
     """roboRIO Digital I/O channel number."""
 
-    CLIMBER_ENCODER = 4
-
     VISION_ENCODER = 1
+
+    SWERVE_COAST_SWITCH = 2
 
     INTAKE_ENCODER = 3
 
+    CLIMBER_ENCODER = 4
+
     ALGAE_INTAKE_SWITCH = 5
 
-    SWERVE_COAST_SWITCH = 2
+    LEFT_CLIMBER_SWITCH = 6
+    RIGHT_CLIMBER_SWITCH = 7
 
 
 @enum.unique

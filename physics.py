@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import statistics
 import typing
 
 import phoenix6
@@ -38,7 +39,7 @@ class RollingBuffer:
         self.buffer_: list[float] = []
 
     def average(self) -> float:
-        return sum(self.buffer_) / len(self.buffer_) if len(self.buffer_) > 0 else 0.0
+        return statistics.fmean(self.buffer_) if self.buffer_ else 0.0
 
     def add_sample(self, sample: float):
         self.buffer_.append(sample)

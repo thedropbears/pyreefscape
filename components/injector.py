@@ -11,7 +11,7 @@ class InjectorComponent:
     INJECTOR_INJECT_VOLTAGE = tunable(12.0)
     INJECTOR_INTAKE_VOLTAGE = tunable(-2.0)
     INJECTOR_BACKDRIVE_VOLTAGE = tunable(-0.5)
-    INJECTOR_MEASURE_SPEED = tunable(75)
+    INJECTOR_MEASURE_SPEED = tunable(200)
 
     INJECTOR_RPS_TOLERANCE = 0.5
     INJECTOR_MAX_ACCEL = 0.5
@@ -53,6 +53,9 @@ class InjectorComponent:
         self.should_measure = False
 
         self.desired_injector_voltage = 0.0
+
+    def on_enable(self) -> None:
+        self.has_seen_algae = False
 
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:

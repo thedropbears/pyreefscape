@@ -38,8 +38,7 @@ class FloorIntake(StateMachine):
 
         self.intake_component.intake()
 
-        if initial_call:
-            self.wrist.tilt_to(self.HANDOFF_POSITION)
+        self.wrist.tilt_to(self.HANDOFF_POSITION)
 
         self.shooter_component.intake()
         self.injector_component.intake()
@@ -47,17 +46,11 @@ class FloorIntake(StateMachine):
     @state(must_finish=True)
     def measuring(self, initial_call):
         if initial_call:
-            if (
-                not wpilib.DriverStation.isAutonomous()
-                and not wpilib.RobotBase.isSimulation()
-            ):
+            if not wpilib.RobotBase.isSimulation():
                 self.algae_measurement.measure()
-            self.wrist.go_to_neutral()
-            self.intake_component.retract()
-
-        if not self.algae_measurement.is_executing:
             self.done()
 
     def done(self) -> None:
+        self.wrist.go_to_neutral()
         self.intake_component.retract()
         super().done()

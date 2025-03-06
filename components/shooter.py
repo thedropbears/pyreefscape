@@ -75,19 +75,20 @@ class ShooterComponent:
         self.bottom_desired_flywheel_speed = 0.0
 
         self._algae_size = 0.0
+        self.has_measured = False
 
     @property
     def algae_size(self) -> float:
         return (
             self._algae_size
-            if not wpilib.DriverStation.isAutonomous()
-            or not wpilib.RobotBase.isSimulation()
+            if not wpilib.RobotBase.isSimulation()
             else (ALGAE_MIN_DIAMETER + ALGAE_MAX_DIAMETER) / 2.0
         )
 
     @algae_size.setter
     def algae_size(self, value: float) -> None:
         self._algae_size = value
+        self.has_measured = True
 
     def spin_flywheels(
         self, top_flywheel_shoot_speed: float, bottom_flywheel_shoot_speed: float

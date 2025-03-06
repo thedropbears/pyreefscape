@@ -18,8 +18,8 @@ from controllers.algae_shooter import AlgaeShooter
 from controllers.reef_intake import ReefIntake
 from utilities import game
 
-x_controller = PIDController(1.0, 0.0, 0.0)
-y_controller = PIDController(1.0, 0.0, 0.0)
+x_controller = PIDController(2.0, 0.0, 0.0)
+y_controller = PIDController(2.0, 0.0, 0.0)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
 wpilib.SmartDashboard.putData("Auto Y PID", y_controller)
@@ -37,6 +37,7 @@ class AutoBase(AutonomousStateMachine):
 
     DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
+    CORAL_DISTANCE_TOLERANCE = 0.2  # metres
 
     def __init__(self, trajectory_names: list[str]) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
@@ -78,6 +79,8 @@ class AutoBase(AutonomousStateMachine):
     @state(first=True)
     def initialising(self) -> None:
         # Add any tasks that need doing first
+        self.reef_intake.holding_coral = True
+        self.chassis.do_smooth = False
         self.next_state("tracking_trajectory")
 
     @state
@@ -104,6 +107,9 @@ class AutoBase(AutonomousStateMachine):
             self.algae_shooter.shoot()
         else:
             self.reef_intake.intake()
+        # Check if we are close enough to deposit coral
+        if distance < self.CORAL_DISTANCE_TOLERANCE:
+            self.reef_intake.holding_coral = False
 
         if self.current_leg > 0 and self.injector_component.has_algae():
             self.algae_shooter.shoot()
@@ -152,8 +158,8 @@ class AutoBase(AutonomousStateMachine):
                 self.next_state("tracking_trajectory")
 
     @state
-    def shooting_algae(self, initial_call: bool) -> None:
-        if initial_call:
-            self.algae_shooter.shoot()
-        elif not self.algae_shooter.is_executing:
+    def shooting_algae(self) -> None:
+        self.algae_shooter.shoot()
+
+        if not self.algae_shooter.is_executing:
             self.next_state("tracking_trajectory")

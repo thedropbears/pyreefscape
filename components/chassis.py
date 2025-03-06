@@ -250,7 +250,7 @@ class ChassisComponent:
         self, track_width: float, wheel_base: float, swerve_config: SwerveConfig
     ) -> None:
         self.imu = Pigeon2(0)
-        self.heading_controller = PIDController(3.0, 0.0, 0.0)
+        self.heading_controller = PIDController(4.5, 0.0, 0.08)
         wpilib.SmartDashboard.putData(
             "Chassis heading_controller", self.heading_controller
         )
@@ -381,9 +381,12 @@ class ChassisComponent:
         """Robot oriented drive commands"""
         self.chassis_speeds = ChassisSpeeds(vx, vy, omega)
 
-    def limit_to_longitudinal_velocity(self) -> None:
+    def limit_to_positive_longitudinal_velocity(self) -> None:
         self.chassis_speeds.vy = 0.0
         self.chassis_speeds.omega = 0.0
+        self.chassis_speeds.vx = (
+            0.0 if self.chassis_speeds.vx <= 0.0 else self.chassis_speeds.vx
+        )
 
     def snap_to_heading(self, heading: float) -> None:
         """set a heading target for the heading controller"""
@@ -464,6 +467,7 @@ class ChassisComponent:
             module.state = SwerveModuleState(0, module.get_rotation())
         self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
+        self.do_smooth = True
 
     def get_rotational_velocity(self) -> float:
         return math.radians(

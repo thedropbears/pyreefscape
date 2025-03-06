@@ -20,14 +20,15 @@ class ReefIntake(StateMachine):
     algae_measurement: AlgaeMeasurement
     status_lights: LightStrip
 
-    L2_INTAKE_ANGLE = tunable(math.radians(-40.0))
-    L3_INTAKE_ANGLE = tunable(math.radians(-5.0))
+    L2_INTAKE_ANGLE = tunable(math.radians(-60.0))
+    L3_INTAKE_ANGLE = tunable(math.radians(-15.0))
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
 
     def __init__(self):
         self.last_l3 = False
+        self.holding_coral = False
 
     def intake(self) -> None:
         self.engage()
@@ -72,24 +73,21 @@ class ReefIntake(StateMachine):
 
         current_is_L3 = self.is_L3()
 
-        if self.last_l3 != current_is_L3 or initial_call:
-            if current_is_L3:
-                self.wrist.tilt_to(self.L3_INTAKE_ANGLE)
-            else:
-                self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
-            self.last_l3 = current_is_L3
+        if current_is_L3:
+            self.wrist.tilt_to(self.L3_INTAKE_ANGLE)
+        else:
+            self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
+        self.last_l3 = current_is_L3
 
-        self.shooter_component.intake()
+        if not self.holding_coral:
+            self.shooter_component.intake()
         self.injector_component.intake()
 
     @state(must_finish=True)
     def safing(self, initial_call: bool):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
-            if (
-                not wpilib.DriverStation.isAutonomous()
-                and not wpilib.RobotBase.isSimulation()
-            ):
+            if not wpilib.RobotBase.isSimulation():
                 self.algae_measurement.measure()
             self.chassis.stop_snapping()
 
@@ -100,15 +98,13 @@ class ReefIntake(StateMachine):
         )
 
         if not wpilib.DriverStation.isAutonomous() and distance < self.RETREAT_DISTANCE:
-            self.chassis.limit_to_longitudinal_velocity()
+            self.chassis.limit_to_positive_longitudinal_velocity()
 
-        if (
-            distance >= self.RETREAT_DISTANCE
-            and not self.algae_measurement.is_executing
-        ):
+        if distance >= self.RETREAT_DISTANCE:
             self.done()
 
     def done(self) -> None:
         super().done()
         self.wrist.go_to_neutral()
         self.chassis.stop_snapping()
+        self.holding_coral = False
