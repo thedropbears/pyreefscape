@@ -43,3 +43,19 @@ class OppositionSideAuto(AutoBase):
                 "AlgaeKLToShoot",
             ]
         )
+
+
+class CentreAllianceSide(AutoBase):
+    MODE_NAME = "Centre > Alliance Side GH>IJ>KL"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "StartToAlgaeGH",
+                "AlgaeGHToShoot",
+                "ShootToAlgaeIJ",
+                "AlgaeIJToShoot",
+                "ShootToAlgaeKL",
+                "AlgaeKLToShoot",
+            ]
+        )
