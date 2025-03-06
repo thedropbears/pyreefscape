@@ -225,6 +225,9 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.climber_state_machine.pre_climb()
 
+        if self.gamepad.getStartButton():
+            self.climber_state_machine.retract()
+
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
