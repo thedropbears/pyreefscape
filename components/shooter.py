@@ -81,8 +81,7 @@ class ShooterComponent:
     def algae_size(self) -> float:
         return (
             self._algae_size
-            if not wpilib.DriverStation.isAutonomous()
-            or not wpilib.RobotBase.isSimulation()
+            if not wpilib.RobotBase.isSimulation()
             else (ALGAE_MIN_DIAMETER + ALGAE_MAX_DIAMETER) / 2.0
         )
 

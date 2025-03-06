@@ -250,7 +250,7 @@ class ChassisComponent:
         self, track_width: float, wheel_base: float, swerve_config: SwerveConfig
     ) -> None:
         self.imu = Pigeon2(0)
-        self.heading_controller = PIDController(4.5, 0.0, 0.01)
+        self.heading_controller = PIDController(4.5, 0.0, 0.08)
         wpilib.SmartDashboard.putData(
             "Chassis heading_controller", self.heading_controller
         )
@@ -467,6 +467,7 @@ class ChassisComponent:
             module.state = SwerveModuleState(0, module.get_rotation())
         self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
+        self.do_smooth = True
 
     def get_rotational_velocity(self) -> float:
         return math.radians(

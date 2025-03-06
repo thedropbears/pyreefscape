@@ -35,7 +35,7 @@ class AlgaeShooter(StateMachine):
             return
         if self.reef_intake.is_executing:
             return
-        if self.algae_measurement.is_executing:
+        if not self.injector_component.has_algae():
             return
         if self.use_ballistics and (
             not self.ballistics_component.is_in_range()
@@ -44,7 +44,14 @@ class AlgaeShooter(StateMachine):
             return
         self.engage()
 
-    @state(first=True, must_finish=True)
+    @state(first=True)
+    def measuring(self):
+        self.wrist.tilt_to(math.radians(-15.0))
+
+        if not self.algae_measurement.is_executing:
+            self.next_state(self.preparing)
+
+    @state(must_finish=True)
     def preparing(self):
         if self.use_ballistics:
             solution = self.ballistics_component.current_solution()

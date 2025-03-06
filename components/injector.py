@@ -11,7 +11,7 @@ class InjectorComponent:
     INJECTOR_INJECT_VOLTAGE = tunable(12.0)
     INJECTOR_INTAKE_VOLTAGE = tunable(-2.0)
     INJECTOR_BACKDRIVE_VOLTAGE = tunable(-0.5)
-    INJECTOR_MEASURE_SPEED = tunable(75)
+    INJECTOR_MEASURE_SPEED = tunable(200)
 
     INJECTOR_RPS_TOLERANCE = 0.5
     INJECTOR_MAX_ACCEL = 0.5

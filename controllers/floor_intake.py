@@ -46,10 +46,7 @@ class FloorIntake(StateMachine):
     @state(must_finish=True)
     def measuring(self, initial_call):
         if initial_call:
-            if (
-                not wpilib.DriverStation.isAutonomous()
-                and not wpilib.RobotBase.isSimulation()
-            ):
+            if not wpilib.RobotBase.isSimulation():
                 self.algae_measurement.measure()
             self.done()
 
