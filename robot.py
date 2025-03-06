@@ -233,12 +233,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
 
-        # Set current robot direction to forward
-        if self.gamepad.getBackButton():
-            self.chassis.reset_yaw()
-        # Reset Odometry
+        # Override Climber Retract
         if self.gamepad.getStartButton():
-            self.chassis.reset_odometry()
+            self.climber_state_machine.engage("retracting", force=True)
 
     def testInit(self) -> None:
         self.chassis.set_coast_in_neutral(True)
