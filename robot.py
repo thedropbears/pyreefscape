@@ -235,7 +235,7 @@ class MyRobot(magicbot.MagicRobot):
 
         # Override Climber Retract
         if self.gamepad.getStartButton():
-            self.climber_state_machine.retract()
+            self.climber_state_machine.engage("retracting", force=True)
 
     def testInit(self) -> None:
         self.chassis.set_coast_in_neutral(True)
