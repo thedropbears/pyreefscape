@@ -87,8 +87,6 @@ class ReefIntake(StateMachine):
     def safing(self, initial_call: bool):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
-            if not wpilib.RobotBase.isSimulation():
-                self.algae_measurement.measure()
             self.chassis.stop_snapping()
 
         robot_pose = self.chassis.get_pose()

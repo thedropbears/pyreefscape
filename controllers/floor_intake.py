@@ -1,6 +1,5 @@
 import math
 
-import wpilib
 from magicbot import StateMachine, state, tunable
 
 from components.injector import InjectorComponent
@@ -33,7 +32,7 @@ class FloorIntake(StateMachine):
             return
 
         if self.injector_component.has_algae():
-            self.next_state(self.measuring)
+            self.done()
             return
 
         self.intake_component.intake()
@@ -42,13 +41,6 @@ class FloorIntake(StateMachine):
 
         self.shooter_component.intake()
         self.injector_component.intake()
-
-    @state(must_finish=True)
-    def measuring(self, initial_call):
-        if initial_call:
-            if not wpilib.RobotBase.isSimulation():
-                self.algae_measurement.measure()
-            self.done()
 
     def done(self) -> None:
         self.wrist.go_to_neutral()
