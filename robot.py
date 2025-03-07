@@ -320,9 +320,8 @@ class MyRobot(magicbot.MagicRobot):
         elif self.gamepad.getRightStickButton():
             self.starboard_vision.full_range_servo_()
             self.port_vision.full_range_servo_()
-        else:
-            self.starboard_vision.execute()
-            self.port_vision.execute()
+        self.starboard_vision.execute()
+        self.port_vision.execute()
         self.wrist.execute()
         self.intake_component.execute()
         self.status_lights.execute()

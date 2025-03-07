@@ -161,6 +161,8 @@ class VisualLocalizer(HasPerLoopCache):
 
         self._has_pairs = False
 
+        self.override_setpoint = False
+
     @feedback
     def rotation_limits(self) -> list[float]:
         return [self.min_rotation, self.max_rotation]
@@ -279,12 +281,14 @@ class VisualLocalizer(HasPerLoopCache):
     def zero_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!
         # This is used to put the servo in a neutral position to record the encoder value at that point
-        self.servo.set(0.5)
+        self.override_setpoint = True
+        self.turret_setpoint = 0.5
 
     def full_range_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!
         # This is used to put the servo to the full range position to record the encoder value at that point
-        self.servo.set(0.99)
+        self.override_setpoint = True
+        self.turret_setpoint = 0.99
 
     def execute(self) -> None:
         desired = self.turret_to_servo(self.desired_turret_rotation())
@@ -297,11 +301,9 @@ class VisualLocalizer(HasPerLoopCache):
             abs(self.turret_setpoint - new_turret_setpoint) > self.min_servo_movement
             or new_turret_setpoint < self.min_servo_movement
             or 0.99 - new_turret_setpoint < self.min_servo_movement
-        ):
+        ) and not self.override_setpoint:
             self.turret_setpoint = new_turret_setpoint
-        if not wpilib.XboxController(0).getLeftStickButton():
-            self.servo.set(self.turret_setpoint)
-            # ultra hacky fix to prevent moving turret while left stick held in teleop
+        self.servo.set(self.turret_setpoint)
 
         now = wpilib.Timer.getFPGATimestamp()
         self.turret_rotation_buffer.addSample(now, self.turret_rotation)
