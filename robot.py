@@ -43,7 +43,7 @@ class MyRobot(magicbot.MagicRobot):
     coral_depositor_component: CoralDepositorComponent
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
-    vision: VisualLocalizer
+    starboard_vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
     status_lights: LightStrip
@@ -89,8 +89,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.status_lights_strip_length = 112 * 4
 
-        self.vision_encoder_id = DioChannel.VISION_ENCODER
-        self.vision_servo_id = PwmChannel.VISION_SERVO
+        self.starboard_vision_encoder_id = DioChannel.STARBOARD_VISION_ENCODER
+        self.starboard_vision_servo_id = PwmChannel.STARBOARD_VISION_SERVO
         if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
@@ -114,16 +114,19 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.467
 
-            self.vision_name = "ardu_cam"
-            self.vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
-            self.vision_turret_rot = Rotation2d.fromDegrees(0.0)
-            self.vision_camera_offset = Translation3d(0.021, 0, 0)
-            self.vision_camera_pitch = math.radians(0.0)
-            self.vision_encoder_offset = Rotation2d(0.0)
-            self.vision_servo_offsets = ServoOffsets(
+            self.starboard_vision_name = "ardu_cam"
+            self.starboard_vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
+            self.starboard_vision_turret_rot = Rotation2d.fromDegrees(0.0)
+            self.starboard_vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.starboard_vision_camera_pitch = math.radians(0.0)
+            self.starboard_vision_encoder_offset = Rotation2d(0.0)
+            self.starboard_vision_servo_offsets = ServoOffsets(
                 neutral=Rotation2d(0.0), full_range=Rotation2d(1.377)
             )
-            self.vision_rotation_range = (Rotation2d(-1.377), Rotation2d(1.377))
+            self.starboard_vision_rotation_range = (
+                Rotation2d(-1.377),
+                Rotation2d(1.377),
+            )
 
         else:
             self.chassis_swerve_config = SwerveConfig(
@@ -148,16 +151,19 @@ class MyRobot(magicbot.MagicRobot):
             # metres between centre of front and back wheels
             self.chassis_wheel_base = 0.517
 
-            self.vision_name = "starboard_turret"
-            self.vision_turret_pos = Translation3d(-0.030, -0.300, 0.660)
-            self.vision_turret_rot = Rotation2d.fromDegrees(-90.0)
-            self.vision_camera_offset = Translation3d(0.021, 0, 0)
-            self.vision_camera_pitch = math.radians(10.0)
-            self.vision_encoder_offset = Rotation2d(4.068)
-            self.vision_servo_offsets = ServoOffsets(
+            self.starboard_vision_name = "starboard_turret"
+            self.starboard_vision_turret_pos = Translation3d(-0.030, -0.300, 0.660)
+            self.starboard_vision_turret_rot = Rotation2d.fromDegrees(-90.0)
+            self.starboard_vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.starboard_vision_camera_pitch = math.radians(10.0)
+            self.starboard_vision_encoder_offset = Rotation2d(4.068)
+            self.starboard_vision_servo_offsets = ServoOffsets(
                 neutral=Rotation2d(2.891), full_range=Rotation2d(5.011)
             )
-            self.vision_rotation_range = (Rotation2d(1.733), Rotation2d(5.011))
+            self.starboard_vision_rotation_range = (
+                Rotation2d(1.733),
+                Rotation2d(5.011),
+            )
 
         self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
         self.coast_button_pressed_event = wpilib.event.BooleanEvent(
@@ -287,11 +293,11 @@ class MyRobot(magicbot.MagicRobot):
         self.shooter_component.execute()
         self.injector_component.execute()
         if self.gamepad.getLeftStickButton():
-            self.vision.zero_servo_()
+            self.starboard_vision.zero_servo_()
         elif self.gamepad.getRightStickButton():
-            self.vision.full_range_servo_()
+            self.starboard_vision.full_range_servo_()
         else:
-            self.vision.execute()
+            self.starboard_vision.execute()
         self.wrist.execute()
         self.intake_component.execute()
         self.status_lights.execute()
@@ -306,9 +312,9 @@ class MyRobot(magicbot.MagicRobot):
         self.wrist.reset_windup()
         self.wrist.execute()
 
-        self.vision.execute()
+        self.starboard_vision.execute()
 
-        if self.vision.sees_multi_tag_target():
+        if self.starboard_vision.sees_multi_tag_target():
             selected_auto = self._automodes.chooser.getSelected()
             if isinstance(selected_auto, AutoBase):
                 intended_start_pose = selected_auto.get_starting_pose()
@@ -341,4 +347,4 @@ class MyRobot(magicbot.MagicRobot):
         super().robotPeriodic()
         self.intake_component.periodic()
         # Clear component per-loop caches.
-        self.vision._per_loop_cache.clear()
+        self.starboard_vision._per_loop_cache.clear()
