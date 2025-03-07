@@ -35,7 +35,7 @@ class AutoBase(AutonomousStateMachine):
 
     field: wpilib.Field2d
 
-    DISTANCE_TOLERANCE = 0.2  # metres
+    DISTANCE_TOLERANCE = 0.1  # metres
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
 
