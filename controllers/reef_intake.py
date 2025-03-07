@@ -20,8 +20,8 @@ class ReefIntake(StateMachine):
     algae_measurement: AlgaeMeasurement
     status_lights: LightStrip
 
-    L2_INTAKE_ANGLE = tunable(math.radians(-55.0))
-    L3_INTAKE_ANGLE = tunable(math.radians(-10.0))
+    L2_INTAKE_ANGLE = tunable(-55.0)
+    L3_INTAKE_ANGLE = tunable(-10.0)
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
@@ -74,9 +74,9 @@ class ReefIntake(StateMachine):
         current_is_L3 = self.is_L3()
 
         if current_is_L3:
-            self.wrist.tilt_to(self.L3_INTAKE_ANGLE)
+            self.wrist.tilt_to(math.radians(self.L3_INTAKE_ANGLE))
         else:
-            self.wrist.tilt_to(self.L2_INTAKE_ANGLE)
+            self.wrist.tilt_to(math.radians(self.L2_INTAKE_ANGLE))
         self.last_l3 = current_is_L3
 
         if not self.holding_coral:
