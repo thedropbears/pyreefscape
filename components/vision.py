@@ -161,6 +161,9 @@ class VisualLocalizer(HasPerLoopCache):
 
         self._has_pairs = False
 
+        self.should_override = False
+        self.override_setpoint = 0.5
+
     @feedback
     def rotation_limits(self) -> list[float]:
         return [self.min_rotation, self.max_rotation]
@@ -279,12 +282,14 @@ class VisualLocalizer(HasPerLoopCache):
     def zero_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!
         # This is used to put the servo in a neutral position to record the encoder value at that point
-        self.servo.set(0.5)
+        self.should_override = True
+        self.override_setpoint = 0.5
 
     def full_range_servo_(self) -> None:
         # ONLY CALL THIS IN TEST MODE!
         # This is used to put the servo to the full range position to record the encoder value at that point
-        self.servo.set(0.99)
+        self.should_override = True
+        self.override_setpoint = 0.99
 
     def execute(self) -> None:
         desired = self.turret_to_servo(self.desired_turret_rotation())
@@ -299,7 +304,11 @@ class VisualLocalizer(HasPerLoopCache):
             or 0.99 - new_turret_setpoint < self.min_servo_movement
         ):
             self.turret_setpoint = new_turret_setpoint
-        self.servo.set(self.turret_setpoint)
+
+        if self.should_override:
+            self.servo.set(self.override_setpoint)
+        else:
+            self.servo.set(self.turret_setpoint)
 
         now = wpilib.Timer.getFPGATimestamp()
         self.turret_rotation_buffer.addSample(now, self.turret_rotation)
@@ -383,6 +392,8 @@ class VisualLocalizer(HasPerLoopCache):
 
                     if self.should_log:
                         self.best_log.setPose(pose)
+
+        self.should_override = False
 
     @feedback
     def sees_target(self):

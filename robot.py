@@ -260,6 +260,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getStartButton():
             self.climber_state_machine.engage("retracting", force=True)
 
+        # Force servo neutral
+        if self.gamepad.getLeftStickButton():
+            self.port_vision.zero_servo_()
+            self.starboard_vision.zero_servo_()
+
     def testInit(self) -> None:
         self.chassis.set_coast_in_neutral(True)
 
@@ -315,9 +320,8 @@ class MyRobot(magicbot.MagicRobot):
         elif self.gamepad.getRightStickButton():
             self.starboard_vision.full_range_servo_()
             self.port_vision.full_range_servo_()
-        else:
-            self.starboard_vision.execute()
-            self.port_vision.execute()
+        self.starboard_vision.execute()
+        self.port_vision.execute()
         self.wrist.execute()
         self.intake_component.execute()
         self.status_lights.execute()
