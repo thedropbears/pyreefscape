@@ -65,6 +65,7 @@ class DioChannel(enum.IntEnum):
 
     LEFT_CLIMBER_SWITCH = 6
     RIGHT_CLIMBER_SWITCH = 7
+    PORT_VISION_ENCODER = 9
 
 
 @enum.unique
@@ -72,6 +73,7 @@ class PwmChannel(enum.IntEnum):
     """roboRIO PWM output channel number."""
 
     STARBOARD_VISION_SERVO = 0
+    PORT_VISION_SERVO = 8
 
     LIGHT_STRIP = 2
 

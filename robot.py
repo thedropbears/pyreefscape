@@ -44,6 +44,7 @@ class MyRobot(magicbot.MagicRobot):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     starboard_vision: VisualLocalizer
+    port_vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
     status_lights: LightStrip
@@ -91,6 +92,8 @@ class MyRobot(magicbot.MagicRobot):
 
         self.starboard_vision_encoder_id = DioChannel.STARBOARD_VISION_ENCODER
         self.starboard_vision_servo_id = PwmChannel.STARBOARD_VISION_SERVO
+        self.port_vision_encoder_id = DioChannel.PORT_VISION_ENCODER
+        self.port_vision_servo_id = PwmChannel.PORT_VISION_SERVO
         if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
@@ -163,6 +166,20 @@ class MyRobot(magicbot.MagicRobot):
             self.starboard_vision_rotation_range = (
                 Rotation2d(1.733),
                 Rotation2d(5.011),
+            )
+
+            self.port_vision_name = "port_turret"
+            self.port_vision_turret_pos = Translation3d(-0.010, 0.300, 0.660)
+            self.port_vision_turret_rot = Rotation2d.fromDegrees(90.0)
+            self.port_vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.port_vision_camera_pitch = math.radians(10.0)
+            self.port_vision_encoder_offset = Rotation2d(6.103)
+            self.port_vision_servo_offsets = ServoOffsets(
+                neutral=Rotation2d(1.052), full_range=Rotation2d(3.121)
+            )
+            self.port_vision_rotation_range = (
+                Rotation2d(1.733),
+                Rotation2d(5.034),
             )
 
         self.coast_button = wpilib.DigitalInput(DioChannel.SWERVE_COAST_SWITCH)
@@ -294,10 +311,13 @@ class MyRobot(magicbot.MagicRobot):
         self.injector_component.execute()
         if self.gamepad.getLeftStickButton():
             self.starboard_vision.zero_servo_()
+            self.port_vision.zero_servo_()
         elif self.gamepad.getRightStickButton():
             self.starboard_vision.full_range_servo_()
+            self.port_vision.full_range_servo_()
         else:
             self.starboard_vision.execute()
+            self.port_vision.execute()
         self.wrist.execute()
         self.intake_component.execute()
         self.status_lights.execute()
@@ -313,8 +333,12 @@ class MyRobot(magicbot.MagicRobot):
         self.wrist.execute()
 
         self.starboard_vision.execute()
+        self.port_vision.execute()
 
-        if self.starboard_vision.sees_multi_tag_target():
+        if (
+            self.starboard_vision.sees_multi_tag_target()
+            or self.port_vision.sees_multi_tag_target()
+        ):
             selected_auto = self._automodes.chooser.getSelected()
             if isinstance(selected_auto, AutoBase):
                 intended_start_pose = selected_auto.get_starting_pose()
@@ -348,3 +372,4 @@ class MyRobot(magicbot.MagicRobot):
         self.intake_component.periodic()
         # Clear component per-loop caches.
         self.starboard_vision._per_loop_cache.clear()
+        self.port_vision._per_loop_cache.clear()

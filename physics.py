@@ -210,6 +210,7 @@ class PhysicsEngine:
         self.starboard_camera = PhotonCameraSim(
             robot.starboard_vision.camera, properties
         )
+        self.port_camera = PhotonCameraSim(robot.port_vision.camera, properties)
         self.starboard_camera.setMaxSightRange(5.0)
         self.starboard_visual_localiser = robot.starboard_vision
         self.vision_sim.addCamera(
@@ -218,11 +219,21 @@ class PhysicsEngine:
                 wpilib.Timer.getFPGATimestamp()
             ),
         )
+        self.port_camera.setMaxSightRange(5.0)
+        self.port_visual_localiser = robot.port_vision
+        self.vision_sim.addCamera(
+            self.port_camera,
+            self.port_visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
+        )
         self.vision_sim_counter = 0
 
         self.starboard_vision_servo_sim = PWMSim(self.starboard_visual_localiser.servo)
         self.starboard_vision_encoder_sim = DutyCycleEncoderSim(
             self.starboard_visual_localiser.encoder
+        )
+        self.port_vision_servo_sim = PWMSim(self.port_visual_localiser.servo)
+        self.port_vision_encoder_sim = DutyCycleEncoderSim(
+            self.port_visual_localiser.encoder
         )
 
         self.algae_limit_switch_sim = DIOSim(
@@ -272,12 +283,31 @@ class PhysicsEngine:
             )
         )
 
+        self.port_vision_encoder_sim.set(
+            constrain_angle(
+                (
+                    (
+                        self.port_visual_localiser.servo_offsets.full_range
+                        - self.port_visual_localiser.servo_offsets.neutral
+                    )
+                    * (2.0 * self.port_visual_localiser.servo.getPosition() - 1.0)
+                    + self.port_visual_localiser.servo_offsets.neutral
+                ).radians()
+            )
+        )
+
         # Simulate slow vision updates.
         self.vision_sim_counter += 1
         if self.vision_sim_counter == 10:
             self.vision_sim.adjustCamera(
                 self.starboard_camera,
                 self.starboard_visual_localiser.robot_to_camera(
+                    wpilib.Timer.getFPGATimestamp()
+                ),
+            )
+            self.vision_sim.adjustCamera(
+                self.port_camera,
+                self.port_visual_localiser.robot_to_camera(
                     wpilib.Timer.getFPGATimestamp()
                 ),
             )
