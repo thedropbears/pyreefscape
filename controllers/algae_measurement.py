@@ -77,8 +77,8 @@ class AlgaeMeasurement(StateMachine):
                 clamp(
                     scale_value(
                         injector_position_delta,
-                        7.5,
-                        5.5,
+                        12.0,
+                        8.0,
                         ALGAE_MIN_DIAMETER,
                         ALGAE_MAX_DIAMETER,
                     ),
