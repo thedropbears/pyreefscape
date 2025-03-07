@@ -3,7 +3,7 @@ import math
 import choreo
 import wpilib
 from choreo.trajectory import SwerveSample, SwerveTrajectory
-from magicbot import AutonomousStateMachine, state
+from magicbot import AutonomousStateMachine, state, timed_state
 from wpilib import RobotBase
 from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
@@ -159,7 +159,7 @@ class AutoBase(AutonomousStateMachine):
         # Apply the generated speeds
         self.chassis.drive_field(speeds.vx, speeds.vy, speeds.omega)
 
-    @state
+    @timed_state(duration=1.0, next_state="tracking_trajectory")
     def intaking_algae(self) -> None:
         if self.current_leg == 0:
             self.coral_depositor_component.deposit()
@@ -167,7 +167,7 @@ class AutoBase(AutonomousStateMachine):
             self.coral_depositor_component.tuck()
             self.next_state("tracking_trajectory")
 
-    @state
+    @timed_state(duration=1.0, next_state="tracking_trajectory")
     def shooting_algae(self) -> None:
         self.algae_shooter.shoot()
 
