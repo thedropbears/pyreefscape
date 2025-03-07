@@ -79,7 +79,8 @@ class WristComponent:
         )
 
     def on_enable(self):
-        self.tilt_to(WristComponent.NEUTRAL_ANGLE)
+        # self.tilt_to(WristComponent.NEUTRAL_ANGLE)
+        self._tilt_to(self.inclination())
         self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
         wrist_config.setIdleMode(self.idle_mode)
@@ -138,11 +139,16 @@ class WristComponent:
 
         # If the new setpoint is within the tolerance we wouldn't move anyway
         if abs(clamped_angle - self.desired_state.position) > self.TOLERANCE:
-            self.desired_state = TrapezoidProfile.State(clamped_angle, 0.0)
-            self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
-            self.initial_state = TrapezoidProfile.State(
-                self.inclination(), self.current_velocity()
-            )
+            self._tilt_to(clamped_angle)
+
+    def _tilt_to(self, pos: float):
+        clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
+
+        self.desired_state = TrapezoidProfile.State(clamped_angle, 0.0)
+        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+        self.initial_state = TrapezoidProfile.State(
+            self.inclination(), self.current_velocity()
+        )
 
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
