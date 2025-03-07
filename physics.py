@@ -207,17 +207,34 @@ class PhysicsEngine:
         self.vision_sim = VisionSystemSim("main")
         self.vision_sim.addAprilTags(game.apriltag_layout)
         properties = SimCameraProperties.OV9281_1280_720()
-        self.camera = PhotonCameraSim(robot.vision.camera, properties)
-        self.camera.setMaxSightRange(5.0)
-        self.visual_localiser = robot.vision
+        self.starboard_camera = PhotonCameraSim(
+            robot.starboard_vision.camera, properties
+        )
+        self.port_camera = PhotonCameraSim(robot.port_vision.camera, properties)
+        self.starboard_camera.setMaxSightRange(5.0)
+        self.starboard_visual_localiser = robot.starboard_vision
         self.vision_sim.addCamera(
-            self.camera,
-            self.visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
+            self.starboard_camera,
+            self.starboard_visual_localiser.robot_to_camera(
+                wpilib.Timer.getFPGATimestamp()
+            ),
+        )
+        self.port_camera.setMaxSightRange(5.0)
+        self.port_visual_localiser = robot.port_vision
+        self.vision_sim.addCamera(
+            self.port_camera,
+            self.port_visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
         )
         self.vision_sim_counter = 0
 
-        self.vision_servo_sim = PWMSim(self.visual_localiser.servo)
-        self.vision_encoder_sim = DutyCycleEncoderSim(self.visual_localiser.encoder)
+        self.starboard_vision_servo_sim = PWMSim(self.starboard_visual_localiser.servo)
+        self.starboard_vision_encoder_sim = DutyCycleEncoderSim(
+            self.starboard_visual_localiser.encoder
+        )
+        self.port_vision_servo_sim = PWMSim(self.port_visual_localiser.servo)
+        self.port_vision_encoder_sim = DutyCycleEncoderSim(
+            self.port_visual_localiser.encoder
+        )
 
         self.algae_limit_switch_sim = DIOSim(
             robot.injector_component.algae_limit_switch
@@ -253,15 +270,28 @@ class PhysicsEngine:
 
         self.physics_controller.drive(speeds, tm_diff)
 
-        self.vision_encoder_sim.set(
+        self.starboard_vision_encoder_sim.set(
             constrain_angle(
                 (
                     (
-                        self.visual_localiser.servo_offsets.full_range
-                        - self.visual_localiser.servo_offsets.neutral
+                        self.starboard_visual_localiser.servo_offsets.full_range
+                        - self.starboard_visual_localiser.servo_offsets.neutral
                     )
-                    * (2.0 * self.visual_localiser.servo.getPosition() - 1.0)
-                    + self.visual_localiser.servo_offsets.neutral
+                    * (2.0 * self.starboard_visual_localiser.servo.getPosition() - 1.0)
+                    + self.starboard_visual_localiser.servo_offsets.neutral
+                ).radians()
+            )
+        )
+
+        self.port_vision_encoder_sim.set(
+            constrain_angle(
+                (
+                    (
+                        self.port_visual_localiser.servo_offsets.full_range
+                        - self.port_visual_localiser.servo_offsets.neutral
+                    )
+                    * (2.0 * self.port_visual_localiser.servo.getPosition() - 1.0)
+                    + self.port_visual_localiser.servo_offsets.neutral
                 ).radians()
             )
         )
@@ -270,8 +300,16 @@ class PhysicsEngine:
         self.vision_sim_counter += 1
         if self.vision_sim_counter == 10:
             self.vision_sim.adjustCamera(
-                self.camera,
-                self.visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
+                self.starboard_camera,
+                self.starboard_visual_localiser.robot_to_camera(
+                    wpilib.Timer.getFPGATimestamp()
+                ),
+            )
+            self.vision_sim.adjustCamera(
+                self.port_camera,
+                self.port_visual_localiser.robot_to_camera(
+                    wpilib.Timer.getFPGATimestamp()
+                ),
             )
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
