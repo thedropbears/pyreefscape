@@ -388,6 +388,8 @@ class VisualLocalizer(HasPerLoopCache):
                     if self.should_log:
                         self.best_log.setPose(pose)
 
+        self.override_setpoint = False
+
     @feedback
     def sees_target(self):
         return wpilib.Timer.getFPGATimestamp() - self.last_timestamp < self.TIMEOUT
