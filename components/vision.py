@@ -287,6 +287,9 @@ class VisualLocalizer(HasPerLoopCache):
         self.servo.set(0.99)
 
     def execute(self) -> None:
+        if wpilib.XboxController(0).getLeftStickButton():
+            return  # ultra hacky fix to prevent tracking while left stick held in teleop
+
         desired = self.turret_to_servo(self.desired_turret_rotation())
         new_turret_setpoint = clamp(
             (desired / self.servo_half_range + 1.0) / 2.0, 0.01, 0.99
