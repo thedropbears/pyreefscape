@@ -48,8 +48,8 @@ class AlgaeShooter(StateMachine):
     def measuring(self):
         self.wrist.tilt_to(math.radians(-15.0))
 
-        if not self.algae_measurement.is_executing:
-            self.next_state(self.preparing)
+        # if not self.algae_measurement.is_executing:
+        self.next_state(self.preparing)
 
     @state(must_finish=True)
     def preparing(self):

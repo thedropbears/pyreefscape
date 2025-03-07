@@ -74,8 +74,8 @@ class ShooterComponent:
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
 
-        self._algae_size = 0.0
-        self.has_measured = False
+        self._algae_size = 16.25
+        self.has_measured = True
 
     @property
     def algae_size(self) -> float:
