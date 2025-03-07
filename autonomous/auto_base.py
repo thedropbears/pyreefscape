@@ -2,7 +2,7 @@ import math
 
 import choreo
 import wpilib
-from choreo.trajectory import SwerveSample
+from choreo.trajectory import SwerveSample, SwerveTrajectory
 from magicbot import AutonomousStateMachine, state
 from wpilib import RobotBase
 from wpimath.controller import PIDController
@@ -33,6 +33,8 @@ class AutoBase(AutonomousStateMachine):
     injector_component: InjectorComponent
     chassis: ChassisComponent
 
+    field: wpilib.Field2d
+
     DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
@@ -43,7 +45,7 @@ class AutoBase(AutonomousStateMachine):
 
         self.current_leg = -1
         self.starting_pose = None
-        self.trajectories = []
+        self.trajectories: list[SwerveTrajectory] = []
         for trajectory_name in trajectory_names:
             try:
                 self.trajectories.append(choreo.load_swerve_trajectory(trajectory_name))
@@ -73,6 +75,21 @@ class AutoBase(AutonomousStateMachine):
 
     def get_starting_pose(self) -> Pose2d | None:
         return self.trajectories[0].get_initial_pose(game.is_red())
+
+    def _get_full_path_poses(self) -> list[Pose2d]:
+        """Get a list of poses for the full path for display."""
+        return [
+            sample.get_pose()
+            for trajectory in self.trajectories
+            for sample in trajectory.get_samples()
+        ]
+
+    def display_trajectory(self) -> None:
+        self.field.getObject("trajectory").setPoses(self._get_full_path_poses())
+
+    def on_disable(self) -> None:
+        super().on_disable()
+        self.field.getObject("trajectory").setPoses([])
 
     @state(first=True)
     def initialising(self) -> None:

@@ -335,6 +335,9 @@ class MyRobot(magicbot.MagicRobot):
         self.starboard_vision.execute()
         self.port_vision.execute()
 
+        if self.gamepad.getBackButtonPressed():
+            self._display_auto_trajectory()
+
         if (
             self.starboard_vision.sees_multi_tag_target()
             or self.port_vision.sees_multi_tag_target()
@@ -366,6 +369,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.coast_button_pressed_event.getAsBoolean():
             self.chassis.toggle_coast_in_neutral()
             self.wrist.toggle_neutral_mode()
+
+    def _display_auto_trajectory(self) -> None:
+        selected_auto = self._automodes.chooser.getSelected()
+        if isinstance(selected_auto, AutoBase):
+            selected_auto.display_trajectory()
 
     def robotPeriodic(self) -> None:
         super().robotPeriodic()
