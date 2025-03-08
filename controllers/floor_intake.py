@@ -19,6 +19,7 @@ class FloorIntake(StateMachine):
     HANDOFF_POSITION = tunable(math.radians(-112.0))
 
     def __init__(self):
+        self.intake_upper = False
         pass
 
     def intake(self) -> None:
@@ -35,7 +36,7 @@ class FloorIntake(StateMachine):
             self.done()
             return
 
-        self.intake_component.intake()
+        self.intake_component.intake(self.intake_upper)
 
         self.wrist.tilt_to(self.HANDOFF_POSITION)
 
@@ -45,4 +46,5 @@ class FloorIntake(StateMachine):
     def done(self) -> None:
         self.wrist.go_to_neutral()
         self.intake_component.retract()
+        self.intake_upper = False
         super().done()

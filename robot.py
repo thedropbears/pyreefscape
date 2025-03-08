@@ -75,6 +75,7 @@ class MyRobot(magicbot.MagicRobot):
         meta_table.putString("rio_serial", wpilib.RobotController.getSerialNumber())
 
         self.gamepad = wpilib.XboxController(0)
+        self.left_trigger_reset = True
 
         self.field = wpilib.Field2d()
         wpilib.SmartDashboard.putData(self.field)
@@ -229,9 +230,11 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis.stop_snapping()
 
         if (
-            self.gamepad.getLeftTriggerAxis() > 0.5
+            self.is_left_trigger_pressed(self.gamepad.getLeftTriggerAxis())
             and not self.reef_intake.is_executing
         ):
+            if self.floor_intake.current_state == "intaking":
+                self.floor_intake.intake_upper = not self.floor_intake.intake_upper
             self.floor_intake.intake()
 
         if self.gamepad.getLeftBumperButton() and not self.floor_intake.is_executing:
@@ -264,6 +267,14 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftStickButton():
             self.port_vision.zero_servo_()
             self.starboard_vision.zero_servo_()
+
+    def is_left_trigger_pressed(self, trigger_value: float) -> bool:
+        if trigger_value < 0.3:
+            self.left_trigger_reset = True
+        if self.left_trigger_reset and trigger_value > 0.5:
+            self.left_trigger_reset = False
+            return True
+        return False
 
     def testInit(self) -> None:
         self.chassis.set_coast_in_neutral(True)
