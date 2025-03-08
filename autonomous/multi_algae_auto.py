@@ -52,8 +52,8 @@ class QuickPath(AutoBase):
         super().__init__(
             [
                 "StartToAlgaeGH",
-                "AlgaeGHToShoot",
-                "ShootToAlgaeIJ",
+                "AlgaeGHToShootGH",
+                "ShootGHToAlgaeIJ",
                 "AlgaeIJToShootIJ",
                 "ShootIJToAlgaeKL",
                 "AlgaeKLToShootKL",
