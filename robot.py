@@ -232,12 +232,17 @@ class MyRobot(magicbot.MagicRobot):
         if (
             self.is_left_trigger_pressed(self.gamepad.getLeftTriggerAxis())
             and not self.reef_intake.is_executing
+            and not self.algae_shooter.is_executing
         ):
             if self.floor_intake.current_state == "intaking":
                 self.floor_intake.intake_upper = not self.floor_intake.intake_upper
             self.floor_intake.intake()
 
-        if self.gamepad.getLeftBumperButton() and not self.floor_intake.is_executing:
+        if (
+            self.gamepad.getLeftBumperButton()
+            and not self.floor_intake.is_executing
+            and not self.algae_shooter.is_executing
+        ):
             self.reef_intake.intake()
 
         if self.gamepad.getYButton():
