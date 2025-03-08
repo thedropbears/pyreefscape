@@ -59,7 +59,7 @@ class InjectorComponent:
 
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:
-        return self.algae_limit_switch.get()
+        return not self.algae_limit_switch.get()
 
     @feedback
     def has_algae(self) -> bool:
