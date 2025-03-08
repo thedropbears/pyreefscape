@@ -40,12 +40,6 @@ class AlgaeMeasurement(StateMachine):
     def calculating(self) -> None:
         self.shooter_component.algae_size = 16.25
 
-        # if len(self.measured_sizes) == self.number_of_iterations:
-        #     self.shooter_component.algae_size = statistics.fmean(self.measured_sizes)
-        #     self.next_state(self.recovering)
-        # else:
-        #     self.next_state(self.pre_measure)
-
     @state(must_finish=True)
     def measuring(self, initial_call) -> None:
         if initial_call:
