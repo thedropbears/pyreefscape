@@ -17,7 +17,7 @@ from utilities.game import ALGAE_MAX_DIAMETER, ALGAE_MIN_DIAMETER
 
 
 class ShooterComponent:
-    FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
+    FLYWHEEL_INTAKE_SPEED = tunable(-20.0)  # changed before and after auto
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
@@ -149,3 +149,6 @@ class ShooterComponent:
 
         self.top_desired_flywheel_speed = 0.0
         self.bottom_desired_flywheel_speed = 0.0
+
+    def on_disable(self) -> None:
+        self.FLYWHEEL_INTAKE_SPEED = -20.0

@@ -95,6 +95,8 @@ class AutoBase(AutonomousStateMachine):
     def initialising(self) -> None:
         # Add any tasks that need doing first
         self.reef_intake.holding_coral = True
+        # intake harder so we can spit out coral
+        self.shooter_component.FLYWHEEL_INTAKE_SPEED = -40.0
         self.chassis.do_smooth = False
         self.next_state("tracking_trajectory")
 
