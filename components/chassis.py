@@ -250,7 +250,7 @@ class ChassisComponent:
         self, track_width: float, wheel_base: float, swerve_config: SwerveConfig
     ) -> None:
         self.imu = Pigeon2(0)
-        self.heading_controller = PIDController(3.2, 0.0, 0.03)
+        self.heading_controller = PIDController(3.0, 0.0, 0.00)
         wpilib.SmartDashboard.putData(
             "Chassis heading_controller", self.heading_controller
         )
