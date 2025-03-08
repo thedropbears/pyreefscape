@@ -50,9 +50,9 @@ class MyRobot(magicbot.MagicRobot):
     status_lights: LightStrip
     ballistics_component: BallisticsComponent
 
-    max_speed = tunable(0.6 * 5.0)  # m/s
-    lower_max_speed = tunable(2.0)  # m/s
-    max_spin_rate = tunable(0.6 * 4.0)  # m/s
+    max_speed = tunable(0.8 * 5.0)  # m/s
+    lower_max_speed = tunable(1.0)  # m/s
+    max_spin_rate = tunable(0.8 * 4.0)  # m/s
     lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
