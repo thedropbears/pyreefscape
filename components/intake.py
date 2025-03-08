@@ -21,7 +21,8 @@ class IntakeComponent:
     # Offset is measured in the vertical position
     VERTICAL_ENCODER_VALUE = 2.477382
     ARM_ENCODER_OFFSET = VERTICAL_ENCODER_VALUE - math.pi / 2.0
-    DEPLOYED_ANGLE = 1.232018 - ARM_ENCODER_OFFSET
+    DEPLOYED_ANGLE_LOWER = 1.232018 - ARM_ENCODER_OFFSET
+    DEPLOYED_ANGLE_UPPER = 1.732018 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 2.477382 - ARM_ENCODER_OFFSET
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
@@ -70,13 +71,15 @@ class IntakeComponent:
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
 
-    def intake(self):
-        if not math.isclose(
-            self.desired_state.position, IntakeComponent.DEPLOYED_ANGLE, abs_tol=0.1
-        ):
-            self.desired_state = TrapezoidProfile.State(
-                IntakeComponent.DEPLOYED_ANGLE, 0.0
-            )
+    def intake(self, upper: bool):
+        deployed_angle = (
+            IntakeComponent.DEPLOYED_ANGLE_UPPER
+            if upper
+            else IntakeComponent.DEPLOYED_ANGLE_LOWER
+        )
+
+        if not math.isclose(self.desired_state.position, deployed_angle, abs_tol=0.1):
+            self.desired_state = TrapezoidProfile.State(deployed_angle, 0.0)
             self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
             self.initial_state = TrapezoidProfile.State(
                 self.position(), self.velocity()
