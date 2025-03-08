@@ -75,8 +75,8 @@
      "val":3.80368527064
     },
     "y":{
-     "exp":"2.89119198799 m",
-     "val":2.89119198799
+     "exp":"2.841204196 m",
+     "val":2.841204196
     },
     "heading":{
      "exp":"240 deg",
@@ -90,7 +90,7 @@
     },
     "y":{
      "exp":"AlgaeCD.y - RetreatDistance * sin60 m",
-     "val":2.544781826478
+     "val":2.494794034488
     },
     "heading":{
      "exp":"AlgaeCD.heading",
@@ -104,7 +104,7 @@
     },
     "y":{
      "exp":"AlgaeCD.y",
-     "val":2.89119198799
+     "val":2.841204196
     },
     "heading":{
      "exp":"540 deg - AlgaeCD.heading",
@@ -118,7 +118,7 @@
     },
     "y":{
      "exp":"AlgaeCDRetreat.y",
-     "val":2.544781826478
+     "val":2.494794034488
     },
     "heading":{
      "exp":"AlgaeEF.heading",
@@ -160,7 +160,7 @@
     },
     "y":{
      "exp":"Reef.y * 2 - AlgaeEF.y",
-     "val":5.1608080120099995
+     "val":5.210795804
     },
     "heading":{
      "exp":"360 deg - AlgaeEF.heading",
@@ -174,7 +174,7 @@
     },
     "y":{
      "exp":"Reef.y * 2 - AlgaeEFRetreat.y",
-     "val":5.507218173521999
+     "val":5.557205965511999
     },
     "heading":{
      "exp":"AlgaeIJ.heading",
@@ -188,7 +188,7 @@
     },
     "y":{
      "exp":"Reef.y * 2 - AlgaeCD.y",
-     "val":5.1608080120099995
+     "val":5.210795804
     },
     "heading":{
      "exp":"360 deg - AlgaeCD.heading",
@@ -202,7 +202,7 @@
     },
     "y":{
      "exp":"Reef.y * 2 - AlgaeCDRetreat.y",
-     "val":5.507218173521999
+     "val":5.557205965511999
     },
     "heading":{
      "exp":"AlgaeKL.heading",
