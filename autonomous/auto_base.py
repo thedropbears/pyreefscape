@@ -17,13 +17,11 @@ from controllers.algae_shooter import AlgaeShooter
 from controllers.reef_intake import ReefIntake
 from utilities import game
 
-x_controller = PIDController(1.0, 0.0, 0.0)
-y_controller = PIDController(1.0, 0.0, 0.0)
-heading_controller = PIDController(1.0, 0.0, 0.0)
+x_controller = PIDController(2.0, 0.0, 0.0)
+y_controller = PIDController(2.0, 0.0, 0.0)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
 wpilib.SmartDashboard.putData("Auto Y PID", y_controller)
-wpilib.SmartDashboard.putData("Auto HEADING PID", heading_controller)
 
 
 class AutoBase(AutonomousStateMachine):
@@ -100,6 +98,7 @@ class AutoBase(AutonomousStateMachine):
         # Add any tasks that need doing first
         self.reef_intake.holding_coral = True
         self.chassis.do_smooth = False
+        self.chassis.heading_controller.setPID(Kp=1.0, Ki=0.0, Kd=0.0)
         self.next_state("tracking_trajectory")
 
     @state
@@ -161,7 +160,9 @@ class AutoBase(AutonomousStateMachine):
             sample.vx + x_controller.calculate(pose.X(), sample.x),
             sample.vy + y_controller.calculate(pose.Y(), sample.y),
             sample.omega
-            + heading_controller.calculate(pose.rotation().radians(), sample.heading),
+            + self.chassis.heading_controller.calculate(
+                pose.rotation().radians(), sample.heading
+            ),
         )
 
         # Apply the generated speeds
