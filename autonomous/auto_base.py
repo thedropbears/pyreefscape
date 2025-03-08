@@ -17,11 +17,13 @@ from controllers.algae_shooter import AlgaeShooter
 from controllers.reef_intake import ReefIntake
 from utilities import game
 
-x_controller = PIDController(2.0, 0.0, 0.0)
-y_controller = PIDController(2.0, 0.0, 0.0)
+x_controller = PIDController(1.0, 0.0, 0.0)
+y_controller = PIDController(1.0, 0.0, 0.0)
+heading_controller = PIDController(1.0, 0.0, 0.0)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
 wpilib.SmartDashboard.putData("Auto Y PID", y_controller)
+wpilib.SmartDashboard.putData("Auto HEADING PID", heading_controller)
 
 
 class AutoBase(AutonomousStateMachine):
@@ -38,7 +40,7 @@ class AutoBase(AutonomousStateMachine):
     DISTANCE_TOLERANCE = 0.1  # metres
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
-    TRANSLATIONAL_SPEED_TOLERANCE = 0.1
+    TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1
 
     def __init__(self, trajectory_names: list[str]) -> None:
@@ -159,9 +161,7 @@ class AutoBase(AutonomousStateMachine):
             sample.vx + x_controller.calculate(pose.X(), sample.x),
             sample.vy + y_controller.calculate(pose.Y(), sample.y),
             sample.omega
-            + self.chassis.heading_controller.calculate(
-                pose.rotation().radians(), sample.heading
-            ),
+            + heading_controller.calculate(pose.rotation().radians(), sample.heading),
         )
 
         # Apply the generated speeds
