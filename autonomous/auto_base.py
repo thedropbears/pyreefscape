@@ -38,7 +38,7 @@ class AutoBase(AutonomousStateMachine):
     DISTANCE_TOLERANCE = 0.1  # metres
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
-    TRANSLATIONAL_SPEED_TOLERANCE = 0.1
+    TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1
 
     def __init__(self, trajectory_names: list[str]) -> None:
