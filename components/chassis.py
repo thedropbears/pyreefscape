@@ -468,6 +468,7 @@ class ChassisComponent:
         self.stop_snapping()
         self.set_coast_in_neutral(coast_mode=False)
         self.do_smooth = True
+        self.heading_controller.setPID(Kp=3.0, Ki=0.0, Kd=0.0)
 
     def get_rotational_velocity(self) -> float:
         return math.radians(
