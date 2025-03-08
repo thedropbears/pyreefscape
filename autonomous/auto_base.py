@@ -17,8 +17,8 @@ from controllers.algae_shooter import AlgaeShooter
 from controllers.reef_intake import ReefIntake
 from utilities import game
 
-x_controller = PIDController(2.0, 0.0, 0.0)
-y_controller = PIDController(2.0, 0.0, 0.0)
+x_controller = PIDController(1.0, 0.0, 0.0)
+y_controller = PIDController(1.0, 0.0, 0.0)
 heading_controller = PIDController(1.0, 0.0, 0.0)
 
 wpilib.SmartDashboard.putData("Auto X PID", x_controller)
