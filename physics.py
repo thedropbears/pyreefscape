@@ -178,7 +178,7 @@ class PhysicsEngine:
                 IntakeComponent.gear_ratio,
                 moi=0.035579622,
                 armLength=0.22,
-                minAngle=IntakeComponent.DEPLOYED_ANGLE,
+                minAngle=IntakeComponent.DEPLOYED_ANGLE_LOWER,
                 maxAngle=IntakeComponent.RETRACTED_ANGLE,
                 simulateGravity=True,
                 startingAngle=IntakeComponent.RETRACTED_ANGLE,
