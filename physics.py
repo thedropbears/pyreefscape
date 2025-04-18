@@ -11,7 +11,6 @@ import wpilib
 from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionSystemSim
 from pyfrc.physics.core import PhysicsInterface
 from wpilib.simulation import (
-    AnalogEncoderSim,
     DCMotorSim,
     DIOSim,
     DutyCycleEncoderSim,
@@ -188,7 +187,7 @@ class PhysicsEngine:
 
         wrist_gearbox = DCMotor.NEO(1)
         wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
-        self.wrist_encoder_sim = AnalogEncoderSim(robot.wrist.wrist_encoder)
+        self.wrist_encoder_sim = DutyCycleEncoderSim(robot.wrist.wrist_encoder)
 
         wrist_sim = SingleJointedArmSim(
             wrist_gearbox,
