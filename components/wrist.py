@@ -7,16 +7,21 @@ from rev import (
     SparkMax,
     SparkMaxConfig,
 )
-from wpilib import AnalogEncoder, AnalogInput
+from wpilib import DutyCycleEncoder
 from wpimath.controller import ArmFeedforward, PIDController
 from wpimath.trajectory import TrapezoidProfile
 
-from ids import AnalogChannel, SparkId
+from ids import DioChannel, SparkId
 from utilities.functions import clamp
-from utilities.rev import configure_spark_ephemeral, configure_spark_reset_and_persist
+from utilities.rev import (
+    configure_spark_ephemeral,
+    configure_spark_reset_and_persist,
+    configure_through_bore_encoder,
+)
 
 
 class WristComponent:
+    # Redo offset with new setup
     ENCODER_ZERO_OFFSET = 5.484795
     MAXIMUM_DEPRESSION = math.radians(-113.0)
     MAXIMUM_ELEVATION = math.radians(0)
@@ -35,10 +40,12 @@ class WristComponent:
             "wrist", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kYellow)
         )
 
-        self.wrist_encoder_raw = AnalogInput(AnalogChannel.WRIST_ENCODER)
-        self.wrist_encoder = AnalogEncoder(self.wrist_encoder_raw, math.tau, 0)
+        self.wrist_encoder = DutyCycleEncoder(
+            DioChannel.WRIST_ENCODER, math.tau, self.ENCODER_ZERO_OFFSET
+        )
+        configure_through_bore_encoder(self.wrist_encoder)
+        # Check inversion with new setup
         self.wrist_encoder.setInverted(False)
-        self.wrist_encoder.setVoltagePercentageRange(0.2 / 5, 4.8 / 5)
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
@@ -107,11 +114,11 @@ class WristComponent:
 
     @feedback
     def raw_encoder(self) -> float:
-        return self.wrist_encoder.get()
+        return self.wrist_encoder.get() + self.ENCODER_ZERO_OFFSET
 
     @feedback
     def inclination(self) -> float:
-        return self.wrist_encoder.get() - self.ENCODER_ZERO_OFFSET
+        return self.wrist_encoder.get()
 
     @feedback
     def inclination_deg(self) -> float:
