@@ -95,5 +95,3 @@ class RioSerialNumber(enum.StrEnum):
 @enum.unique
 class AnalogChannel(enum.IntEnum):
     """roboRIO Analog input channel number"""
-
-    WRIST_ENCODER = 0
