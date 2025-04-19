@@ -64,7 +64,11 @@ class DioChannel(enum.IntEnum):
     ALGAE_INTAKE_SWITCH = 5
 
     LEFT_CLIMBER_SWITCH = 6
+
     RIGHT_CLIMBER_SWITCH = 7
+
+    WRIST_ENCODER = 8
+
     PORT_VISION_ENCODER = 9
 
 
@@ -91,5 +95,3 @@ class RioSerialNumber(enum.StrEnum):
 @enum.unique
 class AnalogChannel(enum.IntEnum):
     """roboRIO Analog input channel number"""
-
-    WRIST_ENCODER = 0
