@@ -21,8 +21,7 @@ from utilities.rev import (
 
 
 class WristComponent:
-    # Redo offset with new setup
-    ENCODER_ZERO_OFFSET = 5.484795
+    ENCODER_ZERO_OFFSET = 2.821570
     MAXIMUM_DEPRESSION = math.radians(-113.0)
     MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
@@ -40,11 +39,8 @@ class WristComponent:
             "wrist", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kYellow)
         )
 
-        self.wrist_encoder = DutyCycleEncoder(
-            DioChannel.WRIST_ENCODER, math.tau, self.ENCODER_ZERO_OFFSET
-        )
+        self.wrist_encoder = DutyCycleEncoder(DioChannel.WRIST_ENCODER, math.tau, 0)
         configure_through_bore_encoder(self.wrist_encoder)
-        # Check inversion with new setup
         self.wrist_encoder.setInverted(False)
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
@@ -114,11 +110,11 @@ class WristComponent:
 
     @feedback
     def raw_encoder(self) -> float:
-        return self.wrist_encoder.get() + self.ENCODER_ZERO_OFFSET
+        return self.wrist_encoder.get()
 
     @feedback
     def inclination(self) -> float:
-        return self.wrist_encoder.get()
+        return self.wrist_encoder.get() - self.ENCODER_ZERO_OFFSET
 
     @feedback
     def inclination_deg(self) -> float:
