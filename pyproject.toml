@@ -86,9 +86,9 @@ requires-python = ">=3.12,<3.14"
 dependencies = [
     "numpy~=2.2",
     "phoenix6~=25.3.1",
-    "robotpy-ctre~=2025.0.0",
+    "robotpy-ctre~=2025.0.2.1",
     "robotpy[apriltag]==2025.3.2.0",
-    "robotpy-rev~=2025.0.1",
+    "robotpy-rev~=2025.0.3",
     "robotpy-wpilib-utilities==2025.0.0",
     "photonlibpy~=2025.2.1",
     "sleipnirgroup-choreolib~=2025.0.3",
@@ -98,8 +98,8 @@ dependencies = [
 requires = [
     "numpy==2.2.1.dev0; platform_machine == 'roborio'",
     "phoenix6~=25.3.1",
-    "robotpy-ctre~=2025.0.0",
-    "robotpy-rev~=2025.0.1",
+    "robotpy-ctre~=2025.0.2.1",
+    "robotpy-rev~=2025.0.3",
     "robotpy-wpilib-utilities==2025.0.0",
     "photonlibpy==2025.2.1",
     "sleipnirgroup-choreolib>=2025.0.3",
