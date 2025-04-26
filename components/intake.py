@@ -8,7 +8,9 @@ from rev import (
     SparkMaxConfig,
 )
 from wpilib import DutyCycleEncoder
+from wpimath import estimator
 from wpimath.controller import ArmFeedforward, PIDController
+from wpimath.system import plant
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId, TalonId
@@ -24,6 +26,7 @@ class IntakeComponent:
     DEPLOYED_ANGLE_LOWER = 3.391598 - ARM_ENCODER_OFFSET
     DEPLOYED_ANGLE_UPPER = 3.891598 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 4.592024 - ARM_ENCODER_OFFSET
+    K_ARM_MOI = 0.181717788
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
 
@@ -70,6 +73,20 @@ class IntakeComponent:
         )
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
+
+        self.armPlant = plant.LinearSystemId.singleJointedArmSystem(
+            plant.DCMotor.NEO(1), self.K_ARM_MOI, self.gear_ratio
+        )
+
+        self.observer = estimator.KalmanFilter_2_1_1(
+            self.armPlant,
+            (
+                0.015,
+                0.17,
+            ),
+            (0.01,),
+            0.020,
+        )
 
     def intake(self, upper: bool):
         deployed_angle = (
