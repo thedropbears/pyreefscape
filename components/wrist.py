@@ -21,8 +21,8 @@ from utilities.rev import (
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = 2.821570
-    MAXIMUM_DEPRESSION = math.radians(-113.0)
+    ENCODER_ZERO_OFFSET = 4.011863
+    MAXIMUM_DEPRESSION = math.radians(-112.0)
     MAXIMUM_ELEVATION = math.radians(0)
     NEUTRAL_ANGLE = math.radians(-90.0)
 
