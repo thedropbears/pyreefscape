@@ -8,13 +8,18 @@ from rev import (
     SparkMaxConfig,
 )
 from wpilib import DutyCycleEncoder
-from wpimath import estimator
-from wpimath.controller import ArmFeedforward, PIDController
-from wpimath.system import plant
+from wpimath import estimator, units
+from wpimath.controller import (
+    ArmFeedforward,
+    LinearQuadraticRegulator_2_1,
+    PIDController,
+)
+from wpimath.system import LinearSystemLoop_2_1_1, plant
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId, TalonId
 from utilities.rev import configure_through_bore_encoder
+from utilities.state_space import single_jointed_arm_system
 
 
 class IntakeComponent:
@@ -74,18 +79,33 @@ class IntakeComponent:
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
 
-        self.armPlant = plant.LinearSystemId.singleJointedArmSystem(
+        self.armPlant = single_jointed_arm_system(
             plant.DCMotor.NEO(1), self.K_ARM_MOI, self.gear_ratio
         )
 
+        """No idea if these are the correct error/trust values"""
         self.observer = estimator.KalmanFilter_2_1_1(
             self.armPlant,
             (
-                0.015,
-                0.17,
+                units.degreesToRadians(1.0),
+                units.degreesToRadians(5.0),
             ),
-            (0.01,),
+            (units.degreesToRadians(0.5),),
             0.020,
+        )
+
+        self.controller = LinearQuadraticRegulator_2_1(
+            self.armPlant,
+            (
+                units.degreesToRadians(1.0),
+                units.degreesToRadians(5.0),
+            ),
+            (12.0,),
+            0.020,
+        )
+
+        self.loop = LinearSystemLoop_2_1_1(
+            self.armPlant, self.controller, self.observer, 12.0, 0.020
         )
 
     def intake(self, upper: bool):
