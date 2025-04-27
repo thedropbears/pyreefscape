@@ -108,6 +108,8 @@ class IntakeComponent:
             self.armPlant, self.controller, self.observer, 12.0, 0.020
         )
 
+        self.loop.reset([self.position(), self.velocity()])
+
     def intake(self, upper: bool):
         deployed_angle = (
             IntakeComponent.DEPLOYED_ANGLE_UPPER
@@ -144,6 +146,10 @@ class IntakeComponent:
     def velocity(self) -> float:
         return self.motor_encoder.getVelocity()
 
+    def correct_and_predict(self) -> None:
+        self.loop.correct([self.position()])
+        self.loop.predict(0.020)
+
     def _force_retract(self):
         self.desired_state = TrapezoidProfile.State(
             IntakeComponent.RETRACTED_ANGLE, 0.0
@@ -167,12 +173,14 @@ class IntakeComponent:
         )
         ff = self.arm_ff.calculate(tracked_state.position, tracked_state.velocity)
 
+        self.loop.setNextR([tracked_state.position, tracked_state.velocity])
+
+        self.correct_and_predict()
+
         if not math.isclose(
             self.desired_state.position, self.position(), abs_tol=math.radians(5)
         ):
-            self.arm_motor.setVoltage(
-                self.pid.calculate(self.position(), tracked_state.position) + ff
-            )
+            self.arm_motor.setVoltage(self.loop.U(0) + ff)
         else:
             self.arm_motor.setVoltage(0.0)
 
