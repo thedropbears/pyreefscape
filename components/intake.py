@@ -115,6 +115,7 @@ class IntakeComponent:
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
 
     def on_enable(self) -> None:
+        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.retract()
         self.desired_output = 0.0
 
