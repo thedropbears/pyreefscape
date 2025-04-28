@@ -348,9 +348,6 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
-        self.wrist.reset_windup()
-        self.wrist.execute()
-
         self.starboard_vision.execute()
         self.port_vision.execute()
 
