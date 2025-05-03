@@ -190,7 +190,7 @@ class LightStrip:
             steps.append(((v + 1) * increment, Color.kBlack))
 
         forward_pattern = (
-            LEDPattern.steps(steps).scrollAtAbsoluteSpeed(1.0, LED_SPACING).reversed()
+            LEDPattern.steps(steps).scrollAtAbsoluteSpeed(1.0, LED_SPACING).reversed()  # type: ignore[arg-type]
         )
 
         def remapper(length: int, idx: int) -> int:
@@ -208,7 +208,7 @@ class LightStrip:
             else:
                 return int(idx)
 
-        forward = forward_pattern.mapIndex(remapper)
+        forward = forward_pattern.mapIndex(remapper)  # type: ignore[arg-type]
         self.pattern = forward
         self.keep_alive()
 
@@ -217,6 +217,7 @@ class LightStrip:
             self.pattern = LEDPattern.solid(wpilib.Color.kBlack)
             self.is_reef_offset_flashing = False
         self.pattern.applyTo(
-            self.strip_data, lambda idx, color: self.strip_data[idx].setLED(color)
+            self.strip_data,
+            lambda idx, color: self.strip_data[idx].setLED(color),  # type: ignore[call-overload]
         )
         self.leds.setData(self.strip_data)

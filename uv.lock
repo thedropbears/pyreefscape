@@ -1,11 +1,15 @@
 version = 1
-revision = 1
 requires-python = ">=3.12, <3.14"
 resolution-markers = [
-    "sys_platform == 'darwin'",
-    "python_version < '0'",
-    "platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(platform_machine != 'aarch64' and sys_platform == 'linux') or (sys_platform != 'darwin' and sys_platform != 'linux')",
+    "platform_system == 'Darwin' and sys_platform == 'darwin'",
+    "platform_machine == 'aarch64' and platform_system == 'Linux' and sys_platform == 'darwin'",
+    "(platform_machine != 'aarch64' and platform_system != 'Darwin' and sys_platform == 'darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform == 'darwin')",
+    "platform_machine == 'aarch64' and platform_system == 'Darwin' and sys_platform == 'linux'",
+    "platform_machine == 'aarch64' and platform_system == 'Linux' and sys_platform == 'linux'",
+    "platform_machine == 'aarch64' and platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform == 'linux'",
+    "(platform_machine != 'aarch64' and platform_system == 'Darwin' and sys_platform != 'darwin') or (platform_system == 'Darwin' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "platform_machine == 'aarch64' and platform_system == 'Linux' and sys_platform != 'darwin' and sys_platform != 'linux'",
+    "(platform_machine != 'aarch64' and platform_system != 'Darwin' and sys_platform != 'darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'darwin' and sys_platform != 'linux')",
 ]
 
 [options]
@@ -55,7 +59,7 @@ name = "cffi"
 version = "1.17.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pycparser", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "pycparser", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fc/97/c783634659c2920c3fc70419e3af40972dbaf758daa229a7d6ea6135c90d/cffi-1.17.1.tar.gz", hash = "sha256:1c39c6016c32bc48dd54561950ebd6836e1670f2ae46128f67cf49e789c52824", size = 516621 }
 wheels = [
@@ -97,7 +101,7 @@ name = "cryptography"
 version = "43.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "(platform_machine != 'aarch64' and platform_python_implementation != 'PyPy') or (platform_python_implementation != 'PyPy' and sys_platform != 'linux')" },
+    { name = "cffi", marker = "(platform_machine != 'aarch64' and platform_python_implementation != 'PyPy' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_python_implementation != 'PyPy' and platform_system == 'Darwin') or (platform_python_implementation != 'PyPy' and platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_python_implementation != 'PyPy' and platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0d/05/07b55d1fa21ac18c3a8c79f764e2514e6f6a9698f1be44994f5adf0d29db/cryptography-43.0.3.tar.gz", hash = "sha256:315b9001266a492a6ff443b61238f956b214dbec9910a081ba5b6646a055a805", size = 686989 }
 wheels = [
@@ -126,7 +130,7 @@ name = "flexcache"
 version = "0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "typing-extensions", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/55/b0/8a21e330561c65653d010ef112bf38f60890051d244ede197ddaa08e50c1/flexcache-0.3.tar.gz", hash = "sha256:18743bd5a0621bfe2cf8d519e4c3bfdf57a269c15d1ced3fb4b64e0ff4600656", size = 15816 }
 wheels = [
@@ -138,7 +142,7 @@ name = "flexparser"
 version = "0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "typing-extensions", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "typing-extensions", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/82/99/b4de7e39e8eaf8207ba1a8fa2241dd98b2ba72ae6e16960d8351736d8702/flexparser-0.4.tar.gz", hash = "sha256:266d98905595be2ccc5da964fe0a2c3526fbbffdc45b65b3146d75db992ef6b2", size = 31799 }
 wheels = [
@@ -150,8 +154,8 @@ name = "hypothesis"
 version = "6.119.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "attrs" },
-    { name = "sortedcontainers" },
+    { name = "attrs", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "sortedcontainers", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a5/6f/98262d753772030d140d8cd04eadebac545ba4945702f4471decc37b8cb5/hypothesis-6.119.3.tar.gz", hash = "sha256:1403676d95bc9f118a30ce2c97fcbdd28dd99f3a1ffe3456970d98a56b370f36", size = 412497 }
 wheels = [
@@ -185,8 +189,8 @@ name = "mypy"
 version = "1.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "mypy-extensions" },
-    { name = "typing-extensions" },
+    { name = "mypy-extensions", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "typing-extensions", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/e8/21/7e9e523537991d145ab8a0a2fd98548d67646dc2aaaf6091c31ad883e7c1/mypy-1.13.0.tar.gz", hash = "sha256:0291a61b6fbf3e6673e3405cfcc0e7650bebc7939659fdca2702958038bd835e", size = 3152532 }
 wheels = [
@@ -255,7 +259,7 @@ name = "opencv-python"
 version = "4.10.0.84"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
+    { name = "numpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/4a/e7/b70a2d9ab205110d715906fc8ec83fbb00404aeb3a37a0654fdb68eb0c8c/opencv-python-4.10.0.84.tar.gz", hash = "sha256:72d234e4582e9658ffea8e9cae5b63d488ad06994ef12d81dc303b17472f3526", size = 95103981 }
 wheels = [
@@ -281,9 +285,9 @@ name = "paramiko"
 version = "3.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "bcrypt", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "cryptography", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "pynacl", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "bcrypt", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "cryptography", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "pynacl", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/1b/0f/c00296e36ff7485935b83d466c4f2cf5934b84b0ad14e81796e1d9d3609b/paramiko-3.5.0.tar.gz", hash = "sha256:ad11e540da4f55cedda52931f1a3f812a8238a7af7f62a60de538cd80bb28124", size = 1704305 }
 wheels = [
@@ -292,35 +296,35 @@ wheels = [
 
 [[package]]
 name = "phoenix6"
-version = "25.3.1"
+version = "25.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "setuptools" },
+    { name = "setuptools", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/67/7e/bf15030e44fc6300b54afa703a77639b230354546e5a6260bd67c11d7385/phoenix6-25.3.1-cp310-abi3-macosx_13_0_universal2.whl", hash = "sha256:418df2c1254a6b09caf49623bb34911795114c4face33a56a6b0dddb2451ce79", size = 7874759 },
-    { url = "https://files.pythonhosted.org/packages/b2/9b/ecbb21883605c605c523a479eaf66703466b936a539fa556a3c95c1d3962/phoenix6-25.3.1-cp310-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:9f6d9c77827bfee56a413b71e7c9a8ccdfc6aeb20a0d542f4ccfc242d92ebd34", size = 5995285 },
-    { url = "https://files.pythonhosted.org/packages/4a/b6/c0a8b23006936962a8719767d68614f830794ee7988193b37804cdfef41e/phoenix6-25.3.1-cp310-abi3-manylinux_2_35_armv7l.whl", hash = "sha256:ba6215ad7f844cecba05981037e6c137b7916f72b5b7ec462b84d715ae5883b0", size = 2056577 },
-    { url = "https://files.pythonhosted.org/packages/b7/b3/58308e352f6aec66776a539caccb7e7c18c0625efaf9f0f64653f6f6ec06/phoenix6-25.3.1-cp310-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:48715d863b84f478b61e52a406fc9f2c90bacfb5bd4ea34050486fa32336d594", size = 6376361 },
-    { url = "https://files.pythonhosted.org/packages/1b/69/c89f1e6cb697221e8ba01553420199f5731332565155154c86aff0148eaf/phoenix6-25.3.1-cp310-abi3-win_amd64.whl", hash = "sha256:1bf697e7db72f91dd6f3e2342ddaf57121a98f4f9b82c877da71e9da639e7a7b", size = 4647442 },
+    { url = "https://files.pythonhosted.org/packages/52/0e/1b380b1654097dac28065b9cf04c7a4924e0190fb147e620b6f8e5f1ff99/phoenix6-25.4.0-cp310-abi3-macosx_13_0_universal2.whl", hash = "sha256:25e242578953f84dd6aa5de03b1521b29344fd6811c4683082405b169c9709b4", size = 8281347 },
+    { url = "https://files.pythonhosted.org/packages/f1/d9/3537edfb47a73eea5d776120d5df7981793bd93b828308f21093e0f9f83b/phoenix6-25.4.0-cp310-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:24f7d42089138751e1333a6dca9260bfa15f8f41c1003d577d6715f669bb1c54", size = 6294834 },
+    { url = "https://files.pythonhosted.org/packages/4c/fa/d01dfc229f7673d3f277f1221bbd8dc16ef4b4ac5b8a4959e1704d997e44/phoenix6-25.4.0-cp310-abi3-manylinux_2_35_armv7l.whl", hash = "sha256:69aac54aee81de040de852771a927472704950cfdf31042264d770816d3569dd", size = 2156708 },
+    { url = "https://files.pythonhosted.org/packages/f7/62/833193f444b60a4285187441807b2cf3225645150e039d93a3b3cffe281d/phoenix6-25.4.0-cp310-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:3ea98ace802ae80834c68c7d501a437b0941b438d43917c55584443413d93306", size = 6690820 },
+    { url = "https://files.pythonhosted.org/packages/e8/f6/07fae0a078cde0fe9c996df9fc6929c57ff92246ac6ff7b3eef050acf69b/phoenix6-25.4.0-cp310-abi3-win_amd64.whl", hash = "sha256:573c87a49658dda27572f25cbe3454f05d332a4b97744a59d6b6fda3366bf06e", size = 4862280 },
 ]
 
 [[package]]
 name = "photonlibpy"
-version = "2025.2.1"
+version = "2025.3.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
-    { name = "opencv-python", marker = "platform_machine != 'roborio'" },
-    { name = "pyntcore" },
-    { name = "robotpy-apriltag" },
-    { name = "robotpy-cscore" },
-    { name = "robotpy-wpimath" },
-    { name = "wpilib" },
+    { name = "numpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "opencv-python", marker = "(platform_machine != 'aarch64' and platform_machine != 'roborio' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'roborio' and platform_system == 'Darwin') or (platform_machine == 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine == 'aarch64' and platform_system == 'Darwin') or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "pyntcore", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-apriltag", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-cscore", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpimath", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/36/f70d03421970c483e1769c50a7ca83ee85893a53b407e0ef20f940d0aa62/photonlibpy-2025.2.1.tar.gz", hash = "sha256:aa887d56d38dda6e2f03e98092bffa5ecb58c83dcb0d0f9c063404b35bf1e8d6", size = 39539 }
+sdist = { url = "https://files.pythonhosted.org/packages/dc/99/11950e5688923c77abcab8a6877679d03ba1aea42e58292b5d2857a69b17/photonlibpy-2025.3.1.tar.gz", hash = "sha256:9f6b56da028cabf8babea75dd4a7e6d2d7a871535214f2ab5ae3a2eb551c256c", size = 39534 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d9/09/f30b01df92a31b0151b33195fa8af674f714f219d538b563fb5262492677/photonlibpy-2025.2.1-py3-none-any.whl", hash = "sha256:4d9c9998af6588cfa21d07ad36952e758808f850872ec754e1fb4f234e4c57c6", size = 54170 },
+    { url = "https://files.pythonhosted.org/packages/58/67/e0e61d2eafee3a613768ad408628fdea4c578936182101503f41c98ea69f/photonlibpy-2025.3.1-py3-none-any.whl", hash = "sha256:dd69a99d3cf73198259f4c253027c3e83fb87709859d39e7298743ad4b8880d6", size = 54170 },
 ]
 
 [[package]]
@@ -328,14 +332,23 @@ name = "pint"
 version = "0.24.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "flexcache", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "flexparser", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "platformdirs", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "typing-extensions", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "flexcache", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "flexparser", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "platformdirs", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "typing-extensions", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/20/bb/52b15ddf7b7706ed591134a895dbf6e41c8348171fb635e655e0a4bbb0ea/pint-0.24.4.tar.gz", hash = "sha256:35275439b574837a6cd3020a5a4a73645eb125ce4152a73a2f126bf164b91b80", size = 342225 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b7/16/bd2f5904557265882108dc2e04f18abc05ab0c2b7082ae9430091daf1d5c/Pint-0.24.4-py3-none-any.whl", hash = "sha256:aa54926c8772159fcf65f82cc0d34de6768c151b32ad1deb0331291c38fe7659", size = 302029 },
+]
+
+[[package]]
+name = "pip"
+version = "25.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/59/de/241caa0ca606f2ec5fe0c1f4261b0465df78d786a38da693864a116c37f4/pip-25.1.1.tar.gz", hash = "sha256:3de45d411d308d5054c2168185d8da7f9a2cd753dbac8acbfa88a8909ecd9077", size = 1940155 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/29/a2/d40fb2460e883eca5199c62cfc2463fd261f760556ae6290f88488c362c0/pip-25.1.1-py3-none-any.whl", hash = "sha256:2913a38a2abf4ea6b64ab507bd9e967f3b53dc1ede74b01b0931e1ce548751af", size = 1825227 },
 ]
 
 [[package]]
@@ -370,12 +383,12 @@ name = "pyfrc"
 version = "2025.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pint", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "pytest", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "pytest-reraise", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "robotpy-cli", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "tomli", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "wpilib", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "pint", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "pytest", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "pytest-reraise", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "robotpy-cli", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "tomli", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2a/bf/4eac62fb384529c2d8fb89f8f243693edf25097c8b103e97fd6464c27714/pyfrc-2025.1.0.tar.gz", hash = "sha256:8b417592410dc885b90cb59d2fa08d57d31226bb79f5981e4ae0d866ee6580b7", size = 39630 }
 wheels = [
@@ -387,7 +400,7 @@ name = "pynacl"
 version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "cffi", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "cffi", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a7/22/27582568be639dfe22ddb3902225f91f2f17ceff88ce80e4db396c8986da/PyNaCl-1.5.0.tar.gz", hash = "sha256:8ac7448f09ab85811607bdd21ec2464495ac8b7c66d146bf545b0f08fb9220ba", size = 3392854 }
 wheels = [
@@ -413,21 +426,21 @@ wheels = [
 
 [[package]]
 name = "pyntcore"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "robotpy-wpinet" },
-    { name = "robotpy-wpiutil" },
+    { name = "robotpy-wpinet", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8f/15/ac3d4ca38db9a7ecabe9f0d7cc052b816f700956ec8992bcf0b5f506f8eb/pyntcore-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:d5e7fce7b6c5022c374522587568efafded67acfec5a2371f17990faf10324a0", size = 3472314 },
-    { url = "https://files.pythonhosted.org/packages/1b/f4/88da9f80e23d2f47a7d7b4caca0001c3069e9efc7d33d76edbe48484ba06/pyntcore-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:390703c714af176c4252d0c484c178752e4c2721cb34db76df5f34629cee6e6d", size = 2131739 },
-    { url = "https://files.pythonhosted.org/packages/e0/9c/74e7dc83a0ce10c7f1efd71aefefb03466f879ac63854362ea71dc0ada9f/pyntcore-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:905974a1312223885cd2f9228405b19e1e8b46cb12069688befe756fd5f5a145", size = 1952593 },
-    { url = "https://files.pythonhosted.org/packages/b6/d1/6531a2027386487103d9e38dcc4765d62539fa680f3891a650e22e24b775/pyntcore-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:2050413fd3c680a68feefdc62346c1a4fe5a7c1ab788f228b2d3532fa56aaae8", size = 1446878 },
-    { url = "https://files.pythonhosted.org/packages/4c/47/7923b46144f3912e6af647b9a60feacd6898b863604c0d3ce7dad65a1dd4/pyntcore-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:ae7194e2dc78b8f78c5ed9d227381869b059cafde1b9434c8034d7e9a5e7b858", size = 3472069 },
-    { url = "https://files.pythonhosted.org/packages/d8/68/e1ef78777acd7de796c7a6f043b577e99df2a7d7da1813902adeceb8ba82/pyntcore-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:c574b960f5e6baf64814c1bbbd056d6bf9a3b4c7e4a0044b09b06b8928333fc5", size = 2127843 },
-    { url = "https://files.pythonhosted.org/packages/df/db/d1caa5616656bc320a6f87bc6aa105091493fcea2345ec6858a53fe44b0d/pyntcore-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:28b0e54900da745bc18571a3e12ef4f9b33252a1555728a113c41855608ad71b", size = 1954642 },
-    { url = "https://files.pythonhosted.org/packages/2c/af/d866c07e9ae820bf9cb5e41c84fee8138b44044467d1f981ae5dde509d3a/pyntcore-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:8e9eaf648e9e5b036f0ef5495d4ed7ea03d4cf33f04f956e75695be51fff6302", size = 1446917 },
+    { url = "https://files.pythonhosted.org/packages/9a/69/e9ee81882896dee9a1a2753b4f831115367cd230a2fa4a9b7423f5d9f65e/pyntcore-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:04336b49b281cc1de7c0683a902d03cf99afbe49e125ea912de4fe74f2f8ea72", size = 3515518 },
+    { url = "https://files.pythonhosted.org/packages/e2/32/4489f12d148e297b06b1826ae609079e4348d2dbcbfec436dc2d4c5ac7b1/pyntcore-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:c00d77ba68fc89deb235b1264e81a9207ca07592d0e687c092f349ffebc9b216", size = 2160759 },
+    { url = "https://files.pythonhosted.org/packages/d9/dd/ee1e81206524d8761e57e010dd42c06223aba8930ea85fbb906aa01bc532/pyntcore-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:0cdad6154ffc776984fcf8188f7eada654f780cfb908a532fa6198c43e321966", size = 1972514 },
+    { url = "https://files.pythonhosted.org/packages/73/f5/bf1464c783a6c319aff374147a921f610a6930dac7f2c3e82db4f8aaa530/pyntcore-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:b0d080002c96990e55a8ce1d3c76c7fcd0ecfc5c6525fa0504501e503ce5bbec", size = 1446259 },
+    { url = "https://files.pythonhosted.org/packages/27/5a/c00962691f3daf4c392004a7ef8ad0ab15fe627de8284d8fd207dae7abf4/pyntcore-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:4c92049c86b4309ce56c1417a8600b1b6849d756e6d9a2fbc66de9969a2558b6", size = 3515306 },
+    { url = "https://files.pythonhosted.org/packages/d2/32/adccb85f987b76da1d54872a9a915e3ccf13747da1b21cb5d59fdaa57663/pyntcore-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:1290ed57aa34be81010cb3b8fe8dcaadd35f3d96f786239c775cbb363016f25c", size = 2156779 },
+    { url = "https://files.pythonhosted.org/packages/a5/f4/14acc1398e944fff30edca6de6c9a8bd609f290e47371ad6841e73b8c8ac/pyntcore-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:fa4affcc470e3fd2ded2e06be73a332fe513adb5fc73103cf7e18dc3e22744d1", size = 1972706 },
+    { url = "https://files.pythonhosted.org/packages/c7/b1/66dbf560aaa83d3e078a6a240ebc9b1ae01381d94ae2fc4e613cc26bdac0/pyntcore-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:fdc844371534b57e59d677e0c27cb63e0e42372fcdf882628740ae17cc73a93d", size = 1446290 },
 ]
 
 [[package]]
@@ -435,33 +448,33 @@ name = "pyreefscape"
 version = "0.0.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "numpy" },
-    { name = "phoenix6" },
-    { name = "photonlibpy" },
-    { name = "robotpy", extra = ["apriltag"] },
-    { name = "robotpy-ctre" },
-    { name = "robotpy-rev" },
-    { name = "robotpy-wpilib-utilities" },
-    { name = "sleipnirgroup-choreolib" },
+    { name = "numpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "phoenix6", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "photonlibpy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy", extra = ["apriltag"], marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-ctre", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-rev", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpilib-utilities", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "sleipnirgroup-choreolib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 
 [package.dev-dependencies]
 dev = [
-    { name = "hypothesis" },
-    { name = "mypy" },
-    { name = "pytest" },
-    { name = "pytest-integration" },
+    { name = "hypothesis", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "mypy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "pytest", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "pytest-integration", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "numpy", specifier = "~=2.2" },
-    { name = "phoenix6", specifier = "~=25.3.1" },
-    { name = "photonlibpy", specifier = "~=2025.2.1" },
-    { name = "robotpy", extras = ["apriltag"], specifier = "==2025.3.1.1" },
-    { name = "robotpy-ctre", specifier = "~=2025.0.0" },
-    { name = "robotpy-rev", specifier = "~=2025.0.1" },
-    { name = "robotpy-wpilib-utilities", specifier = "==2025.0.0" },
+    { name = "phoenix6", specifier = "~=25.4.0" },
+    { name = "photonlibpy", specifier = "~=2025.3.1" },
+    { name = "robotpy", extras = ["apriltag"], specifier = "==2025.3.2.1" },
+    { name = "robotpy-ctre", specifier = "~=2025.0.3" },
+    { name = "robotpy-rev", specifier = "~=2025.0.3" },
+    { name = "robotpy-wpilib-utilities", specifier = "==2025.1.0" },
     { name = "sleipnirgroup-choreolib", specifier = "~=2025.0.3" },
 ]
 
@@ -478,10 +491,10 @@ name = "pytest"
 version = "8.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-    { name = "iniconfig" },
-    { name = "packaging" },
-    { name = "pluggy" },
+    { name = "colorama", marker = "(platform_machine != 'aarch64' and sys_platform == 'win32' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and sys_platform == 'win32' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform == 'win32') or (platform_machine == 'aarch64' and platform_system == 'Linux' and sys_platform == 'win32')" },
+    { name = "iniconfig", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "packaging", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "pluggy", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/8b/6c/62bbd536103af674e227c41a8f3dcd022d591f6eed5facb5a0f31ee33bbc/pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181", size = 1442487 }
 wheels = [
@@ -502,7 +515,7 @@ name = "pytest-reraise"
 version = "2.1.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pytest", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "pytest", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/37/9b/efba721806e9018eee657dda66ffeaca7b5e6de26718b5e5aa7e62f60b03/pytest-reraise-2.1.2.tar.gz", hash = "sha256:5ab59bd0e2028be095289e6dfc9e36cc0b56936465278f3223e81bea0f2d1c70", size = 5158 }
 wheels = [
@@ -511,49 +524,49 @@ wheels = [
 
 [[package]]
 name = "robotpy"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyfrc", marker = "platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio'" },
-    { name = "pyntcore" },
-    { name = "robotpy-cli" },
-    { name = "robotpy-hal" },
-    { name = "robotpy-halsim-gui", marker = "platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio'" },
-    { name = "robotpy-installer", marker = "platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio'" },
-    { name = "robotpy-wpilib-utilities" },
-    { name = "robotpy-wpimath" },
-    { name = "robotpy-wpinet" },
-    { name = "robotpy-wpiutil" },
-    { name = "wpilib" },
+    { name = "pyfrc", marker = "(platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio' and platform_system == 'Darwin')" },
+    { name = "pyntcore", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-cli", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-hal", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-halsim-gui", marker = "(platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio' and platform_system == 'Darwin')" },
+    { name = "robotpy-installer", marker = "(platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_machine != 'armv7l' and platform_machine != 'roborio' and platform_system == 'Darwin')" },
+    { name = "robotpy-wpilib-utilities", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpimath", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpinet", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e9/0a/56fef955386d9cdf982ae13be45e10144b1531f39876443b561f0cb3b412/robotpy-2025.3.1.1.tar.gz", hash = "sha256:ef1b7acd62da11d4e8ded989fc57a597e22a3f308ec60b24b041d8ca5b7e4fed", size = 6399 }
+sdist = { url = "https://files.pythonhosted.org/packages/79/4f/9a5e488fd954f02c7f7ffe3f8a9dfaca77ecb45d6e341b0d2fe1c6530915/robotpy-2025.3.2.1.tar.gz", hash = "sha256:0054bcb37b1507701b53d0dca234cfae76c4e5d843d71789cc5e17d0fe91b44f", size = 6420 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/d2/6a0e20afd982374e48255a4551e13cf39c791b2b5314452907735cb7978f/robotpy-2025.3.1.1-py3-none-any.whl", hash = "sha256:9fe7cfc6286f0c7d08e391283a20a1adc2202713f03dc167b04611530e6f1c21", size = 2217 },
+    { url = "https://files.pythonhosted.org/packages/d0/75/0054455f7e1c68b650195729fa2582e781640cc8e2e62b8c2c2f12574d6c/robotpy-2025.3.2.1-py3-none-any.whl", hash = "sha256:86e5bc8d27758f62f09f09dafa48173400b5a96fbe35b972e17095dd9eb28aa6", size = 2216 },
 ]
 
 [package.optional-dependencies]
 apriltag = [
-    { name = "numpy", marker = "platform_machine == 'roborio'" },
-    { name = "robotpy-apriltag" },
+    { name = "numpy", marker = "(platform_machine == 'roborio' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine == 'roborio' and platform_system == 'Darwin')" },
+    { name = "robotpy-apriltag", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 
 [[package]]
 name = "robotpy-apriltag"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "robotpy-wpimath" },
-    { name = "robotpy-wpiutil" },
+    { name = "robotpy-wpimath", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3c/69/107e1b4c7ffca941f8853427e11bf553cecca9b1442c5de774b19a075d2e/robotpy_apriltag-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:b0dd74f2b677e0e8fb17dc00a8d49cc44a5f95d7c2d719fe671d597de70e62e1", size = 1043519 },
-    { url = "https://files.pythonhosted.org/packages/83/db/8cfe56e63f036b78c0b090a3e253168730d6f3f8e8784e9f5c634a1e4301/robotpy_apriltag-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:fc9485d9865a9d1774ca96ba3a77da852c7068fede2967cdbf7b233ddbf998fe", size = 585133 },
-    { url = "https://files.pythonhosted.org/packages/56/e5/6c35d2754e2769fedbfb2426bb789fd04ed3604711cf76c5d135f3142c92/robotpy_apriltag-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:4602e8c2f3ccdbaa95705a1bf013ff4b86fb37548cfd285c3029ce28810bcaa3", size = 555877 },
-    { url = "https://files.pythonhosted.org/packages/45/03/423318b871dfc301b69eb8940df1e8f86128674e1bfc5f8f1b97d546c57a/robotpy_apriltag-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:508d93d91896347654ddd1de9b82a0a11a743e2fcc013121ea7384068a8b6578", size = 458515 },
-    { url = "https://files.pythonhosted.org/packages/21/d3/062d25a22f18ccf498a65b33f663d11be88648470a5e3985eba998df5f72/robotpy_apriltag-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:d2f6a35e4816012d2523d22ccb1cb9a85f81938f7ae0a180fe862f7444022812", size = 1043594 },
-    { url = "https://files.pythonhosted.org/packages/07/1d/8c1cd29fc90ab06ddfbf6b7c0bfa52bebcec7bd405611878613f86e8f6b8/robotpy_apriltag-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:7c9277638b02f8a09e61c42587313176c29defca154e0095050c3a5e0ce445e1", size = 584738 },
-    { url = "https://files.pythonhosted.org/packages/c7/95/da4500ebdc0d9804e745dec25bb9847a13d62243b38e6470035a8c2567db/robotpy_apriltag-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:1260f810673c6e8dde3086eb9b26e573fc225ae1b76fd115f51f12973fb5e11b", size = 555903 },
-    { url = "https://files.pythonhosted.org/packages/38/ad/d97374167171492e1abb25d402213936a67e1d5411d875111854c3d6ff71/robotpy_apriltag-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:9aafec0901a6c33ce91f89e14e31316f1bd99d985604234436ae6690bf91da9f", size = 458527 },
+    { url = "https://files.pythonhosted.org/packages/30/ce/aca8822b190477ccc0d0c0356882106416d0ccc42386a27bd87de9896b82/robotpy_apriltag-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:bf4bc66445073fe27076e2a7a37a51f6cd25ab9686d70a244300ceec742a1716", size = 1067664 },
+    { url = "https://files.pythonhosted.org/packages/13/39/9bf026285017126dc61b1a61eeeb619e208dec3141d82e5354a6f9d8db7a/robotpy_apriltag-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:b0feeee8165e949e999befc206e5cf38e2a868fc15914f4ec69739ff91dc17d7", size = 589915 },
+    { url = "https://files.pythonhosted.org/packages/14/d6/093af6e4daf21f20626431127af5e1772b4bad71bc500d914bb63fec2b85/robotpy_apriltag-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:f890fe34f9edfb71a5f9e73e54631146bd8d727b64bda71787c9cf1677099d6b", size = 555833 },
+    { url = "https://files.pythonhosted.org/packages/6c/a2/6368c5f7b2a0f96a6764438b269629ac03eae28530ce1671f43930ce1ad4/robotpy_apriltag-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:dd645f6af7ecf433574714496e1d152742c254b65911651f1df88a029b585513", size = 465919 },
+    { url = "https://files.pythonhosted.org/packages/46/e1/603f25368ce6b6015612e132bf997640838c4048c7ed3657ae1745c06976/robotpy_apriltag-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:eb096b81e93607a6dd503ecc4553b7942fa70d7e0403fbc350325eefb2751e73", size = 1067482 },
+    { url = "https://files.pythonhosted.org/packages/f7/60/982d53a13b54d8de3652b561165cff660ceabb32cdc910a0e7a5ae62ccb5/robotpy_apriltag-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:06daa9b7e45b1a763f2186114c5c7b5a96b9c0f5117b619244b2ae8dc8975103", size = 587365 },
+    { url = "https://files.pythonhosted.org/packages/67/96/e114050a4542eb4324f9371338ef95e5cf2bb4f419f22485143130c355aa/robotpy_apriltag-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:97918e74ecd72ef296a9e1ebe153dc88d887313d3742523ace1974652dfcb460", size = 555720 },
+    { url = "https://files.pythonhosted.org/packages/ab/d2/6727a3c42785bc5bafc585fc2361055949aa986b98a0aac027a578d74115/robotpy_apriltag-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:dbc12297c3854d404a4eb050f9313c115ce40b2af5f2b4fd4c7456df62b0abfc", size = 465943 },
 ]
 
 [[package]]
@@ -567,177 +580,178 @@ wheels = [
 
 [[package]]
 name = "robotpy-cscore"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyntcore" },
-    { name = "robotpy-wpinet" },
-    { name = "robotpy-wpiutil" },
+    { name = "pyntcore", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpinet", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/24/ed/8da6a19ed6d75bd8f87fe20da62b0d0e79354d13cc0aa1034c3741e79751/robotpy_cscore-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:b14341cf63be5f67d41c4f59bcb6ee70fad48e5fe896b5583819b4e6c36cbb15", size = 4202138 },
-    { url = "https://files.pythonhosted.org/packages/85/d0/2de9b953f6d74b0cfb21f9663492227cc6e552370559206dbf2edd1939af/robotpy_cscore-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:dcc46d1fb596ebbc190142679c7a4a0e8a9f15edc61930c0b40773efe076d9e5", size = 8803342 },
-    { url = "https://files.pythonhosted.org/packages/82/74/6cd2f3e5279817126fa0201d57a45bd1a65579524048cce48097e565ec11/robotpy_cscore-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:b80aad0d5e533acb350ed01ac40667244a89f7b1d974e6fabfd2eba3029a6640", size = 8315463 },
-    { url = "https://files.pythonhosted.org/packages/2e/00/57078687edd26a3b2f746bea634052aa48030820498acc2a636f784abd0f/robotpy_cscore-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:aa0e1de8a8cb50e8c65957efb6b8e26489c607838f352871406b0c73c7be3fe8", size = 1371818 },
-    { url = "https://files.pythonhosted.org/packages/72/41/2d8c43eb7c8724151f308e012338ad6b1d99b26740cc38b3d0f877c5de1a/robotpy_cscore-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:3c421e12c5b6fe228dd81d3e6f25516b1eda270606533a61aba29b416c872568", size = 4202294 },
-    { url = "https://files.pythonhosted.org/packages/20/bc/cbf89487c7817683a378ea71732a61444eda0b2a29555badda8ff767aa32/robotpy_cscore-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:0c7861e41068f8fc1d921854963b4a7a40be759bf1b91841bfef1f245da76870", size = 8803231 },
-    { url = "https://files.pythonhosted.org/packages/5e/c5/809439e1434ade4f8b73e9457e321f467aa140f947088662022791f88ba5/robotpy_cscore-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:877133a54809054ee67e8e88a2f4b5b3102bc040f2a64f333db2a081d3cb0960", size = 8315682 },
-    { url = "https://files.pythonhosted.org/packages/db/ce/7e4a1f379115b6b6ac716adb4f5e57cae7272a1baa97b84d7e5960b11692/robotpy_cscore-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:26cb0855bba4fd3e0474152e1ab40fd07f7b59734e5b7a0591a93fd666e3e697", size = 1371958 },
+    { url = "https://files.pythonhosted.org/packages/3a/0d/6f620968e1fc9b53b42f39f360bb229927868856893e6cf38a36dc15d576/robotpy_cscore-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:2c723e25ff68cf7eb8572cf2c45189abaf1a568da72cb0c3308d0f55a874d879", size = 4222394 },
+    { url = "https://files.pythonhosted.org/packages/05/2a/2dc73becc2580e614e1f7cffc2f90cbda8ba920865685a760316149cd2e7/robotpy_cscore-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:63999f696d6010a9ccbe127f97628a98c792e21e37ef4f8a67c58490916d5719", size = 8807242 },
+    { url = "https://files.pythonhosted.org/packages/33/1e/2de4a74f9acc4caf2ff468a39dd453530415994e1ef1b7e4b24cac58aa2e/robotpy_cscore-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:2187ea29f589bdf36477945fb64cd5cb470c3adf3810c04bf6a8daa62d61556b", size = 8312546 },
+    { url = "https://files.pythonhosted.org/packages/ac/19/9c5b390f2eed39042d49e6a7725568a6ba18752ded7aae67193637c1ea59/robotpy_cscore-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:02728b39d4a8f8fbd2521ff9fb1fdd81398878f0fdccd2e5e9761c26ff7baf49", size = 1376287 },
+    { url = "https://files.pythonhosted.org/packages/fd/0b/039e8a8dfa595e56b3521589ab38aec5698c0378b209538bbc73331ba933/robotpy_cscore-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:fd1b5294bc425be355e7333cf156308c3ecc3df4e86b96c5c2cc43c642c49ecd", size = 4222340 },
+    { url = "https://files.pythonhosted.org/packages/de/d8/ff0fc193bcc6026aedca086fd3806bafb30fd9d7b5efa384301957f93703/robotpy_cscore-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:99e22b78539bf766b5212f86ab40961cfab6983b462f2c490ef9b00efb70ff47", size = 8807001 },
+    { url = "https://files.pythonhosted.org/packages/e8/e7/deebc7d6618e776eb7300cae2c5c70e03fc6fe78d6b91f875a15483e3ba6/robotpy_cscore-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:f10e2894239c521dc20c41ee634f933a271dcb6458c640d1883248adddf033db", size = 8311811 },
+    { url = "https://files.pythonhosted.org/packages/d2/c2/988113bf0f731670d5ba7866039d9e6732b5faa65ac56d75dfd3f261b983/robotpy_cscore-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:c94a0f1bb8be547a7f2ebeb3953eea32fea47ecadc8418c48e32f49442632724", size = 1376177 },
 ]
 
 [[package]]
 name = "robotpy-ctre"
-version = "2025.0.2"
+version = "2025.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "phoenix6" },
-    { name = "wpilib" },
+    { name = "phoenix6", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/8d/6f/30ac1481f8d3401d3760b7a75c635871856768b48169010caca3b53e74e1/robotpy_ctre-2025.0.2-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:9b9eefba07fd114c0c0175a7a5cc0faf9c01fb405ea28c7869b7f1e02e865b9f", size = 3199980 },
-    { url = "https://files.pythonhosted.org/packages/cf/43/8e405dbff1f95d22aaba83130f30b81cd09f9df0ff7398e0405fc1930612/robotpy_ctre-2025.0.2-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:137fc9a61477513b4595c7b1430d0a5346c61e10b309544efa17b2ea60e8c1d4", size = 2216044 },
-    { url = "https://files.pythonhosted.org/packages/bb/79/65c501d2bf8a73e43553af59d7c035abbe500738c1a4addf35a9009d4674/robotpy_ctre-2025.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:3dbe695bdc79ce45483cfb7f50d6b5cd188f52c40f456b453578234b2b6be097", size = 1267231 },
-    { url = "https://files.pythonhosted.org/packages/bf/10/9eb2a8964958b77d20c987571d923be68300b6dc3cae8d2d47456d43f049/robotpy_ctre-2025.0.2-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:5840bd51e5ac4f8faf7102871bf169eef27359126888d73ab00ed3c91e7ae26d", size = 3199230 },
-    { url = "https://files.pythonhosted.org/packages/32/92/dafc0369d84a69b8cc2af95ff9f0e8c7764563e211addd373ee7b5e9432e/robotpy_ctre-2025.0.2-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:a031f8082d3f4238588cae2afed272955ba87dd97a0d57f9b9c5c606180d5d33", size = 2215809 },
-    { url = "https://files.pythonhosted.org/packages/53/c6/0bb0143718a08d2778bfd339733e16d87395fd403c28ed95aa2270099336/robotpy_ctre-2025.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:2cad4c9b8003910469545f0aff585e4499d352cfb164ed7d9fd85ad90c6615ce", size = 1267271 },
+    { url = "https://files.pythonhosted.org/packages/bc/fe/7b3925425fdfca925f0629f36ccf3e1523a36bc3d43a2f48c6f69a09646c/robotpy_ctre-2025.0.3-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:fb3ff9a081cb02bb386de96cb47e5651af8105350021f6efe9a70aa6cd393bc2", size = 3251901 },
+    { url = "https://files.pythonhosted.org/packages/3b/67/fa4b410d9f3989c72c12f2b0a888970fcf0b3dccfbbc0918ac942017e1a8/robotpy_ctre-2025.0.3-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:03c8d287b374fbcd743075ba97cda94573844247bc6227260c162dbf01e7e177", size = 2231932 },
+    { url = "https://files.pythonhosted.org/packages/fa/3a/dc6d01acddf7e48f9ec7391a8951c235376284a3bede8f689fa4bb38d344/robotpy_ctre-2025.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:ca974a8dca5f3ac8a617ea22aa87ddb1f696fda0867535036206141a7d19746a", size = 1278204 },
+    { url = "https://files.pythonhosted.org/packages/b1/50/298afadcc571c3b33615a5ae93aae4a81026a8b92973267ec3c23f04c6e4/robotpy_ctre-2025.0.3-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:7392a477c07cb319070f4d8587fc818be250fab6beb9d363749a79c22f4b821b", size = 3251556 },
+    { url = "https://files.pythonhosted.org/packages/cf/d3/62de66b81e9da8c180ec48dea171d4fb8ccac2aac9e46cdc5eb554cb954c/robotpy_ctre-2025.0.3-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:58104623419d9b4270a7482bb15ece27d00801f3cdcd947f8a29d1a6da468978", size = 2227859 },
+    { url = "https://files.pythonhosted.org/packages/56/8b/c89ac4a79148653874a265c11e8cfc72ab10177e4c171693e51e6b339ca4/robotpy_ctre-2025.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:b25093b1efbf58593d5c843c468fe8dc3a4bf89ca0ff32334e3b0144077a41ad", size = 1278104 },
 ]
 
 [[package]]
 name = "robotpy-hal"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "robotpy-wpiutil" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/86/bfa51a5086ecb688dbb2aae9da697b3655781da8fd708e382c7acbd8caa6/robotpy_hal-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:c0c5ef49d34fe1ff3024f43a7ea3a9ecbaedcd115490489a82ab9444ce070e6b", size = 2257077 },
-    { url = "https://files.pythonhosted.org/packages/06/a0/f12dba7433cfbb5921912a5c93802083607a72032e68f1bed9143ae398e0/robotpy_hal-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:cfba588b321a08b16b235555761740e8ba667d9b4a24f9164e93ad865fa9491c", size = 1484372 },
-    { url = "https://files.pythonhosted.org/packages/cf/e0/b77fe9eb37d5ce227f1ed8ac76184bc0013f8f6884c120557dbb4c0eafb7/robotpy_hal-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:c4d4e73f279feabc9d0cbcec2dec9c7fc9adb534f1685b2ecb08e69d245b9e11", size = 1356901 },
-    { url = "https://files.pythonhosted.org/packages/7e/30/f87a2e53e9e3cc57d99a7121645aac3398a0ab96413fb6a04d2733954552/robotpy_hal-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:50eaedcfae786f32d600f0e1b06027ffb42a63f9547ec3eb03bdeea23931a6eb", size = 930332 },
-    { url = "https://files.pythonhosted.org/packages/61/90/8db1a0588920ceaffbcbbb4d7ab22166646cbf733bf540f383ae949ba159/robotpy_hal-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:4ab5cc212b1cf65bc535b4f91d909c552ce6ae970dc3d086ccd0c0042b06cd7b", size = 2257843 },
-    { url = "https://files.pythonhosted.org/packages/01/f2/53b274f0125a0559ce4ab9572914c37198bd2dd6f923a88375935b3af946/robotpy_hal-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:5f7debf501b061633a2a777e7ddbb5b7f44896b3650fd6d26c0b9a53bcf86b7d", size = 1484996 },
-    { url = "https://files.pythonhosted.org/packages/be/1a/f9113e63d947a0a3a3b729fd36c5b68a9c60991ffacb0dd5546fe2622dfc/robotpy_hal-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:febefb9ab528ef689f298b8caae4ec38591ddc3516c3970f7e432d85596f3c62", size = 1357496 },
-    { url = "https://files.pythonhosted.org/packages/df/d1/478c6688855f6d08504db4110c95e3428ae785bf6f8a218723b5239569e2/robotpy_hal-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:bba82c8822b187342b9b7dd4a988c7f4eac253c465853ad16c149bee524110cc", size = 930499 },
+    { url = "https://files.pythonhosted.org/packages/ba/d1/fc64ca47935a22b8b7994844a346c115c1dd9a48b6335757b6f1958ebb23/robotpy_hal-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:8d451825d8ac28a206830e511d1098be9ac9f39601bdef93ebed00fdd9ca977c", size = 2292450 },
+    { url = "https://files.pythonhosted.org/packages/40/2c/d798d774ef21cb08edd6ab924ea1b879ea3e3f8581d5b1e244c720986fe4/robotpy_hal-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:71681eb38fda1209f3931e07aaaafaec5c70f872f4bce0e42568ded97e504db9", size = 1508168 },
+    { url = "https://files.pythonhosted.org/packages/7f/ac/bf8b69854167bf43bfdf5e8ff2a944a94b16adf78760feb6a35f0228e19c/robotpy_hal-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:cec32a49333bf971e692443e8eb11a02c4b3d73df5604392cc3c32bf502b9ef7", size = 1346774 },
+    { url = "https://files.pythonhosted.org/packages/59/08/6cb782c68e7fe21742666f847f00944f4c9b770b1412e1136a260af67bb5/robotpy_hal-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:0216030c461a99b3fd6905a4eaf2eaa9c9c7d86f7916be2c764020d1bfbc0d57", size = 938945 },
+    { url = "https://files.pythonhosted.org/packages/6c/24/80583ac6b74fef3f581ad35ee8ae3f58ce257c7cbc2ec40add96639fed48/robotpy_hal-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:f81fded09f2bed52d7b1de0fd3dd9674f0dc9aac859a8bcc5d96f37a069eb75c", size = 2292402 },
+    { url = "https://files.pythonhosted.org/packages/0c/07/13d76cbf383fe3733196587721b3837bf7aa2a7f95501d4e9956f0563ccc/robotpy_hal-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:f4e1922e9576d59882c139cfe501b9a2200cdadddb062ff50ef72c864f92fc0d", size = 1506741 },
+    { url = "https://files.pythonhosted.org/packages/32/16/2491a3987f389dc1b55fb0b8000ab9f2b6b3f2dc49d445ee9c82dcc9ba26/robotpy_hal-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:db3c595c3749048731a24ab3a64fe8b0156fcf7120ddcde4431c2e8085d47a9c", size = 1349104 },
+    { url = "https://files.pythonhosted.org/packages/13/0e/e1928a337d70052f3e861a2f51dd294326d7066bfc615548c4936ec4d6aa/robotpy_hal-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:f058bea3d4b66dc5122bbdf6eda310184ffa64e972d47aba853c81587463f0e7", size = 938956 },
 ]
 
 [[package]]
 name = "robotpy-halsim-gui"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyntcore", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "robotpy-hal", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "robotpy-wpimath", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "robotpy-wpiutil", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "pyntcore", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "robotpy-hal", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "robotpy-wpimath", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/54/04d583354416eaeea1ef67d19daeb088ec19c828ebf24da31791fa16dfb8/robotpy_halsim_gui-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:36a199a1e494b283d52b4e4a738e19597ec3dd750a5fa99a0c776817918370ed", size = 25393774 },
-    { url = "https://files.pythonhosted.org/packages/5f/d2/242a84d838ce16d748c32d0d6395be6361df1505680f536ccd4e250331c7/robotpy_halsim_gui-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:5c611dc262bf27f2382a8f7829ffd175323292846cdd8eb730d28999cc82dc56", size = 12638480 },
-    { url = "https://files.pythonhosted.org/packages/29/07/36a4d9502196c9813c52e3345ba99ca7c405410466d4781511ea0bdd315d/robotpy_halsim_gui-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:c85b4de08e11032ccf44e48076d4f1fc8d92665446a0cebe8f8f9edfa9545bf9", size = 12535142 },
-    { url = "https://files.pythonhosted.org/packages/8d/28/91f8f9a020e432658892f6271908e6c49cb8297ade2028e449f360e9b5e4/robotpy_halsim_gui-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:e7798c2b16e051586fa24d19f58a777f5424976d034534d021138e6c465e47c4", size = 12001636 },
-    { url = "https://files.pythonhosted.org/packages/83/27/fa2f85e958708f7b667ac6dbe8d152a0c1db98c3271a155e92a83c770db0/robotpy_halsim_gui-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:89fdae3ba7a77add8e70a6439d7c053529518431a81ba0c5357427e77296ae06", size = 25393937 },
-    { url = "https://files.pythonhosted.org/packages/23/67/73eae9c369c6b8e3ba99f7ad16c94c3b744aaed8be61ce9bdf328ae3b812/robotpy_halsim_gui-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:3dd3c152057db6163a9df218cc93cf1f25338d869260724b3d071b66d002d2cd", size = 12638677 },
-    { url = "https://files.pythonhosted.org/packages/84/ec/b610713e876ae952a3fee501882e668642b7af50a22b10714f0add24bb5f/robotpy_halsim_gui-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:6864204ae1a98b04881b1042191979f625f6d73f45faaf4a90c8d638de97f927", size = 12535175 },
-    { url = "https://files.pythonhosted.org/packages/2d/c1/db734a30be5cf248c8f8c0ec8cae9f5a04c6bb6977aa161b75be3c68df88/robotpy_halsim_gui-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:d7614a54fff5428fcfba4f01639fadcac6897f7bd93f1ca62ec0e31866510eec", size = 12001654 },
+    { url = "https://files.pythonhosted.org/packages/a5/62/40494cc3ed99ed75cc402911851a013ecb9544f77817b0bea7f1f606c28a/robotpy_halsim_gui-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:cd4b69f572b52fd12d617c71cc9828ff2d5f9f371742dc837facd154b4563785", size = 25404123 },
+    { url = "https://files.pythonhosted.org/packages/13/f5/5910b7cc869f78ab891aee18512cdd9be99c5f96e8484a1c4fa249cd0f3b/robotpy_halsim_gui-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:4f199677e5c82a9dada503ffd4649d2d88bfeef9ce6a48e0d8be7cba4cb0f4ad", size = 12643247 },
+    { url = "https://files.pythonhosted.org/packages/ad/ac/439f14e1aff66172af5d58490b770a47dd8b83b50a8921709bb22d578908/robotpy_halsim_gui-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:f5cdb4a9440c46d932df0a853fcd77ac87bc5fe5e603a934a69c1a04bcc33338", size = 12541301 },
+    { url = "https://files.pythonhosted.org/packages/9f/13/e926489b5cd39e092d3749e4b519c8f71b22c5792a82b9584870d41a3413/robotpy_halsim_gui-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:42e31f5948019ae87eff1ea6291037c541cc0f96f72973d469df62400ccf68c2", size = 12007457 },
+    { url = "https://files.pythonhosted.org/packages/97/81/70ab2406a80eec14f9b39c4b57b13c933f45138849f86c7c428e88d17dfe/robotpy_halsim_gui-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:1ea6e6d26542c6a0d8485c926e521e5728d22b97d76f596358d2781614a937f4", size = 25404214 },
+    { url = "https://files.pythonhosted.org/packages/d9/6b/1f8c74406e6b674d9879ba556af0a4971dbfb4e91a4bcb98b735976e5f83/robotpy_halsim_gui-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:7a38614cdf934cf8bd470a10dab61b6c6730fcfe6dfeeb7a96a4c3d2cc7602d3", size = 12643399 },
+    { url = "https://files.pythonhosted.org/packages/91/6b/7e069b95328494b51587733657c9d4f608b42a11eb9a054439dbc70012ef/robotpy_halsim_gui-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:a72245aca9281a0b175a294fcb190c4f3e7a4525d2e658568e7b7dce83959186", size = 12541378 },
+    { url = "https://files.pythonhosted.org/packages/55/f0/4bada43adc8380d82e63192f108d0a289a74a637c4469705926a5de15e30/robotpy_halsim_gui-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:6a6488aa844ea7d978f2c3e25921e39b9784b073bfa6583de7641cabb7b780c3", size = 12007451 },
 ]
 
 [[package]]
 name = "robotpy-installer"
-version = "2025.0.3"
+version = "2025.1.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "packaging", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "paramiko", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "pynetconsole", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "robotpy-cli", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "tomli", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "tomlkit", marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
+    { name = "packaging", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "paramiko", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "pip", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "pynetconsole", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "robotpy-cli", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "tomli", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
+    { name = "tomlkit", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_machine != 'aarch64' and platform_system == 'Darwin') or (platform_system != 'Darwin' and platform_system != 'Linux' and sys_platform != 'linux' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system == 'Darwin' and sys_platform != 'linux')" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f6/9e/deefb4d6943582085bd37ad4905ec784dac90a648ee7d6785c3e12abcf76/robotpy_installer-2025.0.3.tar.gz", hash = "sha256:93e6f3d7b65f734f480878bf87089596973da020403dc53be356509967cf0bf6", size = 32911 }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/5d/04d313f81a8af3a348e3d6fefbd470b892d12403ef1a11a984c78dc452d1/robotpy_installer-2025.1.1.tar.gz", hash = "sha256:c05376cfb2d2c0b0a5c8a988d56ceb4ab4c4e333e2de1dbd0067d8028e829882", size = 31721 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/43/0b252b4a48ad4e1ee7cdfd228477518abb285990a6953f29309a943be6da/robotpy_installer-2025.0.3-py3-none-any.whl", hash = "sha256:6ffcfe7db723445b5dc68947f64c7e467e792592093a88f40aea09da46882c2a", size = 40033 },
+    { url = "https://files.pythonhosted.org/packages/4f/74/da745a1dcff9a0e7c7c45ad1f1cedca3cc12506ff8adbec4f35d25facf6a/robotpy_installer-2025.1.1-py3-none-any.whl", hash = "sha256:8098144ca0be731a500bbd9634bfa86f7bdfab9f20e2aa3b6355010bb9721539", size = 42953 },
 ]
 
 [[package]]
 name = "robotpy-rev"
-version = "2025.0.1"
+version = "2025.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "wpilib" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6a/9c/f9620e6d2f4727e31614591fde40cf08f1475a8b3e1fbd57f808d96be782/robotpy_rev-2025.0.1-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:0ba6722747cb15273bc54866bff7d6d20de051f8c7e5788386932e3089da2a64", size = 1760035 },
-    { url = "https://files.pythonhosted.org/packages/7b/46/050d3a00a6f03db947d39819d1ab67b7a11a0818ba80754482516dbbaa88/robotpy_rev-2025.0.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:274a7b14f775afe240e7eb5be854d99d579569445c704389d09dc8645aa52a33", size = 1286939 },
-    { url = "https://files.pythonhosted.org/packages/a4/ca/8c8487becc077cabd23f4be5caedba794db00ad5d4552f62569775d02c96/robotpy_rev-2025.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:b32c47c117aa3994710fdb7fde07ef99bf5c4283c948d8b53de0e54ebcdaf5d6", size = 468943 },
-    { url = "https://files.pythonhosted.org/packages/2a/cf/6fe2680fcb15fc4aa866c0a2f1a3601afbf7d37fefce785b3c564a4c9f58/robotpy_rev-2025.0.1-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:2d3341ad99ffbdc8d6284cb50d932e08f89770bbec061c72a363d99076b25724", size = 1760766 },
-    { url = "https://files.pythonhosted.org/packages/03/69/1c42c774a185b92a206fa5431215dfaf4fe6e1c759ddbea6fa9a5dda8aa3/robotpy_rev-2025.0.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:ffe207ca1ef074d76a89445d29aa34d0506ec4f380b5c7787545c04a67e861e3", size = 1282136 },
-    { url = "https://files.pythonhosted.org/packages/8b/56/a9b081256f4a1dafa39bbd20b1656dc87b7787bac2090f6b2a5f51f0f39c/robotpy_rev-2025.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:d558a9e9ce09af709d7dd81d328ac70f064a81b920cb5f1181130fab8198f58f", size = 469003 },
+    { url = "https://files.pythonhosted.org/packages/be/02/0b1f92dee8ca536874dc7009f5bbb4c346a1bf2d172477f112df2de4323e/robotpy_rev-2025.0.3-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:10cc180f0626d392b6ef2a0d0f48cf928e7376748a1634e795c3728a6d81c323", size = 1818747 },
+    { url = "https://files.pythonhosted.org/packages/19/92/341c5629771c5aba38817e97d2e051c0e6cc1b1b9ea9e1590367acfd29e6/robotpy_rev-2025.0.3-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:a03253196c02fa6fb38cc3be03d24c41de8ca4d90df1dfb9a3fa8738edd3551a", size = 1313002 },
+    { url = "https://files.pythonhosted.org/packages/46/16/e08f333860e23ef5dc4ead0ccf655ef6efd30af840765ec4b9dc992442f1/robotpy_rev-2025.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:e4e2a847d17a237e33f9b07776ff125d7cfa1ee05311414cc6bff86e55d40758", size = 486525 },
+    { url = "https://files.pythonhosted.org/packages/84/65/a211ec3a39c2ecd0463acf200786f3442bfdfd42d749805ababd15bc132a/robotpy_rev-2025.0.3-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:cd73ff76f90655ce3956b0687b6ecc146d1baaf792effe69686c04b2dc25bd65", size = 1817935 },
+    { url = "https://files.pythonhosted.org/packages/11/35/4a8aa6991ee92ce4b4b7cf366ec88c1afab436caa6b836ff7e3b39d1d294/robotpy_rev-2025.0.3-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:fce84c727f17ec16bed869e2474389842df0461ff258ff4f5d08d0697719bb3b", size = 1312956 },
+    { url = "https://files.pythonhosted.org/packages/26/45/083995df0e218147e8cff9475c95fb2c7a9b1f1894e071c24b16ebc18472/robotpy_rev-2025.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:146d75d654c1920615ae944428d5d7fd71ff0a132437b0e5b4e348aa50850177", size = 486531 },
 ]
 
 [[package]]
 name = "robotpy-wpilib-utilities"
-version = "2025.0.0"
+version = "2025.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "wpilib" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5c/99/a81c6bd44ba8d0504f15effe56eb56dd01c724c38a46102943eb83a7080c/robotpy_wpilib_utilities-2025.0.0.tar.gz", hash = "sha256:11959e0b891f8db41f676c1570c93f51c1f703f565e0f223d743058c50824867", size = 52541 }
+sdist = { url = "https://files.pythonhosted.org/packages/2d/a0/ec9ff088e71c0d19233463bc834b3d56ed45276b60fa1a168da6a3108d79/robotpy_wpilib_utilities-2025.1.0.tar.gz", hash = "sha256:4c7c1eec598e959b2a62cd22d2738d7794d8a7e4066e67352288d2e9773323e4", size = 52601 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b7/19/91d87152ee0cbc99ee3607aa07fcb9eebd44c5d5151c7dfd60298c3e3b01/robotpy_wpilib_utilities-2025.0.0-py3-none-any.whl", hash = "sha256:ee66dde6d45321f0fce0dddb9bb8bc3e0f8111e032462d5d46882832baea974a", size = 48962 },
+    { url = "https://files.pythonhosted.org/packages/a1/1d/74a2a344b642cab5580f2107ce92c56e6eeaf99b609a963728ed7e4ef489/robotpy_wpilib_utilities-2025.1.0-py3-none-any.whl", hash = "sha256:d7046a0e8b3ce1c2b4be563e897fe0eb3ceaa36064a8d2979c09142e8ff88c71", size = 49023 },
 ]
 
 [[package]]
 name = "robotpy-wpimath"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "robotpy-wpiutil" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/d5/b6c74e681827e534bdf2ee4345675c0890c6da54bc39383f1c5a1cf25633/robotpy_wpimath-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:8477d61e9222effed789b7b8c8475e6938e7c92a1631954141f60132cf3f3a5c", size = 9844412 },
-    { url = "https://files.pythonhosted.org/packages/82/24/381c85689861a2e4576919f5007432cfdf5cec57bdd81ee2717c6e0eca64/robotpy_wpimath-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:6201d50dc00eb3b86be223fcf2d69e661b79da2044f385d50b93bb15aa0ee8a2", size = 7312137 },
-    { url = "https://files.pythonhosted.org/packages/48/ed/311cda248ae7f8347a03320235a431d73f84fbc3274d8f506514233be156/robotpy_wpimath-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:0a0b45112a3ed6b46c11ccda0b71cf56f4daa41ac8907afff5ffb2ce0ae467d3", size = 6833447 },
-    { url = "https://files.pythonhosted.org/packages/52/92/3cc7a9ec4355d9bb3756dff50d86cd48491bba781136329ee7e270073e5b/robotpy_wpimath-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:b4fbdf847565ae2bb7170af5aa38b1c63918b9d3961dc7e8580406291c281110", size = 4804216 },
-    { url = "https://files.pythonhosted.org/packages/40/2a/3bbc319ceadb0f260538b9b0ba66ad8aaba28a58fc43feaf5644cdd57df4/robotpy_wpimath-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:64fd252ac895bab9561ff34110e4ebacd028d519754ec4bf416e9bf6b70cbec3", size = 9842555 },
-    { url = "https://files.pythonhosted.org/packages/38/43/5adfda2fdcb63e06f8d916066572f6b80940dd45f190c5951ccb2d18965e/robotpy_wpimath-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:1fce9ec12e34c75d0bf0ab471a7e1764f53c4305b4f9d835debd5ac677df0248", size = 7303560 },
-    { url = "https://files.pythonhosted.org/packages/8d/f7/37d05014a3a4582e4be83c59cc7287b61c73c7ba6745f8458b84d6d83f43/robotpy_wpimath-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:5b4e77549eeadc91cad9ac5696596609d46b3f0012c66ec12094581c8564312b", size = 6836760 },
-    { url = "https://files.pythonhosted.org/packages/84/01/654aabf18967b66baaef81c9ccdb7ab5ccc751f1b99fb96957f4f3fc10ef/robotpy_wpimath-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:52b1b85a99afc572e83885e41453a2ff58f93565cce8f16ccfea574aed61f59c", size = 4804277 },
+    { url = "https://files.pythonhosted.org/packages/d7/6c/979177b9919aeb7b070b17d92586b4beaf31890f318cfacf7988d311e8a9/robotpy_wpimath-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:3aa26b602c22df5c3343941a376a9e8a3cdacde1b78a296469add9a24ac98fb6", size = 10162561 },
+    { url = "https://files.pythonhosted.org/packages/68/00/aa561b831a372a563c2b0b4fce0dcf0b43399ecaa12bea2d80f1671b5fad/robotpy_wpimath-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:4e2e9da317abadf7fde8d11103c62f2747fd978f0f0bc6e98fe0b8ad452b54e0", size = 7488455 },
+    { url = "https://files.pythonhosted.org/packages/08/78/5d54e8f5d72c7e59c3b3ca4ed52ef85d63670de280c6e90c8cabd83d5682/robotpy_wpimath-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:eb5d8c03da89aa93a4c1598b345782812bc5fc531cb8a2cea7b5ca81d03afb5f", size = 6924391 },
+    { url = "https://files.pythonhosted.org/packages/e3/ac/62c877dd9e0832f839a2e8f2317489aa91abecc12d73ffb255b7b31fc192/robotpy_wpimath-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:84bea0cbbd725c007ad4d51698017392e88fb3bcb12225664445a01e45bfefa4", size = 4879616 },
+    { url = "https://files.pythonhosted.org/packages/52/90/9aad3072f9034b5714a8df3fa52ac7d4afc894f9de366243bb2384785277/robotpy_wpimath-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:6537f6f7a9628af9334f1297d170977608e24249bfe62c4f01447b1e7afd4205", size = 10161508 },
+    { url = "https://files.pythonhosted.org/packages/85/aa/d3bc5d58095fa397f7c6554062d95415fe66dc2fcda401625e50392bf4bd/robotpy_wpimath-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:0cb340017b3f07fb938fa2ab86535f166b0615f0a7409ca9d25350bddab53e3e", size = 7483211 },
+    { url = "https://files.pythonhosted.org/packages/0b/7e/8bbc809652df0f56e7ca6ee2adcf46ee19ff6c7dbf28546f6dd54376ec15/robotpy_wpimath-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:43dc3deca95d5b91ea849b4dc9eb3bc9b24f845d6ecd9e0f0fdf9e7fe2c329ee", size = 6927858 },
+    { url = "https://files.pythonhosted.org/packages/83/cc/15cc88c7c9a467f97540d85254568ac06e3b47166da65054c8c32d1dff1a/robotpy_wpimath-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:24e0075b66a21b8ae0788451cf312a4c93b95ed0d566492242599ca3def26342", size = 4879926 },
 ]
 
 [[package]]
 name = "robotpy-wpinet"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "robotpy-wpiutil" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d5/03/5b9fc7d5f51e37e5734e34f1d20a10db999d3ee6809b0cab158c64d15b3d/robotpy_wpinet-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:55e51f34987c99a8e5499a5e025e8febc7f603814900d77adf0488e1fbe93aa3", size = 1384276 },
-    { url = "https://files.pythonhosted.org/packages/81/84/5f1383e6acaeed5a32b3c546da2921df31fb6cfd47b22ac9c0223c5bde97/robotpy_wpinet-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:9d35cc388bb6268ed310876e461b0d88be43976cca326542597812697ec17666", size = 780430 },
-    { url = "https://files.pythonhosted.org/packages/08/b2/93c2585b902180beee8eb00352eb3583d1e45fea00fd7e09736749a2c89a/robotpy_wpinet-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:5720a4dd71bb1c2a942bc1b3e4a1ac829375799ff29f8ddeff7d61409f49d5e4", size = 748374 },
-    { url = "https://files.pythonhosted.org/packages/74/a9/f9c4bec4e959631cc7d4f80dfefd45ae9447095e18bd065cbfc5927e6048/robotpy_wpinet-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:37173347ec5238b1e394a5ffcc43ecff539077fb7d4218057eb7a75045ef9248", size = 853093 },
-    { url = "https://files.pythonhosted.org/packages/64/72/bbfa4f42d1ea16e2342c98f61931023ede63163c233f6815a4dc85014250/robotpy_wpinet-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:92d54425f079fd3cdd5c1687b9fc106017dd17af578edd1249bf52ba239d79e9", size = 1384435 },
-    { url = "https://files.pythonhosted.org/packages/4f/af/1feee01eb84e91e5a234b0ea8ade925522864b38d2c1f867771ff0d51230/robotpy_wpinet-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:d874cc6b4bbf0c47200861f413d311d3164e9a33736cbbf0caecaf32e0c05538", size = 780794 },
-    { url = "https://files.pythonhosted.org/packages/32/ea/94b1d6a2d05ef74c889fc09427c78799f4bcd75f0f871792170c76ab16f3/robotpy_wpinet-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:753ce52b9958426b8f55ebf107a72018eab2384678206a05620cce6d3929aeff", size = 748948 },
-    { url = "https://files.pythonhosted.org/packages/07/ea/a523dd28e24dc1ab12ead3e2ce09aa20ae1f25c98cae07721ca34f43b43f/robotpy_wpinet-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:fa05d6a30d73be2ade4ca19216ac728341476ae2220ebefa1836c418dc2ff58f", size = 853123 },
+    { url = "https://files.pythonhosted.org/packages/5f/64/bb9777d9b860efce2b07d4b6647a073853837764c5d8061ce46faf1e19d7/robotpy_wpinet-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:7833cd7624b6fad59e069bb9bfcb59dcffece510988ed1bce97abf4cdf39978a", size = 1395205 },
+    { url = "https://files.pythonhosted.org/packages/b3/77/8c55de86c614d3234a25df50287c633c0c64c7f8c8f6468a5656cf48b230/robotpy_wpinet-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:7f8927f2169254dfec08b2335d5bfcf1e4158af7cf0d68132a70fcb7d3b79343", size = 780558 },
+    { url = "https://files.pythonhosted.org/packages/ec/75/87901eb6ee435df24030fef06f1a891482b095ed254c98efd1b8dd5b4365/robotpy_wpinet-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:0c58728838f060db1b939cbd44e3da8582c0e36a9b6753b26d851105025d6ace", size = 747965 },
+    { url = "https://files.pythonhosted.org/packages/50/21/30477d1538edb7259f802382f15370304beb731fa50ea67c7efbb8bcef58/robotpy_wpinet-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:1398e17cbc5f987505ffac74bd6bde86b95249ccd045e63593f2666169e9abff", size = 857886 },
+    { url = "https://files.pythonhosted.org/packages/4a/05/e33f241ca8a3d0dfc30655b2cb8ec5c7b879eb1f6ad5ed8304696444f67d/robotpy_wpinet-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:5609c75367c21bc0400c99eb5caf535441db3ef0ba3c88932534c7cad995343f", size = 1395288 },
+    { url = "https://files.pythonhosted.org/packages/3e/18/698261a0edbab68047ff656f96d3e0115f4bf596712eb19ba78ae62d9f04/robotpy_wpinet-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:1ebb4513908c08d3a4f58f90d90862117e3cb7127803e33a702f992591de28ac", size = 781797 },
+    { url = "https://files.pythonhosted.org/packages/cc/86/d36369f237b33cc5c723c0264c004ca1af3654aac5aa738afc51d903b0cd/robotpy_wpinet-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:1bf03b976def213ff781d227ef4dbce66cc151a610d4c8f1b568ff0a6bb6d3ed", size = 748381 },
+    { url = "https://files.pythonhosted.org/packages/e7/54/1e5d365e3649e5e00e2962f0c25286af4da04cef48871b3a8f24265f7a99/robotpy_wpinet-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:c1118da3c8b5f62ce97f3f855231ac3891940639bb1950dd6bc30971da28e408", size = 857929 },
 ]
 
 [[package]]
 name = "robotpy-wpiutil"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "msvc-runtime", marker = "sys_platform == 'win32'" },
+    { name = "msvc-runtime", marker = "platform_system == 'Windows'" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/72/5d1764963f0de75b9dc7a8fa84d0d07ba49dc209af7d3b823edd38289df4/robotpy_wpiutil-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:890b8a73d3f8978b68d344989eb9ec88ccdbf2c19a983cc718a4d2071f00cdff", size = 5240956 },
-    { url = "https://files.pythonhosted.org/packages/dc/86/333acbf9bd89eb35af22f98dc309490b983e2ab4c145c5a3999b16c2ffa9/robotpy_wpiutil-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:8c29631c163ebe1e737ec11a22e10927235ba25930ade9d7c11ffff29d28a2cd", size = 3500973 },
-    { url = "https://files.pythonhosted.org/packages/9c/64/459272d39cb80ad9b8afeb8868714ff2fe2068407c1234dc636b69cfab6c/robotpy_wpiutil-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:d90cce6a22cf6872bbd2525ac4479c1472ffd06956316568e10180c2f762bbf0", size = 3350167 },
-    { url = "https://files.pythonhosted.org/packages/96/0e/71ade7c95a22f7de8bac2f58adb3c6c9f6e5f13626ef07a3dafd71b7de19/robotpy_wpiutil-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:4b39ca08cf95eb50c9d982c01c0b9c96a565b6d449b92a64fb5a9d6a2762f67d", size = 3552819 },
-    { url = "https://files.pythonhosted.org/packages/f5/19/7bacdf5e75a0e4c7eac7248e1540b4dc3765d6b19eba085a5f3f4c9f6c55/robotpy_wpiutil-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:a271d20db5f0c7fdf5ef8be713192b51dbc5d7918ead906d79e39b770864a68e", size = 5240797 },
-    { url = "https://files.pythonhosted.org/packages/bf/a1/f83e6ebad2846eca5ffaa2a5256125b5f836d99b127a00e9d698710ed299/robotpy_wpiutil-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:d530e3f2dfcc3bd5a8040ee38842f78543f3de9fa4ee130d69dc84a9dde3bc11", size = 3500879 },
-    { url = "https://files.pythonhosted.org/packages/bb/bb/2c9039d2b6742b49338ba45ae4d68038814857ae63767f7c8732f48c6f4b/robotpy_wpiutil-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:3dc3fc035a4ca1845b143591252c7cd66d3149c268cea4b16694063ccc8e43fc", size = 3350405 },
-    { url = "https://files.pythonhosted.org/packages/16/76/027e5a50da42492df3f3e35a6e7755e033a8e40870e20ade370c71f3ae39/robotpy_wpiutil-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:34a88191631d3ff0ce50a25d979579a5af8aa99c8061e03ccb39383354e73ca7", size = 3552813 },
+    { url = "https://files.pythonhosted.org/packages/3c/ec/af9d7a342da0af4471ef34f26a295f7734284bd55e97c1e87035d57ac4dd/robotpy_wpiutil-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:3560bf3a77efc7273bd031ffe78c66ddac0f7612530df962738c86a0fcb56f25", size = 5266559 },
+    { url = "https://files.pythonhosted.org/packages/ad/7e/b620c9005bede450eff90a49542aa8247c87739a1f83e906ad6aa484a4f3/robotpy_wpiutil-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:3ccaafd91a86f5ffc5c524dc8fc14da73802f706146de5ca187eb811c20ea3a9", size = 3507445 },
+    { url = "https://files.pythonhosted.org/packages/b3/a4/fbaa94444e51622ff5b9359a4fc7ccba173abedd74b6d93fddee6038d4e8/robotpy_wpiutil-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:7a6f64d09275d2d07cec10641224809cd2fbc1034549acd831860cc17e5c762f", size = 3350771 },
+    { url = "https://files.pythonhosted.org/packages/3e/a4/1452ba27926e8760ec4899506cd2cf85a4006fa7a8be8c45b35ae994cf64/robotpy_wpiutil-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:43efed2d91a9ac6d0cbcd21bbe3acf757cf75d344da5d2f2eb78034db9bc2c75", size = 3555176 },
+    { url = "https://files.pythonhosted.org/packages/d7/03/c835ebf96c6bdda25f27dfedfd0dbed3efc0b9da11181329eaccde243d44/robotpy_wpiutil-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:c8ec77dfd367ad46bf9d97f3183c858670767187236123cc4522a0a9212591ea", size = 5266723 },
+    { url = "https://files.pythonhosted.org/packages/da/dc/4cf575e8d4ac751e9f27a793da8aad12a1a92ab52ad61d4204b632c0e8cc/robotpy_wpiutil-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:6011e9a8c27229cae2f667f06a9879587ebae2a793f5ba221e6146a15f0d6d8f", size = 3507596 },
+    { url = "https://files.pythonhosted.org/packages/3b/50/7c70046678c19110cdd29edf94d7710c42bba92b36c208a281b8ea3353aa/robotpy_wpiutil-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:d5c6b4f0440ea136c7e923fd7751e856979019b792fc1a820a8e554dd45a80c0", size = 3349593 },
+    { url = "https://files.pythonhosted.org/packages/ed/d8/c0c7579161208a3da67e666beedf13dee48be5826431a929a2abfb1c93a9/robotpy_wpiutil-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:79742505fc0729da3b766da317b3bb720d1ae7ad6bec06112931fae944c6076d", size = 3555302 },
 ]
 
 [[package]]
@@ -754,7 +768,7 @@ name = "sleipnirgroup-choreolib"
 version = "2025.0.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "wpilib" },
+    { name = "wpilib", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f7/3c/88b417c1e36e04099b67e57168c5c6dd4ee19377137115e3df0f12ffef69/sleipnirgroup_choreolib-2025.0.3.tar.gz", hash = "sha256:a9f8d626509e412c03b7a0f458701159931d86b22f9b617c987aa80e0e970270", size = 7467 }
 wheels = [
@@ -799,22 +813,22 @@ wheels = [
 
 [[package]]
 name = "wpilib"
-version = "2025.3.1.1"
+version = "2025.3.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "pyntcore" },
-    { name = "robotpy-cli" },
-    { name = "robotpy-hal" },
-    { name = "robotpy-wpimath" },
-    { name = "robotpy-wpiutil" },
+    { name = "pyntcore", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-cli", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-hal", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpimath", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
+    { name = "robotpy-wpiutil", marker = "(platform_machine != 'aarch64' and python_full_version >= '3.12' and python_full_version < '3.14') or (platform_system != 'Linux' and python_full_version >= '3.12' and python_full_version < '3.14') or platform_system == 'Darwin' or (platform_machine == 'aarch64' and platform_system == 'Linux')" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3a/a5/124bcc3cc1a036ebbd2adf5dd9b720ed937e3cd0a42bb38bee9dca181e53/wpilib-2025.3.1.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:69e4a3c9788a8a3fce38da6205323a94727c7749dd86fcfe0a897c05d220b6e4", size = 8713577 },
-    { url = "https://files.pythonhosted.org/packages/34/be/4b49baf10399fed8569d379c884dbc39024fed498574d9dcb90a2eecaa9d/wpilib-2025.3.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:d6766e2305c49f214ff3ebe2da40cd99edfde986d5ce35106f26e3e55ca433e4", size = 5705935 },
-    { url = "https://files.pythonhosted.org/packages/7a/19/3317a9bec71a8a91e3912f0ceffbd12fd916536da22cceca702f2e2278b2/wpilib-2025.3.1.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:6c8cf353b0e06a9791d50750b0f939c9bff6b93d1bdd3928ada6902fba913d9e", size = 5259725 },
-    { url = "https://files.pythonhosted.org/packages/fb/5c/cfa482c393ba57b297038558fae8c1d4152946e19ea7d2c9aac70ea2fa43/wpilib-2025.3.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:d1dbd24811b7b15022bdb1ef5fd7a65564395ca0a35ae1d5c7e7cb99eb8257eb", size = 3366730 },
-    { url = "https://files.pythonhosted.org/packages/70/d2/576beb1c59fa174b0577f59be4aeda6aad5a09bf78c692607e12c4537775/wpilib-2025.3.1.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:56b9cbaf28c6e5c738ea16e8437c3a7f0140d24a7c41199072aec12c14566e8f", size = 8715747 },
-    { url = "https://files.pythonhosted.org/packages/ae/cc/a9b2e00c8080b924fbd8d68e2e381abc828e6cb1dd734d3ab03344bf4df4/wpilib-2025.3.1.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:dabae4f3d054d6a5a4d976028133f652bc46a23569ee90d3bd055c1604c4a75f", size = 5691355 },
-    { url = "https://files.pythonhosted.org/packages/1f/30/dc15b3c7124b5ef76e3873387f830c918fb90cdf2eedfbf9a713027f0c8c/wpilib-2025.3.1.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:a735db3f1bc05fdc822283da300a308dbbeaa95c6dcbb795955c874e288e58c9", size = 5254598 },
-    { url = "https://files.pythonhosted.org/packages/26/a7/f968045e1cc28518a6c59db17aecae94ddd9a60da78838817f6a7a053c69/wpilib-2025.3.1.1-cp313-cp313-win_amd64.whl", hash = "sha256:f2f0610c1628244a9fd8f0eea920ed56a882cbeefcd80b17aa4315c95d0d7853", size = 3367106 },
+    { url = "https://files.pythonhosted.org/packages/1d/51/2c710c3b804a8ceda2ffc0949773b07d55a67ae5478019c10e6bbdc35ee1/wpilib-2025.3.2.1-cp312-cp312-macosx_13_0_universal2.whl", hash = "sha256:481194fa431863710e05b7245563657e36c1bc64becb613bc0d72063c9e31aa1", size = 8902814 },
+    { url = "https://files.pythonhosted.org/packages/d8/e8/b8220799a92056c873d573cd6a3c59ac50f0b6d6e81cc1e929c0fdd5522b/wpilib-2025.3.2.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:cbd24ea974c29126dd2720ef36f4b0b107a24ca882e417412d44413ff8c848b4", size = 5772148 },
+    { url = "https://files.pythonhosted.org/packages/17/69/3165eb035daad5b9e2ab531b0dbc94b278a6e9f1fce391400b59d269bfc7/wpilib-2025.3.2.1-cp312-cp312-manylinux_2_36_aarch64.whl", hash = "sha256:937711baa382f10e9db6348e9051ae64f807dec807055bce928d1e96641a91d9", size = 5268582 },
+    { url = "https://files.pythonhosted.org/packages/28/19/13926a224c6aea7b66d36403e36d87f319e1ce2873d33b5cc41fdd760e94/wpilib-2025.3.2.1-cp312-cp312-win_amd64.whl", hash = "sha256:02c849a8e64d75b99b55fa514353c7a545da52e9c0c0039538793da2b5126d6d", size = 3404545 },
+    { url = "https://files.pythonhosted.org/packages/e1/aa/f55337ae59e7a45d3c5f45ae956868a5c16f592fd9cc740fd202e07afd26/wpilib-2025.3.2.1-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:c52fcfe7c5e889a6e3735718705856e79d3c8c5973b363052dff78897d83de91", size = 8903256 },
+    { url = "https://files.pythonhosted.org/packages/6d/06/c162eae151f750999c9f5fd851b43763a261ab1df8d1fed660a57d79a28d/wpilib-2025.3.2.1-cp313-cp313-manylinux_2_35_x86_64.whl", hash = "sha256:7c89692d638ae9ab6f9434848485fca21200bf6fd1857a98522b2a4af59a4208", size = 5765106 },
+    { url = "https://files.pythonhosted.org/packages/33/4a/13050498dccd53b6c81dadc67918f5914b68ad1cf9646a242041fd2c5307/wpilib-2025.3.2.1-cp313-cp313-manylinux_2_36_aarch64.whl", hash = "sha256:d5093ff53cbdb1f51f30ec115c23bbc244a3034fb89f37ebdd348a17dca217b2", size = 5262268 },
+    { url = "https://files.pythonhosted.org/packages/d3/ee/71f80acb5303a01a06038a40994578d5e6e99e81a40836944d785f7f29c3/wpilib-2025.3.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:2ea989a2b909f457702c78b90a7dcc1ab3d09d58c56587dc65efce106be0c82a", size = 3405040 },
 ]
