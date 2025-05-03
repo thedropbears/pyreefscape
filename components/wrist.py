@@ -82,7 +82,6 @@ class WristComponent:
         )
 
     def on_enable(self):
-        # self.tilt_to(WristComponent.NEUTRAL_ANGLE)
         self._tilt_to(self.inclination())
         self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
@@ -155,9 +154,6 @@ class WristComponent:
 
     def go_to_neutral(self) -> None:
         self.tilt_to(WristComponent.NEUTRAL_ANGLE)
-
-    def reset_windup(self) -> None:
-        self.tilt_to(self.inclination())
 
     @feedback
     def at_limit(self) -> bool:
