@@ -82,7 +82,6 @@ class WristComponent:
         )
 
     def on_enable(self):
-        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self._tilt_to(self.inclination())
         self.idle_mode = SparkMaxConfig.IdleMode.kBrake
         wrist_config = SparkMaxConfig()
