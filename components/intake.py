@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import wpilib
 from magicbot import feedback, tunable
 from phoenix5 import ControlMode, TalonSRX
@@ -12,14 +13,12 @@ from wpimath import estimator, units
 from wpimath.controller import (
     ArmFeedforward,
     LinearQuadraticRegulator_2_1,
-    PIDController,
 )
-from wpimath.system import LinearSystemLoop_2_1_1, plant
+from wpimath.system import LinearSystemLoop_2_1_2, plant
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId, TalonId
 from utilities.rev import configure_through_bore_encoder
-from utilities.state_space import single_jointed_arm_system
 
 
 class IntakeComponent:
@@ -55,7 +54,6 @@ class IntakeComponent:
         spark_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
         self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(4.0, 8.0))
-        self.pid = PIDController(Kp=5.9679, Ki=0, Kd=0.0)
 
         # CG is at 220mm, 2.9kg
         # https://www.reca.lc/arm?armMass=%7B%22s%22%3A2.9%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.22%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A24%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A15%2C%22u%22%3A%22deg%22%7D
@@ -76,21 +74,19 @@ class IntakeComponent:
         self.desired_state = TrapezoidProfile.State(
             IntakeComponent.RETRACTED_ANGLE, 0.0
         )
-        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
-        self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
 
-        self.armPlant = single_jointed_arm_system(
+        self.armPlant = plant.LinearSystemId.singleJointedArmSystem(
             plant.DCMotor.NEO(1), self.K_ARM_MOI, self.gear_ratio
         )
 
         """No idea if these are the correct error/trust values"""
-        self.observer = estimator.KalmanFilter_2_1_1(
+        self.observer = estimator.KalmanFilter_2_1_2(
             self.armPlant,
             (
                 units.degreesToRadians(1.0),
                 units.degreesToRadians(5.0),
             ),
-            (units.degreesToRadians(0.5),),
+            (units.degreesToRadians(0.5), units.degreesToRadians(1.0)),
             0.020,
         )
 
@@ -104,11 +100,13 @@ class IntakeComponent:
             0.020,
         )
 
-        self.loop = LinearSystemLoop_2_1_1(
+        self.loop = LinearSystemLoop_2_1_2(
             self.armPlant, self.controller, self.observer, 12.0, 0.020
         )
 
         self.loop.reset([self.position(), self.velocity()])
+        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+        self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
 
     def intake(self, upper: bool):
         deployed_angle = (
@@ -141,13 +139,20 @@ class IntakeComponent:
         return math.degrees(self.position())
 
     def position(self):
-        return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
+        return self.observer.xhat(0)
 
     def velocity(self) -> float:
-        return self.motor_encoder.getVelocity()
+        return self.observer.xhat(1)
 
     def correct_and_predict(self) -> None:
-        self.loop.correct([self.position()])
+        self.loop.correct(
+            np.array(
+                [
+                    (self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET),
+                    self.motor_encoder.getVelocity(),
+                ]
+            )
+        )
         self.loop.predict(0.020)
 
     def _force_retract(self):
