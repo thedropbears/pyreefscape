@@ -81,7 +81,7 @@ description = "The Drop Bears' FRC 2025 robot code"
 authors = [{ name = "The Drop Bears", email = "enquiries@thedropbears.org.au" }]
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.13,<3.14"
 
 dependencies = [
     "numpy~=2.2",
