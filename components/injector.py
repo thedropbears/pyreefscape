@@ -1,6 +1,6 @@
 import math
 
-from magicbot import feedback, tunable
+from magicbot import feedback, tunable, will_reset_to
 from rev import SparkMax, SparkMaxConfig
 from wpilib import DigitalInput
 
@@ -15,6 +15,8 @@ class InjectorComponent:
 
     INJECTOR_RPS_TOLERANCE = 0.5
     INJECTOR_MAX_ACCEL = 0.5
+
+    desired_injector_voltage = will_reset_to(0.0)
 
     def __init__(self) -> None:
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
@@ -51,8 +53,6 @@ class InjectorComponent:
         self.has_seen_algae: bool = False
 
         self.should_measure = False
-
-        self.desired_injector_voltage = 0.0
 
     def on_enable(self) -> None:
         self.has_seen_algae = False
@@ -108,4 +108,3 @@ class InjectorComponent:
             self.injector_2.setVoltage(self.desired_injector_voltage)
 
         self.should_measure = False
-        self.desired_injector_voltage = 0.0
