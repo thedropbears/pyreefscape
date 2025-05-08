@@ -8,6 +8,8 @@ from ids import DioChannel, SparkId
 
 
 class InjectorComponent:
+    desired_injector_voltage = will_reset_to(0.0)
+
     INJECTOR_INJECT_VOLTAGE = tunable(12.0)
     INJECTOR_INTAKE_VOLTAGE = tunable(-2.0)
     INJECTOR_BACKDRIVE_VOLTAGE = tunable(-0.5)
@@ -15,8 +17,6 @@ class InjectorComponent:
 
     INJECTOR_RPS_TOLERANCE = 0.5
     INJECTOR_MAX_ACCEL = 0.5
-
-    desired_injector_voltage = will_reset_to(0.0)
 
     def __init__(self) -> None:
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
