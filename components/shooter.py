@@ -1,7 +1,7 @@
 import math
 
 import wpilib
-from magicbot import feedback, tunable
+from magicbot import feedback, tunable, will_reset_to
 from phoenix6.configs import (
     ClosedLoopRampsConfigs,
     FeedbackConfigs,
@@ -17,7 +17,10 @@ from utilities.game import ALGAE_MAX_DIAMETER, ALGAE_MIN_DIAMETER
 
 
 class ShooterComponent:
-    FLYWHEEL_INTAKE_SPEED = tunable(-20.0)
+    top_desired_flywheel_speed = will_reset_to(0.0)
+    bottom_desired_flywheel_speed = will_reset_to(0.0)
+
+    FLYWHEEL_INTAKE_SPEED = tunable(-40.0)
     FLYWHEEL_RPS_TOLERANCE = 1.0
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
@@ -70,9 +73,6 @@ class ShooterComponent:
         bottom_flywheel_config.apply(flywheel_bottom_pid)
         bottom_flywheel_config.apply(flywheel_gear_ratio)
         bottom_flywheel_config.apply(flywheel_closed_loop_ramp_config)
-
-        self.top_desired_flywheel_speed = 0.0
-        self.bottom_desired_flywheel_speed = 0.0
 
         self._algae_size = 16.25
         self.has_measured = True
@@ -146,6 +146,3 @@ class ShooterComponent:
                 self.bottom_desired_flywheel_speed, override_brake_dur_neutral=True
             )
         )
-
-        self.top_desired_flywheel_speed = 0.0
-        self.bottom_desired_flywheel_speed = 0.0
