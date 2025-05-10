@@ -19,11 +19,11 @@ class IntakeComponent:
     intake_output = tunable(0.9)
 
     # Offset is measured in the vertical position
-    VERTICAL_ENCODER_VALUE = 2.477382
+    VERTICAL_ENCODER_VALUE = 4.566228
     ARM_ENCODER_OFFSET = VERTICAL_ENCODER_VALUE - math.pi / 2.0
     DEPLOYED_ANGLE_LOWER = 1.232018 - ARM_ENCODER_OFFSET
     DEPLOYED_ANGLE_UPPER = 1.732018 - ARM_ENCODER_OFFSET
-    RETRACTED_ANGLE = 2.477382 - ARM_ENCODER_OFFSET
+    RETRACTED_ANGLE = 4.566228 - ARM_ENCODER_OFFSET
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
 
