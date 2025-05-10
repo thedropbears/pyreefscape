@@ -1,7 +1,7 @@
 import math
 
 import wpilib
-from magicbot import feedback, tunable
+from magicbot import feedback, tunable, will_reset_to
 from phoenix5 import ControlMode, TalonSRX
 from rev import (
     SparkMax,
@@ -17,6 +17,7 @@ from utilities.rev import configure_through_bore_encoder
 
 class IntakeComponent:
     intake_output = tunable(0.9)
+    desired_output = will_reset_to(0.0)
 
     # Offset is measured in the vertical position
     VERTICAL_ENCODER_VALUE = 4.566228
@@ -34,8 +35,6 @@ class IntakeComponent:
 
         self.intake_motor = TalonSRX(TalonId.INTAKE)
         self.intake_motor.setInverted(True)
-
-        self.desired_output = 0.0
 
         self.arm_motor = SparkMax(SparkId.INTAKE_ARM, SparkMax.MotorType.kBrushless)
         self.encoder = DutyCycleEncoder(DioChannel.INTAKE_ENCODER, math.tau, 0)
@@ -120,8 +119,6 @@ class IntakeComponent:
 
     def execute(self) -> None:
         self.intake_motor.set(ControlMode.PercentOutput, self.desired_output)
-
-        self.desired_output = 0.0
 
         tracked_state = self.motion_profile.calculate(
             wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
