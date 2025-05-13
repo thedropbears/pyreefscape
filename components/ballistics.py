@@ -47,17 +47,16 @@ class BallisticsComponent:
     # Keys of the lookup dictionaries are ball diameters in inches
     # Tuples are values corresponding to the distances above
     # fmt: off
+
     FLYWHEEL_TOP_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (31, 34, 37.0, 44.5),
-        # 16.5: (60, 80),
-        ALGAE_MAX_DIAMETER: (35, 37, 41.0, 45.0),
+        ALGAE_MIN_DIAMETER: (31, 34, 37.0, 44.5), #temporary values for min
+        ALGAE_MAX_DIAMETER: (33, 35, 38, 42),
     }
     # Currently we use the same speed top and bottom, but this could be seperate
     FLYWHEEL_BOTTOM_SPEED_LOOKUP = FLYWHEEL_TOP_SPEED_LOOKUP
     FLYWHEEL_ANGLE_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-19), math.radians(-25)),
-        # 16.5: (math.radians(-15), math.radians(-20)),
-        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-19), math.radians(-25)),
+        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-19), math.radians(-25)), #temporary values for min
+        ALGAE_MAX_DIAMETER: (math.radians(-12), math.radians(-18), math.radians(-25), math.radians(-29)),
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())
