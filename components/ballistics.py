@@ -80,11 +80,19 @@ class BallisticsComponent:
         if is_red():
             if robot_pos.Y() < FIELD_WIDTH / 2:
                 return abs(self.barge_red_mid_end_point.X() - robot_pos.X())
+            elif self.FLYWHEEL_DISTANCE_LOOKUP[0] > abs(
+                self.barge_blue_mid_end_point.X() - robot_pos.X()
+            ):
+                return math.inf
             else:
                 return robot_pos.distance(self.barge_red_mid_end_point)
         else:
             if robot_pos.Y() > FIELD_WIDTH / 2:
                 return abs(self.barge_blue_mid_end_point.X() - robot_pos.X())
+            elif self.FLYWHEEL_DISTANCE_LOOKUP[0] > abs(
+                self.barge_red_mid_end_point.X() - robot_pos.X()
+            ):
+                return math.inf
             else:
                 return robot_pos.distance(self.barge_blue_mid_end_point)
 
