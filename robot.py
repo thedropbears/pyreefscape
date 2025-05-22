@@ -297,16 +297,7 @@ class MyRobot(magicbot.MagicRobot):
                 * max_spin_rate
             )
 
-            if (
-                self.injector_component.has_algae()
-                or self.floor_intake.is_executing
-                or self.reef_intake.is_executing
-            ):
-                # Make the shooter behave like the front of the robot
-                self.chassis.drive_local(-drive_x, -drive_y, drive_z)
-            else:
-                # Climber is front as defined in the chassis
-                self.chassis.drive_local(drive_x, drive_y, drive_z)
+            self.chassis.drive_local(drive_x, drive_y, drive_z)
 
         if self.gamepad.getBButton():
             self.reef_intake.done()
