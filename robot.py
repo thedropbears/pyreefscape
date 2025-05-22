@@ -298,6 +298,9 @@ class MyRobot(magicbot.MagicRobot):
             )
 
             self.chassis.drive_local(drive_x, drive_y, drive_z)
+            self.chassis.execute()
+        else:
+            self.chassis.stop()
 
         if self.gamepad.getBButton():
             self.reef_intake.done()
