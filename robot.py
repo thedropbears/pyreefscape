@@ -283,6 +283,31 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.set_coast_in_neutral(True)
 
     def testPeriodic(self) -> None:
+        allowed_to_drive = self.gamepad.getRightBumperButton()
+        if allowed_to_drive:
+            # Set max speed
+            max_speed = self.lower_max_speed
+            max_spin_rate = self.lower_max_spin_rate
+
+            # Driving
+            drive_x = -rescale_js(self.gamepad.getLeftY(), 0.05, 15) * max_speed
+            drive_y = -rescale_js(self.gamepad.getLeftX(), 0.05, 15) * max_speed
+            drive_z = (
+                -rescale_js(self.gamepad.getRightX(), 0.1, exponential=20)
+                * max_spin_rate
+            )
+
+            if (
+                self.injector_component.has_algae()
+                or self.floor_intake.is_executing
+                or self.reef_intake.is_executing
+            ):
+                # Make the shooter behave like the front of the robot
+                self.chassis.drive_local(-drive_x, -drive_y, drive_z)
+            else:
+                # Climber is front as defined in the chassis
+                self.chassis.drive_local(drive_x, drive_y, drive_z)
+
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
