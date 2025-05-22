@@ -8,7 +8,6 @@ from components.injector import InjectorComponent
 from components.led_component import LightStrip
 from components.shooter import ShooterComponent
 from components.wrist import WristComponent
-from controllers.algae_measurement import AlgaeMeasurement
 from utilities import game
 
 
@@ -17,7 +16,6 @@ class ReefIntake(StateMachine):
     injector_component: InjectorComponent
     wrist: WristComponent
     chassis: ChassisComponent
-    algae_measurement: AlgaeMeasurement
     status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(-55.0)
