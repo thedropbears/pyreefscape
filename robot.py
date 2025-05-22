@@ -19,7 +19,6 @@ from components.led_component import LightStrip
 from components.shooter import ShooterComponent
 from components.vision import ServoOffsets, VisualLocalizer
 from components.wrist import WristComponent
-from controllers.algae_measurement import AlgaeMeasurement
 from controllers.algae_shooter import AlgaeShooter
 from controllers.climber import ClimberStateMachine
 from controllers.floor_intake import FloorIntake
@@ -35,7 +34,6 @@ class MyRobot(magicbot.MagicRobot):
     algae_shooter: AlgaeShooter
     floor_intake: FloorIntake
     climber_state_machine: ClimberStateMachine
-    algae_measurement: AlgaeMeasurement
 
     # Components
     chassis: ChassisComponent
@@ -314,15 +312,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
 
-        if self.gamepad.getRightBumper():
-            self.algae_measurement.engage()
-
         # Controllers
         self.reef_intake.execute()
         self.algae_shooter.execute()
         self.floor_intake.execute()
         self.climber_state_machine.execute()
-        self.algae_measurement.execute()
 
         # Components
         self.climber.execute()

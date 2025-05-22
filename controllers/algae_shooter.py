@@ -7,7 +7,6 @@ from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
 from components.wrist import WristComponent
-from controllers.algae_measurement import AlgaeMeasurement
 from controllers.floor_intake import FloorIntake
 from controllers.reef_intake import ReefIntake
 
@@ -18,7 +17,6 @@ class AlgaeShooter(StateMachine):
     ballistics_component: BallisticsComponent
     chassis: ChassisComponent
     wrist: WristComponent
-    algae_measurement: AlgaeMeasurement
     floor_intake: FloorIntake
     reef_intake: ReefIntake
 
@@ -48,7 +46,6 @@ class AlgaeShooter(StateMachine):
     def measuring(self):
         self.wrist.tilt_to(math.radians(-15.0))
 
-        # if not self.algae_measurement.is_executing:
         self.next_state(self.preparing)
 
     @state(must_finish=True)
