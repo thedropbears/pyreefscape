@@ -406,6 +406,16 @@ class ChassisComponent:
             and math.isclose(velocity.omega, 0.0, abs_tol=math.radians(3))
         )
 
+    def stop(self) -> None:
+        for module in self.modules:
+            module.stop()
+            # Also reset the state to account for the internal smoothing
+            module.state = SwerveModuleState(0, module.get_rotation())
+        self.stop_snapping()
+        self.set_coast_in_neutral(coast_mode=False)
+        self.do_smooth = True
+        self.heading_controller.setPID(Kp=3.0, Ki=0.0, Kd=0.0)
+
     def execute(self) -> None:
         # rotate desired velocity to compensate for skew caused by discretization
         # see https://www.chiefdelphi.com/t/field-relative-swervedrive-drift-even-with-simulated-perfect-modules/413892/
@@ -461,14 +471,7 @@ class ChassisComponent:
         self.set_coast_in_neutral(False)
 
     def on_disable(self) -> None:
-        for module in self.modules:
-            module.stop()
-            # Also reset the state to account for the internal smoothing
-            module.state = SwerveModuleState(0, module.get_rotation())
-        self.stop_snapping()
-        self.set_coast_in_neutral(coast_mode=False)
-        self.do_smooth = True
-        self.heading_controller.setPID(Kp=3.0, Ki=0.0, Kd=0.0)
+        self.stop()
 
     def get_rotational_velocity(self) -> float:
         return math.radians(
