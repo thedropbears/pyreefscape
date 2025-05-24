@@ -183,7 +183,7 @@ class PhysicsEngine:
             SingleJointedArmSim(
                 intake_arm_gearbox,
                 IntakeComponent.gear_ratio,
-                moi=0.035579622,
+                moi=IntakeComponent.ARM_MOI,
                 armLength=0.22,
                 minAngle=IntakeComponent.DEPLOYED_ANGLE_LOWER,
                 maxAngle=IntakeComponent.RETRACTED_ANGLE,
