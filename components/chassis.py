@@ -412,9 +412,6 @@ class ChassisComponent:
             # Also reset the state to account for the internal smoothing
             module.state = SwerveModuleState(0, module.get_rotation())
         self.stop_snapping()
-        self.set_coast_in_neutral(coast_mode=False)
-        self.do_smooth = True
-        self.heading_controller.setPID(Kp=3.0, Ki=0.0, Kd=0.0)
 
     def execute(self) -> None:
         # rotate desired velocity to compensate for skew caused by discretization
@@ -472,6 +469,9 @@ class ChassisComponent:
 
     def on_disable(self) -> None:
         self.stop()
+        self.set_coast_in_neutral(coast_mode=False)
+        self.do_smooth = True
+        self.heading_controller.setPID(Kp=3.0, Ki=0.0, Kd=0.0)
 
     def get_rotational_velocity(self) -> float:
         return math.radians(
