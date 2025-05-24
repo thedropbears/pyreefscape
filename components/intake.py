@@ -8,7 +8,7 @@ from rev import (
     SparkMaxConfig,
 )
 from wpilib import DutyCycleEncoder
-from wpimath import estimator, units
+from wpimath import estimator
 from wpimath.controller import (
     ArmFeedforward,
     LinearQuadraticRegulator_2_1,
@@ -81,18 +81,18 @@ class IntakeComponent:
         self.observer = estimator.KalmanFilter_2_1_1(
             self.armPlant,
             (
-                units.degreesToRadians(1.0),
-                units.degreesToRadians(5.0),
+                0.15,
+                0.17,
             ),
-            (units.degreesToRadians(0.5),),
+            (0.005,),
             0.020,
         )
 
         self.controller = LinearQuadraticRegulator_2_1(
             self.armPlant,
             (
-                units.degreesToRadians(1.0),
-                units.degreesToRadians(5.0),
+                0.01,
+                0.5,
             ),
             (12.0,),
             0.020,
