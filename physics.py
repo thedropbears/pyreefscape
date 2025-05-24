@@ -109,12 +109,14 @@ class SparkArmSim:
     def __init__(self, mech_sim: SingleJointedArmSim, motor_sim: rev.SparkSim) -> None:
         self.mech_sim = mech_sim
         self.motor_sim = motor_sim
+        self.motor_encoder_sim = self.motor_sim.getRelativeEncoderSim()
 
     def update(self, dt: float) -> None:
         vbus = self.motor_sim.getBusVoltage()
         self.mech_sim.setInputVoltage(self.motor_sim.getAppliedOutput() * vbus)
         self.mech_sim.update(dt)
         self.motor_sim.iterate(self.mech_sim.getVelocity(), vbus, dt)
+        self.motor_encoder_sim.iterate(self.mech_sim.getVelocity(), dt)
 
 
 # class ServoEncoderSim:
