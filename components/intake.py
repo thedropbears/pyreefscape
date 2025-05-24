@@ -198,7 +198,6 @@ class IntakeComponent:
             self.initial_state,
             self.desired_state,
         )
-        ff = self.arm_ff.calculate(tracked_state.position, tracked_state.velocity)
 
         self.loop.setNextR([tracked_state.position, tracked_state.velocity])
 
@@ -207,7 +206,7 @@ class IntakeComponent:
         if not math.isclose(
             self.desired_state.position, self.position(), abs_tol=math.radians(5)
         ):
-            self.arm_motor.setVoltage(self.loop.U(0) + ff)
+            self.arm_motor.setVoltage(self.loop.U(0))
         else:
             self.arm_motor.setVoltage(0.0)
 
