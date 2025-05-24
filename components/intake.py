@@ -109,6 +109,7 @@ class IntakeComponent:
         self.desired_state = TrapezoidProfile.State(
             IntakeComponent.RETRACTED_ANGLE, 0.0
         )
+        self.tracked_state = self.desired_state
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(
             self.position_observation(), self.velocity_observation()
@@ -174,6 +175,22 @@ class IntakeComponent:
         self.loop.predict(0.020)
 
     @feedback
+    def desired(self):
+        return (self.desired_state.position, self.desired_state.velocity)
+
+    @feedback
+    def tracked(self):
+        return (self.tracked_state.position, self.tracked_state.velocity)
+
+    @feedback
+    def initial(self):
+        return (self.initial_state.position, self.initial_state.velocity)
+
+    @feedback
+    def profile_time(self):
+        return wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time
+
+    @feedback
     def filter_error(self):
         return self.innovation
 
@@ -193,13 +210,13 @@ class IntakeComponent:
 
         self.desired_output = 0.0
 
-        tracked_state = self.motion_profile.calculate(
-            wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
+        self.tracked_state = self.motion_profile.calculate(
+            self.profile_time(),
             self.initial_state,
             self.desired_state,
         )
 
-        self.loop.setNextR([tracked_state.position, tracked_state.velocity])
+        self.loop.setNextR([self.desired_state.position, self.desired_state.velocity])
 
         self.correct_and_predict()
 
