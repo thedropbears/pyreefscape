@@ -85,7 +85,7 @@ class RefinedQuickCentreSlow(AutoBase):
             [
                 "StartToAlgaeGH",
                 "SlowedAlgaeGHToShootGH",
-                "RefinedShootGHToAlgaeIJ",
+                "SlowedShootGHToAlgaeIJ",
                 "RefinedAlgaeIJToShootIJ",
                 "RefinedShootIJToAlgaeKL",
                 "RefinedAlgaeKLToShootKL",
