@@ -7,12 +7,12 @@ class CentreAuto(AutoBase):
     def __init__(self):
         super().__init__(
             [
-                "StartToAlgaeGH",
-                "AlgaeGHToShoot",
-                "ShootToAlgaeIJ",
-                "AlgaeIJToShoot",
-                "ShootToAlgaeEF",
-                "AlgaeEFToShoot",
+                "StartToAlgaeGH", # Seems good
+                "AlgaeGHToShoot", # Slight wiggle, rotates while moving but seems not major issue
+                "ShootToAlgaeIJ", # Goes outwards and takes a wide path while spinning
+                "AlgaeIJToShoot", # Spins right at the end of its path and moves fastest there
+                "ShootToAlgaeEF", # Slow long path, spins whole way, could perhaps start slow and spin fast, then speed up, slow down for the sharp corner
+                "AlgaeEFToShoot", # Funny backward spin at beginning, could perhaps spin the whole way while nearly stationary at end of sharp bend, then move to translational goal
             ]
         )
 
@@ -57,5 +57,20 @@ class QuickPath(AutoBase):
                 "AlgaeIJToShootIJ",
                 "ShootIJToAlgaeKL",
                 "AlgaeKLToShootKL",
+            ]
+        )
+
+class RefinedQuickCentre(AutoBase):
+    MODE_NAME = "REFINED Quick Centre GH>IJ>KL"
+
+    def __init__(self):
+        super().__init__(
+            [
+                "StartToAlgaeGH",
+                "RefinedAlgaeGHToShootGH",
+                "RefinedShootGHToAlgaeIJ",
+                "RefinedAlgaeIJToShootIJ",
+                "RefinedShootIJToAlgaeKL",
+                "RefinedAlgaeKLToShootKL",
             ]
         )
