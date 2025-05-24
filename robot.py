@@ -311,9 +311,17 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
 
-        if self.gamepad.getYButtonPressed():
-            self.climber.go_to_deploy()
-            self.climber.start_pid_update()
+        if self.gamepad.getYButton():
+            self.climber_state_machine.deploy()
+
+        if self.gamepad.getAButton():
+            if (
+                self.climber_state_machine.current_state == "pre_climbing"
+                and self.climber_state_machine.is_ready_to_climb()
+            ) or self.climber_state_machine.current_state == "retracting":
+                self.climber_state_machine.retract()
+            else:
+                self.climber_state_machine.pre_climb()
 
         if self.gamepad.getAButton():
             self.climber.go_to_retract()
