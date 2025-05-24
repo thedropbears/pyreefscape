@@ -31,7 +31,7 @@ class IntakeComponent:
     DEPLOYED_ANGLE_LOWER = 3.391598 - ARM_ENCODER_OFFSET
     DEPLOYED_ANGLE_UPPER = 3.891598 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 4.592024 - ARM_ENCODER_OFFSET
-    K_ARM_MOI = 0.181717788
+    ARM_MOI = 0.181717788
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
 
@@ -74,7 +74,7 @@ class IntakeComponent:
         self.motor_encoder = self.arm_motor.getEncoder()
 
         self.armPlant = single_jointed_arm_system(
-            plant.DCMotor.NEO(1), self.K_ARM_MOI, self.gear_ratio
+            plant.DCMotor.NEO(1), self.ARM_MOI, self.gear_ratio
         )
 
         """No idea if these are the correct error/trust values"""
