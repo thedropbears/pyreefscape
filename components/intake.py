@@ -73,12 +73,6 @@ class IntakeComponent:
 
         self.motor_encoder = self.arm_motor.getEncoder()
 
-        self.desired_state = TrapezoidProfile.State(
-            IntakeComponent.RETRACTED_ANGLE, 0.0
-        )
-        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
-        self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
-
         self.armPlant = single_jointed_arm_system(
             plant.DCMotor.NEO(1), self.K_ARM_MOI, self.gear_ratio
         )
@@ -108,7 +102,17 @@ class IntakeComponent:
             self.armPlant, self.controller, self.observer, 12.0, 0.020
         )
 
-        self.loop.reset([self.position(), self.velocity()])
+        self.loop.reset([self.position_observation(), self.velocity_observation()])
+        self.loop.setNextR([self.position_observation(), self.velocity_observation()])
+        self.innovation = self.loop.xhat()
+
+        self.desired_state = TrapezoidProfile.State(
+            IntakeComponent.RETRACTED_ANGLE, 0.0
+        )
+        self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
+        self.initial_state = TrapezoidProfile.State(
+            self.position_observation(), self.velocity_observation()
+        )
 
     def intake(self, upper: bool):
         deployed_angle = (
@@ -141,14 +145,37 @@ class IntakeComponent:
         return math.degrees(self.position())
 
     def position(self):
+        return self.loop.xhat(0)
+
+    def position_observation(self) -> float:
         return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
 
+    @feedback
+    def position_observation_degrees(self) -> float:
+        return math.degrees(self.position_observation())
+
     def velocity(self) -> float:
+        return self.loop.xhat(1)
+
+    def velocity_observation(self) -> float:
         return self.motor_encoder.getVelocity()
 
+    @feedback
+    def current_input(self):
+        return self.loop.U()
+
     def correct_and_predict(self) -> None:
-        self.loop.correct([self.position()])
+        # this is still predicted from the last loop
+        predicted = self.loop.xhat()
+        self.loop.correct([self.position_observation()])
+        corrected = self.loop.xhat()
+
+        self.innovation = corrected - predicted
         self.loop.predict(0.020)
+
+    @feedback
+    def filter_error(self):
+        return self.innovation
 
     def _force_retract(self):
         self.desired_state = TrapezoidProfile.State(
