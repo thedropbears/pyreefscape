@@ -213,12 +213,12 @@ class VisualLocalizer(HasPerLoopCache):
         turret_pose = robot_pose.transformBy(self.robot_to_turret_2d)
 
         for tag in APRILTAGS:
-            turret_to_tag = (
-                tag.pose.toPose2d().translation() - turret_pose.translation()
-            )
-            relative_bearing = turret_to_tag.angle() - turret_pose.rotation()
+            tag_pose = tag.pose.toPose2d()
+            turret_to_tag = tag_pose.translation() - turret_pose.translation()
+            turret_angle_to_tag = turret_to_tag.angle()
+            relative_bearing = turret_angle_to_tag - turret_pose.rotation()
             distance = turret_to_tag.norm()
-            relative_facing = tag.pose.toPose2d().rotation() - turret_to_tag.angle()
+            relative_facing = tag_pose.rotation() - turret_angle_to_tag
             relative_bearing_rad = relative_bearing.radians()
             # Make the angle less than the max rotation, then see if we are above the min too
             in_rotation_range = False
