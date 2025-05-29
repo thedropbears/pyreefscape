@@ -211,12 +211,14 @@ class VisualLocalizer(HasPerLoopCache):
 
         robot_pose = self.chassis.get_pose()
         turret_pose = robot_pose.transformBy(self.robot_to_turret_2d)
+        turret_translation = turret_pose.translation()
+        turret_rotation = turret_pose.rotation()
 
         for tag in APRILTAGS_2D:
             tag_pose = tag.pose
-            turret_to_tag = tag_pose.translation() - turret_pose.translation()
+            turret_to_tag = tag_pose.translation() - turret_translation
             turret_angle_to_tag = turret_to_tag.angle()
-            relative_bearing = turret_angle_to_tag - turret_pose.rotation()
+            relative_bearing = turret_angle_to_tag - turret_rotation
             distance = turret_to_tag.norm()
             relative_facing = tag_pose.rotation() - turret_angle_to_tag
             relative_bearing_rad = relative_bearing.radians()
