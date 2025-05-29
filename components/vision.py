@@ -22,7 +22,7 @@ from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 from components.chassis import ChassisComponent
 from utilities.caching import HasPerLoopCache, cache_per_loop
 from utilities.functions import clamp
-from utilities.game import APRILTAGS, apriltag_layout
+from utilities.game import APRILTAGS_2D, apriltag_layout
 from utilities.rev import configure_through_bore_encoder
 
 
@@ -212,8 +212,8 @@ class VisualLocalizer(HasPerLoopCache):
         robot_pose = self.chassis.get_pose()
         turret_pose = robot_pose.transformBy(self.robot_to_turret_2d)
 
-        for tag in APRILTAGS:
-            tag_pose = tag.pose.toPose2d()
+        for tag in APRILTAGS_2D:
+            tag_pose = tag.pose
             turret_to_tag = tag_pose.translation() - turret_pose.translation()
             turret_angle_to_tag = turret_to_tag.angle()
             relative_bearing = turret_angle_to_tag - turret_pose.rotation()
@@ -241,7 +241,7 @@ class VisualLocalizer(HasPerLoopCache):
             ):
                 # Test for relative facing is more than 90 degrees because we don't want to be too
                 # close to parallel to the tag
-                tags_in_view.append(VisibleTag(tag.ID, relative_bearing_rad, distance))
+                tags_in_view.append(VisibleTag(tag.id, relative_bearing_rad, distance))
 
         return tags_in_view
 

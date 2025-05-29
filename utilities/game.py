@@ -1,5 +1,6 @@
 """Descriptions of the field and match state."""
 
+import dataclasses
 import math
 import typing
 
@@ -26,6 +27,18 @@ get_fiducial_pose = typing.cast(
 )
 
 APRILTAGS = apriltag_layout.getTags()
+
+
+@dataclasses.dataclass(slots=True)
+class Tag2d:
+    id: TagId
+    pose: Pose2d
+
+
+APRILTAGS_2D = [
+    Tag2d(typing.cast(TagId, tag.ID), tag.pose.toPose2d()) for tag in APRILTAGS
+]
+
 
 L3_TAGS = [7, 9, 11, 18, 20, 22]
 L2_TAGS = [6, 8, 10, 17, 19, 21]
