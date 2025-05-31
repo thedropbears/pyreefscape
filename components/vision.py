@@ -398,11 +398,11 @@ class VisualLocalizer(HasPerLoopCache):
         self.should_override = False
 
     @feedback
-    def sees_target(self):
+    def sees_target(self) -> bool:
         return wpilib.Timer.getFPGATimestamp() - self.last_timestamp < self.TIMEOUT
 
     @feedback
-    def sees_multi_tag_target(self):
+    def sees_multi_tag_target(self) -> bool:
         return self.has_multitag and self.sees_target()
 
 
