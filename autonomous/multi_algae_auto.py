@@ -1,4 +1,4 @@
-from autonomous.auto_base import AutoBase
+from autonomous.auto_base import AutoBase, AutoBaseNoBalls
 
 
 class CentreAuto(AutoBase):
@@ -57,5 +57,27 @@ class QuickPath(AutoBase):
                 "AlgaeIJToShootIJ",
                 "ShootIJToAlgaeKL",
                 "AlgaeKLToShootKL",
+            ]
+        )
+
+
+class LineRotateTest(AutoBaseNoBalls):
+    MODE_NAME = "TEST LINE ROTATION"
+
+    def __init__(self) -> None:
+        super().__init__(
+            [
+                "LineRotateTest",
+            ]
+        )
+
+
+class LineRotateJiggleReductionTest(AutoBaseNoBalls):
+    MODE_NAME = "TEST JIGGLE REDUCTION line rotation"
+
+    def __init__(self) -> None:
+        super().__init__(
+            [
+                "LineLessJiggleTest",
             ]
         )
