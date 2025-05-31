@@ -244,7 +244,7 @@ class MyRobot(magicbot.MagicRobot):
             self.reef_intake.intake()
 
         if self.gamepad.getYButton():
-            self.climber_state_machine.deploy_without_localization()
+            self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
             if (
                 self.climber_state_machine.current_state == "pre_climbing"
@@ -312,7 +312,7 @@ class MyRobot(magicbot.MagicRobot):
             self.algae_shooter.shoot()
 
         if self.gamepad.getYButton():
-            self.climber_state_machine.deploy()
+            self.climber_state_machine.deploy_without_localization()
 
         if self.gamepad.getAButton():
             if (
