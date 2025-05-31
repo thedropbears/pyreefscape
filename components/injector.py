@@ -9,6 +9,7 @@ from ids import DioChannel, SparkId
 
 class InjectorComponent:
     desired_injector_voltage = will_reset_to(0.0)
+    should_measure = will_reset_to(False)
 
     INJECTOR_INJECT_VOLTAGE = tunable(12.0)
     INJECTOR_INTAKE_VOLTAGE = tunable(-2.0)
@@ -106,5 +107,3 @@ class InjectorComponent:
         else:
             self.injector_1.setVoltage(self.desired_injector_voltage)
             self.injector_2.setVoltage(self.desired_injector_voltage)
-
-        self.should_measure = False
