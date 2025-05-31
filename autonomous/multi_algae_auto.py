@@ -62,7 +62,7 @@ class QuickPath(AutoBase):
 
 
 class LineRotateTest(AutoBaseNoBalls):
-    MODE_NAME = "TEST LINE ROTATION"
+    MODE_NAME = "TEST LINE rotation"
 
     def __init__(self) -> None:
         super().__init__(
@@ -73,7 +73,7 @@ class LineRotateTest(AutoBaseNoBalls):
 
 
 class LineRotateJiggleReductionTest(AutoBaseNoBalls):
-    MODE_NAME = "TEST JIGGLE REDUCTION line rotation"
+    MODE_NAME = "TEST JIGGLE REDUCTION LINE rotation"
 
     def __init__(self) -> None:
         super().__init__(
@@ -84,11 +84,22 @@ class LineRotateJiggleReductionTest(AutoBaseNoBalls):
 
 
 class CurveRotateTest(AutoBaseNoBalls):
-    MODE_NAME = "TEST CURVE ROTATION"
+    MODE_NAME = "TEST CURVE rotation"
 
     def __init__(self) -> None:
         super().__init__(
             [
                 "CurveRotateTest",
+            ]
+        )
+
+
+class CurveRotateJiggleReductionTest(AutoBaseNoBalls):
+    MODE_NAME = "TEST JIGGLE REDUCTION CURVE rotation"
+
+    def __init__(self) -> None:
+        super().__init__(
+            [
+                "CurveLessJiggleTest",
             ]
         )
