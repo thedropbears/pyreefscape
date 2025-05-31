@@ -81,3 +81,14 @@ class LineRotateJiggleReductionTest(AutoBaseNoBalls):
                 "LineLessJiggleTest",
             ]
         )
+
+
+class CurveRotateTest(AutoBaseNoBalls):
+    MODE_NAME = "TEST CURVE ROTATION"
+
+    def __init__(self) -> None:
+        super().__init__(
+            [
+                "CurveRotateTest",
+            ]
+        )
