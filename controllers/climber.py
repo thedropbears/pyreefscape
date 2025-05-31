@@ -16,13 +16,18 @@ class ClimberStateMachine(StateMachine):
     def __init__(self):
         self.has_deployed = False
         self.heading_to_cage = 0.0
+        self.should_localize = True
 
     def on_disable(self) -> None:
         self.has_deployed = False
         super().on_disable()
 
-    def deploy(self) -> None:
+    def deploy(self, *, localize: bool = True) -> None:
+        self.should_localize = localize
         self.engage("deploying", force=True)
+
+    def deploy_without_localization(self) -> None:
+        self.deploy(localize=False)
 
     def retract(self) -> None:
         if self.has_deployed:
@@ -41,23 +46,24 @@ class ClimberStateMachine(StateMachine):
             self.climber.stop_pid_update()
             self.has_deployed = True
 
-        cage_positions = cage_pos(is_red())
-        closest_cage_position = cage_positions[0]
-        closest_cage_dist = 999.0
-        robot_position = self.chassis.get_pose().translation()
+        if self.should_localize:
+            cage_positions = cage_pos(is_red())
+            closest_cage_position = cage_positions[0]
+            closest_cage_dist = 999.0
+            robot_position = self.chassis.get_pose().translation()
 
-        for cage_position in cage_positions:
-            dist = robot_position.distance(cage_position)
-            if dist < closest_cage_dist:
-                closest_cage_dist = dist
-                closest_cage_position = cage_position
+            for cage_position in cage_positions:
+                dist = robot_position.distance(cage_position)
+                if dist < closest_cage_dist:
+                    closest_cage_dist = dist
+                    closest_cage_position = cage_position
 
-        if closest_cage_dist > 0.5:
-            self.heading_to_cage = math.atan2(
-                closest_cage_position.y - robot_position.y,
-                closest_cage_position.x - robot_position.x,
-            )
-        self.chassis.snap_to_heading(self.heading_to_cage)
+            if closest_cage_dist > 0.5:
+                self.heading_to_cage = math.atan2(
+                    closest_cage_position.y - robot_position.y,
+                    closest_cage_position.x - robot_position.x,
+                )
+            self.chassis.snap_to_heading(self.heading_to_cage)
 
     def is_ready_to_climb(self) -> bool:
         return self.climber.is_left_engaged() and self.climber.is_right_engaged()

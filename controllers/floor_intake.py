@@ -6,7 +6,6 @@ from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.shooter import ShooterComponent
 from components.wrist import WristComponent
-from controllers.algae_measurement import AlgaeMeasurement
 
 
 class FloorIntake(StateMachine):
@@ -14,7 +13,6 @@ class FloorIntake(StateMachine):
     injector_component: InjectorComponent
     wrist: WristComponent
     intake_component: IntakeComponent
-    algae_measurement: AlgaeMeasurement
 
     HANDOFF_POSITION = tunable(math.radians(-112.0))
 
