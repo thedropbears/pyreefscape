@@ -323,9 +323,6 @@ class MyRobot(magicbot.MagicRobot):
             else:
                 self.climber_state_machine.pre_climb()
 
-        if self.gamepad.getAButton():
-            self.climber.go_to_retract()
-
         if self.gamepad.getXButton():
             self.coral_depositor_component.deposit()
         elif self.gamepad.getAButton():
