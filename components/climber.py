@@ -20,7 +20,7 @@ class ClimberComponent:
     def __init__(self) -> None:
         self.START_ANGLE = -30.0
         self.PRE_CLIMB_ANGLE = -20.0
-        self.DEPLOY_ANGLE = 11.0
+        self.DEPLOY_ANGLE = 16.0
         self.RETRACT_ANGLE = -52.0
 
         self.left_limit_switch = DigitalInput(DioChannel.LEFT_CLIMBER_SWITCH)
