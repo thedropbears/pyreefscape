@@ -8,18 +8,18 @@ from rev import (
     SparkMaxConfig,
 )
 from wpilib import DutyCycleEncoder
-from wpimath import estimator
 from wpimath.controller import (
     ArmFeedforward,
     LinearQuadraticRegulator_2_1,
     PIDController,
 )
-from wpimath.system import LinearSystemLoop_2_1_1, plant
+from wpimath.estimator import KalmanFilter_2_1_2
+from wpimath.system import LinearSystemLoop_2_1_2
+from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId, TalonId
 from utilities.rev import configure_through_bore_encoder
-from utilities.state_space import single_jointed_arm_system
 
 
 class IntakeComponent:
@@ -73,23 +73,22 @@ class IntakeComponent:
 
         self.motor_encoder = self.arm_motor.getEncoder()
 
-        self.armPlant = single_jointed_arm_system(
-            plant.DCMotor.NEO(1), self.ARM_MOI, self.gear_ratio
+        plant = LinearSystemId.singleJointedArmSystem(
+            DCMotor.NEO(1), self.ARM_MOI, self.gear_ratio
         )
 
-        """No idea if these are the correct error/trust values"""
-        self.observer = estimator.KalmanFilter_2_1_1(
-            self.armPlant,
+        self.observer = KalmanFilter_2_1_2(
+            plant,
             (
                 0.15,
                 0.17,
             ),
-            (0.005,),
+            (0.005, 0.009),
             0.020,
         )
 
         self.controller = LinearQuadraticRegulator_2_1(
-            self.armPlant,
+            plant,
             (
                 0.01,
                 0.5,
@@ -98,8 +97,8 @@ class IntakeComponent:
             0.020,
         )
 
-        self.loop = LinearSystemLoop_2_1_1(
-            self.armPlant, self.controller, self.observer, 12.0, 0.020
+        self.loop = LinearSystemLoop_2_1_2(
+            plant, self.controller, self.observer, 12.0, 0.020
         )
 
         self.loop.reset([self.position_observation(), self.velocity_observation()])
@@ -167,11 +166,15 @@ class IntakeComponent:
 
     def correct_and_predict(self) -> None:
         if wpilib.DriverStation.isDisabled():
-            self.observer.correct([0.0], [self.position_observation()])
+            self.observer.correct(
+                [0.0], [self.position_observation(), self.velocity_observation()]
+            )
 
             self.observer.predict([0.0], 0.02)
         else:
-            self.loop.correct([self.position_observation()])
+            self.loop.correct(
+                [self.position_observation(), self.velocity_observation()]
+            )
 
             self.loop.predict(0.020)
 
@@ -180,7 +183,7 @@ class IntakeComponent:
             self.position() > IntakeComponent.RETRACTED_ANGLE
             or self.position() < IntakeComponent.DEPLOYED_ANGLE_LOWER
         ):
-            self.loop.reset([self.position_observation()])
+            self.loop.reset([self.position_observation(), self.velocity_observation()])
 
     @feedback
     def desired(self):
