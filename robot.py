@@ -19,7 +19,6 @@ from components.led_component import LightStrip
 from components.shooter import ShooterComponent
 from components.vision import ServoOffsets, VisualLocalizer
 from components.wrist import WristComponent
-from controllers.algae_measurement import AlgaeMeasurement
 from controllers.algae_shooter import AlgaeShooter
 from controllers.climber import ClimberStateMachine
 from controllers.floor_intake import FloorIntake
@@ -35,7 +34,6 @@ class MyRobot(magicbot.MagicRobot):
     algae_shooter: AlgaeShooter
     floor_intake: FloorIntake
     climber_state_machine: ClimberStateMachine
-    algae_measurement: AlgaeMeasurement
 
     # Components
     chassis: ChassisComponent
@@ -285,6 +283,25 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.set_coast_in_neutral(True)
 
     def testPeriodic(self) -> None:
+        allowed_to_drive = self.gamepad.getRightBumperButton()
+        if allowed_to_drive:
+            # Set max speed
+            max_speed = self.lower_max_speed
+            max_spin_rate = self.lower_max_spin_rate
+
+            # Driving
+            drive_x = -rescale_js(self.gamepad.getLeftY(), 0.05, 15) * max_speed
+            drive_y = -rescale_js(self.gamepad.getLeftX(), 0.05, 15) * max_speed
+            drive_z = (
+                -rescale_js(self.gamepad.getRightX(), 0.1, exponential=20)
+                * max_spin_rate
+            )
+
+            self.chassis.drive_local(drive_x, drive_y, drive_z)
+            self.chassis.execute()
+        else:
+            self.chassis.stop()
+
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
@@ -294,12 +311,17 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getRightTriggerAxis() > 0.5:
             self.algae_shooter.shoot()
 
-        if self.gamepad.getYButtonPressed():
-            self.climber.go_to_deploy()
-            self.climber.start_pid_update()
+        if self.gamepad.getYButton():
+            self.climber_state_machine.deploy_without_localization()
 
         if self.gamepad.getAButton():
-            self.climber.go_to_retract()
+            if (
+                self.climber_state_machine.current_state == "pre_climbing"
+                and self.climber_state_machine.is_ready_to_climb()
+            ) or self.climber_state_machine.current_state == "retracting":
+                self.climber_state_machine.retract()
+            else:
+                self.climber_state_machine.pre_climb()
 
         if self.gamepad.getXButton():
             self.coral_depositor_component.deposit()
@@ -314,15 +336,11 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getLeftTriggerAxis() > 0.5:
             self.floor_intake.intake()
 
-        if self.gamepad.getRightBumper():
-            self.algae_measurement.engage()
-
         # Controllers
         self.reef_intake.execute()
         self.algae_shooter.execute()
         self.floor_intake.execute()
         self.climber_state_machine.execute()
-        self.algae_measurement.execute()
 
         # Components
         self.climber.execute()
