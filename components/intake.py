@@ -9,9 +9,7 @@ from rev import (
 )
 from wpilib import DutyCycleEncoder
 from wpimath.controller import (
-    ArmFeedforward,
     LinearQuadraticRegulator_2_1,
-    PIDController,
 )
 from wpimath.estimator import KalmanFilter_2_1_2
 from wpimath.system import LinearSystemLoop_2_1_2
@@ -55,11 +53,7 @@ class IntakeComponent:
         spark_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
         self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(1.0, 1.0))
-        self.pid = PIDController(Kp=5.9679, Ki=0, Kd=0.0)
 
-        # CG is at 220mm, 2.9kg
-        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A2.9%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.22%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A24%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A15%2C%22u%22%3A%22deg%22%7D
-        self.arm_ff = ArmFeedforward(kS=0.0, kG=0.86, kV=0.47, kA=0.02)
         spark_config.encoder.positionConversionFactor(math.tau * (1 / self.gear_ratio))
         spark_config.encoder.velocityConversionFactor(
             (1 / 60) * math.tau * (1 / self.gear_ratio)
