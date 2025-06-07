@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import wpilib
 from magicbot import feedback, tunable
 from phoenix5 import ControlMode, TalonSRX
@@ -8,7 +9,12 @@ from rev import (
     SparkMaxConfig,
 )
 from wpilib import DutyCycleEncoder
-from wpimath.controller import ArmFeedforward, PIDController
+from wpimath.controller import (
+    LinearQuadraticRegulator_2_1,
+)
+from wpimath.estimator import KalmanFilter_2_1_2
+from wpimath.system import LinearSystemLoop_2_1_2
+from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.trajectory import TrapezoidProfile
 
 from ids import DioChannel, SparkId, TalonId
@@ -24,6 +30,7 @@ class IntakeComponent:
     DEPLOYED_ANGLE_LOWER = 3.391598 - ARM_ENCODER_OFFSET
     DEPLOYED_ANGLE_UPPER = 3.891598 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 4.592024 - ARM_ENCODER_OFFSET
+    ARM_MOI = 0.181717788
 
     gear_ratio = 4.0 * 5.0 * (48.0 / 40.0)
 
@@ -46,12 +53,6 @@ class IntakeComponent:
         spark_config.inverted(False)
         spark_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
-        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(4.0, 8.0))
-        self.pid = PIDController(Kp=5.9679, Ki=0, Kd=0.0)
-
-        # CG is at 220mm, 2.9kg
-        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A2.9%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.22%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A90%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A24%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A15%2C%22u%22%3A%22deg%22%7D
-        self.arm_ff = ArmFeedforward(kS=0.0, kG=0.86, kV=0.47, kA=0.02)
         spark_config.encoder.positionConversionFactor(math.tau * (1 / self.gear_ratio))
         spark_config.encoder.velocityConversionFactor(
             (1 / 60) * math.tau * (1 / self.gear_ratio)
@@ -65,11 +66,47 @@ class IntakeComponent:
 
         self.motor_encoder = self.arm_motor.getEncoder()
 
+        plant = LinearSystemId.singleJointedArmSystem(
+            DCMotor.NEO(1), self.ARM_MOI, self.gear_ratio
+        )
+
+        self.observer = KalmanFilter_2_1_2(
+            plant,
+            (
+                0.15,
+                0.17,
+            ),
+            (0.005, 0.009),
+            0.020,
+        )
+
+        self.controller = LinearQuadraticRegulator_2_1(
+            plant,
+            (
+                0.005,
+                0.02,
+            ),
+            (2.0,),
+            0.020,
+        )
+
+        self.loop = LinearSystemLoop_2_1_2(
+            plant, self.controller, self.observer, 12.0, 0.020
+        )
+
+        self.loop.reset([self.position_observation(), self.velocity_observation()])
+        self.loop.setNextR([self.position_observation(), self.velocity_observation()])
+        self.innovation = np.zeros(self.loop.xhat().shape)
+
+        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(8.0, 10.0))
         self.desired_state = TrapezoidProfile.State(
             IntakeComponent.RETRACTED_ANGLE, 0.0
         )
+        self.tracked_state = self.desired_state
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
-        self.initial_state = TrapezoidProfile.State(self.position(), self.velocity())
+        self.initial_state = TrapezoidProfile.State(
+            self.position_observation(), self.velocity_observation()
+        )
 
     def intake(self, upper: bool):
         deployed_angle = (
@@ -97,15 +134,67 @@ class IntakeComponent:
     def raw_encoder(self) -> float:
         return self.encoder.get()
 
-    @feedback
     def position_degrees(self) -> float:
         return math.degrees(self.position())
 
-    def position(self):
+    @feedback
+    def position(self) -> float:
+        return self.loop.xhat(0)
+
+    def position_observation(self) -> float:
         return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
 
+    @feedback
+    def position_observation_degrees(self) -> float:
+        return math.degrees(self.position_observation())
+
     def velocity(self) -> float:
+        return self.loop.xhat(1)
+
+    def velocity_observation(self) -> float:
         return self.motor_encoder.getVelocity()
+
+    @feedback
+    def next_input(self) -> float:
+        return self.loop.U(0)
+
+    def correct_and_predict(self) -> None:
+        predicted = self.loop.xhat()
+        if wpilib.DriverStation.isDisabled():
+            self.observer.correct(
+                [0.0], [self.position_observation(), self.velocity_observation()]
+            )
+            corrected = self.observer.xhat()
+
+            self.observer.predict([0.0], 0.02)
+        else:
+            self.loop.correct(
+                [self.position_observation(), self.velocity_observation()]
+            )
+            corrected = self.loop.xhat()
+
+            self.loop.predict(0.020)
+
+        # Use in-place subtraction to avoid creating a new array.
+        # `corrected` is no longer used after this point.
+        innovation = corrected
+        innovation -= predicted
+        self.innovation = innovation
+
+        # constrain ourselves if we are going to do damage
+        if (
+            self.position() > IntakeComponent.RETRACTED_ANGLE
+            or self.position() < IntakeComponent.DEPLOYED_ANGLE_LOWER
+        ):
+            self.loop.reset([self.position_observation(), self.velocity_observation()])
+
+    @feedback
+    def next_setpoint(self) -> tuple[float, float]:
+        return (self.tracked_state.position, self.tracked_state.velocity)
+
+    @feedback
+    def filter_innovation(self) -> tuple[float, float]:
+        return (self.innovation[0], self.innovation[1])
 
     def _force_retract(self):
         self.desired_state = TrapezoidProfile.State(
@@ -123,19 +212,20 @@ class IntakeComponent:
 
         self.desired_output = 0.0
 
-        tracked_state = self.motion_profile.calculate(
+        self.tracked_state = self.motion_profile.calculate(
             wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
             self.initial_state,
             self.desired_state,
         )
-        ff = self.arm_ff.calculate(tracked_state.position, tracked_state.velocity)
+
+        self.loop.setNextR([self.tracked_state.position, self.tracked_state.velocity])
+
+        self.correct_and_predict()
 
         if not math.isclose(
             self.desired_state.position, self.position(), abs_tol=math.radians(5)
         ):
-            self.arm_motor.setVoltage(
-                self.pid.calculate(self.position(), tracked_state.position) + ff
-            )
+            self.arm_motor.setVoltage(self.loop.U(0))
         else:
             self.arm_motor.setVoltage(0.0)
 

@@ -366,6 +366,8 @@ class MyRobot(magicbot.MagicRobot):
         self.chassis.update_alliance()
         self.chassis.update_odometry()
 
+        self.intake_component.correct_and_predict()
+
         self.starboard_vision.execute()
         self.port_vision.execute()
 
