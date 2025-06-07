@@ -129,6 +129,20 @@ class MyRobot(magicbot.MagicRobot):
                 Rotation2d(-1.377),
                 Rotation2d(1.377),
             )
+            # temporary values
+            self.port_vision_name = "port_turret"
+            self.port_vision_turret_pos = Translation3d(-0.010, 0.300, 0.660)
+            self.port_vision_turret_rot = Rotation2d.fromDegrees(90.0)
+            self.port_vision_camera_offset = Translation3d(0.021, 0, 0)
+            self.port_vision_camera_pitch = math.radians(10.0)
+            self.port_vision_encoder_offset = Rotation2d(6.103)
+            self.port_vision_servo_offsets = ServoOffsets(
+                neutral=Rotation2d(1.052), full_range=Rotation2d(3.121)
+            )
+            self.port_vision_rotation_range = (
+                Rotation2d(1.733),
+                Rotation2d(5.034),
+            )
 
         else:
             self.chassis_swerve_config = SwerveConfig(
