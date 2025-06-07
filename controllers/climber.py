@@ -15,13 +15,17 @@ class ClimberStateMachine(StateMachine):
 
     def __init__(self):
         self.has_deployed = False
+        self.seen_left = False
+        self.seen_right = False
         self.heading_to_cage = 0.0
 
     def on_disable(self) -> None:
-        self.has_deployed = False
         super().on_disable()
 
     def deploy(self) -> None:
+        self.has_deployed = False
+        self.seen_right = False
+        self.seen_left = False
         self.engage("deploying", force=True)
 
     def retract(self) -> None:
@@ -30,12 +34,17 @@ class ClimberStateMachine(StateMachine):
 
     @state(first=True, must_finish=True)
     def deploying(self, initial_call) -> None:
+        if initial_call:
+            self.climber.go_to_deploy()
+
+        if self.climber.is_left_engaged():
+            self.seen_left = True
+        if self.climber.is_right_engaged():
+            self.seen_right = True
         self.status_lights.climber_deploying(
             left_okay=self.climber.is_left_engaged(),
             right_okay=self.climber.is_right_engaged(),
         )
-        if initial_call:
-            self.climber.go_to_deploy()
 
         if self.climber.is_deployed():
             self.climber.stop_pid_update()
@@ -60,20 +69,7 @@ class ClimberStateMachine(StateMachine):
         self.chassis.snap_to_heading(self.heading_to_cage)
 
     def is_ready_to_climb(self) -> bool:
-        return self.climber.is_left_engaged() and self.climber.is_right_engaged()
-
-    def pre_climb(self) -> None:
-        self.engage("pre_climbing", force=True)
-
-    @state(must_finish=True)
-    def pre_climbing(self) -> None:
-        self.status_lights.climber_pre_climb(
-            left_okay=self.climber.is_left_engaged(),
-            right_okay=self.climber.is_right_engaged(),
-        )
-        self.climber.start_pid_update()
-        self.chassis.stop_snapping()
-        self.climber.go_to_pre_climb()
+        return self.seen_left and self.seen_right
 
     @state(must_finish=True)
     def retracting(self) -> None:
