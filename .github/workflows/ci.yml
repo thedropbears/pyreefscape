@@ -63,3 +63,17 @@ jobs:
         with:
           linters: mypy
           run: uv run mypy --show-column-numbers .
+
+  ty:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.x"
+      - name: Install dependencies
+        run: |
+          uv sync --locked
+      - run: uvx ty check robot.py
