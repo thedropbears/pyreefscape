@@ -159,18 +159,23 @@ class IntakeComponent:
         return self.loop.U(0)
 
     def correct_and_predict(self) -> None:
+        predicted = self.loop.xhat()
         if wpilib.DriverStation.isDisabled():
             self.observer.correct(
                 [0.0], [self.position_observation(), self.velocity_observation()]
             )
+            corrected = self.observer.xhat()
 
             self.observer.predict([0.0], 0.02)
         else:
             self.loop.correct(
                 [self.position_observation(), self.velocity_observation()]
             )
+            corrected = self.loop.xhat()
 
             self.loop.predict(0.020)
+
+        self.innovation = corrected - predicted
 
         # constrain ourselves if we are going to do damage
         if (
