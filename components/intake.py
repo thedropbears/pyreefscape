@@ -166,13 +166,21 @@ class IntakeComponent:
         return self.loop.U()
 
     def correct_and_predict(self) -> None:
-        # this is still predicted from the last loop
-        predicted = self.loop.xhat()
-        self.loop.correct([self.position_observation()])
-        corrected = self.loop.xhat()
+        if wpilib.DriverStation.isDisabled():
+            self.observer.correct([0.0], [self.position_observation()])
 
-        self.innovation = corrected - predicted
-        self.loop.predict(0.020)
+            self.observer.predict([0.0], 0.02)
+        else:
+            self.loop.correct([self.position_observation()])
+
+            self.loop.predict(0.020)
+
+        # constrain ourselves if we are going to do damage
+        if (
+            self.position() > IntakeComponent.RETRACTED_ANGLE
+            or self.position() < IntakeComponent.DEPLOYED_ANGLE_LOWER
+        ):
+            self.loop.reset([self.position_observation()])
 
     @feedback
     def desired(self):
