@@ -53,7 +53,6 @@ class InjectorComponent:
 
         self.has_seen_algae: bool = False
 
-        self.should_measure = False
 
     def on_enable(self) -> None:
         self.has_seen_algae = False
