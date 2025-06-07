@@ -175,7 +175,11 @@ class IntakeComponent:
 
             self.loop.predict(0.020)
 
-        self.innovation = corrected - predicted
+        # Use in-place subtraction to avoid creating a new array.
+        # `corrected` is no longer used after this point.
+        innovation = corrected
+        innovation -= predicted
+        self.innovation = innovation
 
         # constrain ourselves if we are going to do damage
         if (
