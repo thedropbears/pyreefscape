@@ -134,11 +134,11 @@ class IntakeComponent:
     def raw_encoder(self) -> float:
         return self.encoder.get()
 
-    @feedback
     def position_degrees(self) -> float:
         return math.degrees(self.position())
 
-    def position(self):
+    @feedback
+    def position(self) -> float:
         return self.loop.xhat(0)
 
     def position_observation(self) -> float:
@@ -155,8 +155,8 @@ class IntakeComponent:
         return self.motor_encoder.getVelocity()
 
     @feedback
-    def current_input(self):
-        return self.loop.U()
+    def next_input(self) -> float:
+        return self.loop.U(0)
 
     def correct_and_predict(self) -> None:
         if wpilib.DriverStation.isDisabled():
@@ -180,24 +180,12 @@ class IntakeComponent:
             self.loop.reset([self.position_observation(), self.velocity_observation()])
 
     @feedback
-    def desired(self):
-        return (self.desired_state.position, self.desired_state.velocity)
-
-    @feedback
-    def tracked(self):
+    def next_setpoint(self) -> tuple[float, float]:
         return (self.tracked_state.position, self.tracked_state.velocity)
 
     @feedback
-    def initial(self):
-        return (self.initial_state.position, self.initial_state.velocity)
-
-    @feedback
-    def profile_time(self):
-        return wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time
-
-    @feedback
-    def filter_error(self):
-        return self.innovation
+    def filter_innovation(self) -> tuple[float, float]:
+        return (self.innovation[0], self.innovation[1])
 
     def _force_retract(self):
         self.desired_state = TrapezoidProfile.State(
@@ -216,7 +204,7 @@ class IntakeComponent:
         self.desired_output = 0.0
 
         self.tracked_state = self.motion_profile.calculate(
-            self.profile_time(),
+            wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
             self.initial_state,
             self.desired_state,
         )
