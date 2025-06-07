@@ -117,8 +117,8 @@ class MyRobot(magicbot.MagicRobot):
             self.chassis_wheel_base = 0.467
 
             self.starboard_vision_name = "ardu_cam"
-            self.starboard_vision_turret_pos = Translation3d(0.300, 0.000, 0.250)
-            self.starboard_vision_turret_rot = Rotation2d.fromDegrees(0.0)
+            self.starboard_vision_turret_pos = Translation3d(-0.300, -0.040, 0.230)
+            self.starboard_vision_turret_rot = Rotation2d.fromDegrees(180.0)
             self.starboard_vision_camera_offset = Translation3d(0.021, 0, 0)
             self.starboard_vision_camera_pitch = math.radians(0.0)
             self.starboard_vision_encoder_offset = Rotation2d(0.0)
