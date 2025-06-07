@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import wpilib
 from magicbot import feedback, tunable
 from phoenix5 import ControlMode, TalonSRX
@@ -95,7 +96,7 @@ class IntakeComponent:
 
         self.loop.reset([self.position_observation(), self.velocity_observation()])
         self.loop.setNextR([self.position_observation(), self.velocity_observation()])
-        self.innovation = self.loop.xhat()
+        self.innovation = np.zeros(self.loop.xhat().shape)
 
         self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(8.0, 10.0))
         self.desired_state = TrapezoidProfile.State(
