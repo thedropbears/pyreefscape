@@ -19,7 +19,6 @@ class ClimberComponent:
 
     def __init__(self) -> None:
         self.START_ANGLE = -30.0
-        self.PRE_CLIMB_ANGLE = -20.0
         self.DEPLOY_ANGLE = 16.0
         self.RETRACT_ANGLE = -52.0
 
@@ -78,9 +77,6 @@ class ClimberComponent:
 
     def go_to_neutral(self) -> None:
         self.set_angle(math.radians(self.START_ANGLE))
-
-    def go_to_pre_climb(self) -> None:
-        self.set_angle(math.radians(self.PRE_CLIMB_ANGLE))
 
     def go_to_deploy(self) -> None:
         self.set_angle(math.radians(self.DEPLOY_ANGLE))
