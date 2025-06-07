@@ -221,7 +221,7 @@ class IntakeComponent:
             self.desired_state,
         )
 
-        self.loop.setNextR([self.desired_state.position, self.desired_state.velocity])
+        self.loop.setNextR([self.tracked_state.position, self.tracked_state.velocity])
 
         self.correct_and_predict()
 
