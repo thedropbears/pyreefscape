@@ -52,8 +52,6 @@ class IntakeComponent:
         spark_config.inverted(False)
         spark_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
 
-        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(1.0, 1.0))
-
         spark_config.encoder.positionConversionFactor(math.tau * (1 / self.gear_ratio))
         spark_config.encoder.velocityConversionFactor(
             (1 / 60) * math.tau * (1 / self.gear_ratio)
@@ -84,10 +82,10 @@ class IntakeComponent:
         self.controller = LinearQuadraticRegulator_2_1(
             plant,
             (
-                0.01,
-                0.5,
+                0.005,
+                0.02,
             ),
-            (12.0,),
+            (2.0,),
             0.020,
         )
 
@@ -99,6 +97,7 @@ class IntakeComponent:
         self.loop.setNextR([self.position_observation(), self.velocity_observation()])
         self.innovation = self.loop.xhat()
 
+        self.motion_profile = TrapezoidProfile(TrapezoidProfile.Constraints(8.0, 10.0))
         self.desired_state = TrapezoidProfile.State(
             IntakeComponent.RETRACTED_ANGLE, 0.0
         )
