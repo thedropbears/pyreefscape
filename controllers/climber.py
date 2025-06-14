@@ -34,7 +34,7 @@ class ClimberStateMachine(StateMachine):
         self.deploy(localize=False)
 
     def retract(self) -> None:
-        if self.has_deployed:
+        if self.has_deployed and self.is_ready_to_climb():
             self.engage("retracting", force=True)
 
     @state(first=True, must_finish=True)

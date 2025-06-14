@@ -245,7 +245,7 @@ class MyRobot(magicbot.MagicRobot):
 
         if self.gamepad.getYButton():
             self.climber_state_machine.deploy()
-        if self.gamepad.getAButton() and self.climber_state_machine.is_ready_to_climb():
+        if self.gamepad.getAButton():
             self.climber_state_machine.retract()
 
         if self.gamepad.getBButton():
