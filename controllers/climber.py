@@ -1,6 +1,6 @@
 import math
 
-from magicbot import StateMachine, state
+from magicbot import StateMachine, feedback, state
 
 from components.chassis import ChassisComponent
 from components.climber import ClimberComponent
@@ -47,8 +47,8 @@ class ClimberStateMachine(StateMachine):
         if self.climber.is_right_engaged():
             self.seen_right = True
         self.status_lights.climber_deploying(
-            left_okay=self.climber.is_left_engaged(),
-            right_okay=self.climber.is_right_engaged(),
+            left_okay=self.seen_left,
+            right_okay=self.seen_right,
         )
 
         if self.climber.is_deployed():
@@ -74,6 +74,7 @@ class ClimberStateMachine(StateMachine):
                 )
             self.chassis.snap_to_heading(self.heading_to_cage)
 
+    @feedback
     def is_ready_to_climb(self) -> bool:
         return self.seen_left and self.seen_right
 
