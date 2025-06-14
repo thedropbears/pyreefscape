@@ -129,7 +129,7 @@ class MyRobot(magicbot.MagicRobot):
                 Rotation2d(-1.377),
                 Rotation2d(1.377),
             )
-            # temporary values
+
             self.port_vision_name = "port_turret"
             self.port_vision_turret_pos = Translation3d(-0.010, 0.300, 0.660)
             self.port_vision_turret_rot = Rotation2d.fromDegrees(90.0)
