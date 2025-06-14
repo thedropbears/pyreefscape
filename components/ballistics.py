@@ -48,12 +48,12 @@ class BallisticsComponent:
     # Tuples are values corresponding to the distances above
     # fmt: off
     FLYWHEEL_TOP_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (18, 19, 26.0, 44.5),
+        ALGAE_MIN_DIAMETER: (17, 19, 26.0, 44.5),
         ALGAE_MAX_DIAMETER: (21, 22, 24.0, 35.0),
     }
 
     FLYWHEEL_BOTTOM_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (36, 40, 44.0, 44.5),
+        ALGAE_MIN_DIAMETER: (33, 36, 44.0, 44.5),
         ALGAE_MAX_DIAMETER: (36, 37, 44.0, 70.0),
     }
 
