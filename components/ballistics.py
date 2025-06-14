@@ -43,24 +43,24 @@ class BallisticsComponent:
     barge_blue_mid_end_point = Translation2d(FIELD_LENGTH / 2, FIELD_WIDTH / 2)
 
     # TODO Retune for  >= 4m when the space allows
-    FLYWHEEL_DISTANCE_LOOKUP = (1.5, 2.0, 3.0, 4.0)
+    FLYWHEEL_DISTANCE_LOOKUP = (1.5, 2.0, 3.0)
     # Keys of the lookup dictionaries are ball diameters in inches
     # Tuples are values corresponding to the distances above
     # fmt: off
     FLYWHEEL_TOP_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (17, 19, 26.0, 44.5),
-        ALGAE_MAX_DIAMETER: (21, 22, 24.0, 35.0),
+        ALGAE_MIN_DIAMETER: (17, 19, 26.0),
+        ALGAE_MAX_DIAMETER: (21, 22, 24.0),
     }
 
     FLYWHEEL_BOTTOM_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (33, 36, 44.0, 44.5),
-        ALGAE_MAX_DIAMETER: (36, 37, 44.0, 70.0),
+        ALGAE_MIN_DIAMETER: (33, 36, 44.0),
+        ALGAE_MAX_DIAMETER: (36, 37, 44.0),
     }
 
     FLYWHEEL_ANGLE_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25), math.radians(-25)),
+        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
         # 16.5: (math.radians(-11.0), math.radians(-19), -25),
-        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25), math.radians(-33)),
+        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())
