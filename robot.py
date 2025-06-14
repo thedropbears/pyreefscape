@@ -246,13 +246,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getYButton():
             self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
-            if (
-                self.climber_state_machine.current_state == "pre_climbing"
-                and self.climber_state_machine.is_ready_to_climb()
-            ) or self.climber_state_machine.current_state == "retracting":
-                self.climber_state_machine.retract()
-            else:
-                self.climber_state_machine.pre_climb()
+            self.climber_state_machine.retract()
 
         if self.gamepad.getBButton():
             self.reef_intake.done()
@@ -315,13 +309,7 @@ class MyRobot(magicbot.MagicRobot):
             self.climber_state_machine.deploy_without_localization()
 
         if self.gamepad.getAButton():
-            if (
-                self.climber_state_machine.current_state == "pre_climbing"
-                and self.climber_state_machine.is_ready_to_climb()
-            ) or self.climber_state_machine.current_state == "retracting":
-                self.climber_state_machine.retract()
-            else:
-                self.climber_state_machine.pre_climb()
+            self.climber_state_machine.retract()
 
         if self.gamepad.getXButton():
             self.coral_depositor_component.deposit()
