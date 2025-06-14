@@ -5,6 +5,7 @@ from magicbot import StateMachine, feedback, state
 from components.chassis import ChassisComponent
 from components.climber import ClimberComponent
 from components.led_component import LightStrip
+from components.wrist import WristComponent
 from utilities.game import cage_pos, is_red
 
 
@@ -12,6 +13,7 @@ class ClimberStateMachine(StateMachine):
     status_lights: LightStrip
     climber: ClimberComponent
     chassis: ChassisComponent
+    wrist: WristComponent
 
     def __init__(self):
         self.has_deployed = False
@@ -39,6 +41,8 @@ class ClimberStateMachine(StateMachine):
 
     @state(first=True, must_finish=True)
     def deploying(self, initial_call) -> None:
+        self.wrist.go_to_neutral()
+
         if initial_call:
             self.climber.go_to_deploy()
 
