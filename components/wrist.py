@@ -21,10 +21,11 @@ from utilities.rev import (
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = 4.011863
-    MAXIMUM_DEPRESSION = math.radians(-112.0)
-    MAXIMUM_ELEVATION = math.radians(0)
-    NEUTRAL_ANGLE = math.radians(-90.0)
+    ENCODER_ZERO_OFFSET = 3.46463832679
+    COM_DIFFERENCE = 0.54722467321
+    MAXIMUM_DEPRESSION = math.radians(-112.0) + COM_DIFFERENCE
+    MAXIMUM_ELEVATION = math.radians(0) + COM_DIFFERENCE
+    NEUTRAL_ANGLE = math.radians(-90.0) + COM_DIFFERENCE
 
     WRIST_MAX_VEL = math.radians(180.0)
     WRIST_MAX_ACC = math.radians(360.0)
@@ -35,6 +36,10 @@ class WristComponent:
     def __init__(self, mech_root: wpilib.MechanismRoot2d):
         self.wrist_ligament = mech_root.appendLigament(
             "wrist", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kYellow)
+        )
+
+        self.wrist_COM_ligament = mech_root.appendLigament(
+            "wrist_COM", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kBlue)
         )
 
         self.wrist_encoder = DutyCycleEncoder(DioChannel.WRIST_ENCODER, math.tau, 0)
@@ -118,6 +123,10 @@ class WristComponent:
         return math.degrees(self.inclination())
 
     @feedback
+    def test_inclination(self) -> float:
+        return math.degrees(self.inclination() - self.COM_DIFFERENCE)
+
+    @feedback
     def shoot_angle_deg(self) -> float:
         return self.inclination_deg() + 90
 
@@ -169,5 +178,9 @@ class WristComponent:
             self.pid.calculate(self.inclination(), tracked_state.position) + ff
         )
 
-        self.wrist_ligament.setAngle(self.inclination_deg())
+        self.wrist_ligament.setAngle(
+            self.inclination_deg() - math.degrees(WristComponent.COM_DIFFERENCE)
+        )
+
+        self.wrist_COM_ligament.setAngle(self.inclination_deg())
         # self.wrist_ligament.setAngle(math.degrees(desired_state.position))

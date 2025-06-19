@@ -14,7 +14,7 @@ class FloorIntake(StateMachine):
     wrist: WristComponent
     intake_component: IntakeComponent
 
-    HANDOFF_POSITION = tunable(math.radians(-112.0))
+    HANDOFF_POSITION = tunable(math.radians(-112.0) + WristComponent.COM_DIFFERENCE)
 
     def __init__(self):
         self.intake_upper = False

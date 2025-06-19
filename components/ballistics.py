@@ -14,6 +14,7 @@ from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
 from components.led_component import LightStrip
 from components.shooter import ShooterComponent
+from components.wrist import WristComponent
 from utilities.game import (
     ALGAE_MAX_DIAMETER,
     ALGAE_MIN_DIAMETER,
@@ -58,9 +59,17 @@ class BallisticsComponent:
     }
 
     FLYWHEEL_ANGLE_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
+        ALGAE_MIN_DIAMETER: (
+            math.radians(-10) + WristComponent.COM_DIFFERENCE,
+            math.radians(-15) + WristComponent.COM_DIFFERENCE,
+            math.radians(-25) + WristComponent.COM_DIFFERENCE
+        ),
         # 16.5: (math.radians(-11.0), math.radians(-19), -25),
-        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
+        ALGAE_MAX_DIAMETER: (
+            math.radians(-10) + WristComponent.COM_DIFFERENCE,
+            math.radians(-15) + WristComponent.COM_DIFFERENCE,
+            math.radians(-25) + WristComponent.COM_DIFFERENCE
+        ),
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())
