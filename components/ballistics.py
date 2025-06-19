@@ -64,7 +64,6 @@ class BallisticsComponent:
             math.radians(-15) + WristComponent.COM_DIFFERENCE,
             math.radians(-25) + WristComponent.COM_DIFFERENCE
         ),
-        # 16.5: (math.radians(-11.0), math.radians(-19), -25),
         ALGAE_MAX_DIAMETER: (
             math.radians(-10) + WristComponent.COM_DIFFERENCE,
             math.radians(-15) + WristComponent.COM_DIFFERENCE,
