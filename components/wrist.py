@@ -123,7 +123,7 @@ class WristComponent:
         return math.degrees(self.inclination())
 
     @feedback
-    def shooter_FOR_inclination(self) -> float:
+    def shooter_FOR_inclination_deg(self) -> float:
         return math.degrees(self.inclination() - self.COM_DIFFERENCE)
 
     @feedback
@@ -145,14 +145,9 @@ class WristComponent:
 
     # Tilts to an angle with regards to the shooter frame of reference.
     # Shooter FOR takes the arm as in-line with the backplate of the shooter
-    # SHould be called with angles in the shooter FOR
+    # Should be called with angles in the shooter FOR
     def tilt_to_shooter_FOR(self, pos: float) -> None:
-        clamped_angle = clamp(
-            (pos + self.COM_DIFFERENCE), self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION
-        )
-        # If the new setpoint is within the tolerance we wouldn't move anyway
-        if abs(clamped_angle - self.desired_state.position) > self.TOLERANCE:
-            self._tilt_to(clamped_angle)
+        self.tilt_to(pos + self.COM_DIFFERENCE)
 
     # Tilts to an angle with respect to the COM FOR
     def tilt_to(self, pos: float) -> None:
@@ -190,7 +185,7 @@ class WristComponent:
             self.pid.calculate(self.inclination(), tracked_state.position) + ff
         )
 
-        self.wrist_ligament.setAngle(self.shooter_FOR_inclination())
+        self.wrist_ligament.setAngle(self.shooter_FOR_inclination_deg())
 
         self.wrist_COM_ligament.setAngle(self.inclination_deg())
         # self.wrist_ligament.setAngle(math.degrees(desired_state.position))
