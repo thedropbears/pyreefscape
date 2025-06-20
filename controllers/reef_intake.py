@@ -72,13 +72,9 @@ class ReefIntake(StateMachine):
         current_is_L3 = self.is_L3()
 
         if current_is_L3:
-            self.wrist.tilt_to(
-                math.radians(self.L3_INTAKE_ANGLE) + WristComponent.COM_DIFFERENCE
-            )
+            self.wrist.tilt_to_shooter_FOR(math.radians(self.L3_INTAKE_ANGLE))
         else:
-            self.wrist.tilt_to(
-                math.radians(self.L2_INTAKE_ANGLE) + WristComponent.COM_DIFFERENCE
-            )
+            self.wrist.tilt_to_shooter_FOR(math.radians(self.L2_INTAKE_ANGLE))
         self.last_l3 = current_is_L3
 
         if not self.holding_coral:

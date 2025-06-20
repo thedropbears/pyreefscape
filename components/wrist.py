@@ -25,7 +25,7 @@ class WristComponent:
     COM_DIFFERENCE = 0.54722467321
     MAXIMUM_DEPRESSION = math.radians(-112.0) + COM_DIFFERENCE
     MAXIMUM_ELEVATION = math.radians(0) + COM_DIFFERENCE
-    NEUTRAL_ANGLE = math.radians(-90.0) + COM_DIFFERENCE
+    NEUTRAL_ANGLE = math.radians(-90.0)
 
     WRIST_MAX_VEL = math.radians(180.0)
     WRIST_MAX_ACC = math.radians(360.0)
@@ -123,7 +123,7 @@ class WristComponent:
         return math.degrees(self.inclination())
 
     @feedback
-    def test_inclination(self) -> float:
+    def shooter_FOR_inclination(self) -> float:
         return math.degrees(self.inclination() - self.COM_DIFFERENCE)
 
     @feedback
@@ -143,6 +143,18 @@ class WristComponent:
             self.desired_state.velocity - self.current_velocity()
         ) < WristComponent.VEL_TOLERANCE
 
+    # Tilts to an angle with regards to the shooter frame of reference.
+    # Shooter FOR takes the arm as in-line with the backplate of the shooter
+    # SHould be called with angles in the shooter FOR
+    def tilt_to_shooter_FOR(self, pos: float) -> None:
+        clamped_angle = clamp(
+            (pos + self.COM_DIFFERENCE), self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION
+        )
+        # If the new setpoint is within the tolerance we wouldn't move anyway
+        if abs(clamped_angle - self.desired_state.position) > self.TOLERANCE:
+            self._tilt_to(clamped_angle)
+
+    # Tilts to an angle with respect to the COM FOR
     def tilt_to(self, pos: float) -> None:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 
@@ -160,7 +172,7 @@ class WristComponent:
         )
 
     def go_to_neutral(self) -> None:
-        self.tilt_to(WristComponent.NEUTRAL_ANGLE)
+        self.tilt_to_shooter_FOR(WristComponent.NEUTRAL_ANGLE)
 
     @feedback
     def at_limit(self) -> bool:
@@ -178,9 +190,7 @@ class WristComponent:
             self.pid.calculate(self.inclination(), tracked_state.position) + ff
         )
 
-        self.wrist_ligament.setAngle(
-            self.inclination_deg() - math.degrees(WristComponent.COM_DIFFERENCE)
-        )
+        self.wrist_ligament.setAngle(self.shooter_FOR_inclination())
 
         self.wrist_COM_ligament.setAngle(self.inclination_deg())
         # self.wrist_ligament.setAngle(math.degrees(desired_state.position))
