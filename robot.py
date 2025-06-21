@@ -1,4 +1,5 @@
 import math
+from collections.abc import Sequence
 
 import magicbot
 import ntcore
@@ -200,6 +201,11 @@ class MyRobot(magicbot.MagicRobot):
             self.event_loop, self.coast_button.get
         ).falling()
 
+    def robotInit(self) -> None:
+        super().robotInit()
+        localizers = [self.starboard_vision, self.port_vision]
+        self.localizers: Sequence[VisualLocalizer] = localizers
+
     def teleopInit(self) -> None:
         self.field.getObject("Intended start pos").setPoses([])
         self.chassis.set_coast_in_neutral(False)
@@ -276,8 +282,8 @@ class MyRobot(magicbot.MagicRobot):
 
         # Force servo neutral
         if self.gamepad.getLeftStickButton():
-            self.port_vision.zero_servo_()
-            self.starboard_vision.zero_servo_()
+            for localizer in self.localizers:
+                localizer.zero_servo_()
 
     def is_left_trigger_pressed(self, trigger_value: float) -> bool:
         if trigger_value < 0.3:
@@ -350,13 +356,13 @@ class MyRobot(magicbot.MagicRobot):
         self.shooter_component.execute()
         self.injector_component.execute()
         if self.gamepad.getLeftStickButton():
-            self.starboard_vision.zero_servo_()
-            self.port_vision.zero_servo_()
+            for localizer in self.localizers:
+                localizer.zero_servo_()
         elif self.gamepad.getRightStickButton():
-            self.starboard_vision.full_range_servo_()
-            self.port_vision.full_range_servo_()
-        self.starboard_vision.execute()
-        self.port_vision.execute()
+            for localizer in self.localizers:
+                localizer.full_range_servo_()
+        for localizer in self.localizers:
+            localizer.execute()
         self.wrist.execute()
         self.intake_component.execute()
         self.status_lights.execute()
@@ -370,16 +376,13 @@ class MyRobot(magicbot.MagicRobot):
 
         self.intake_component.correct_and_predict()
 
-        self.starboard_vision.execute()
-        self.port_vision.execute()
+        for localizer in self.localizers:
+            localizer.execute()
 
         if self.gamepad.getBackButtonPressed():
             self._display_auto_trajectory()
 
-        if (
-            self.starboard_vision.sees_multi_tag_target()
-            or self.port_vision.sees_multi_tag_target()
-        ):
+        if any(localizer.sees_multi_tag_target() for localizer in self.localizers):
             selected_auto = self._automodes.chooser.getSelected()
             if isinstance(selected_auto, AutoBase):
                 intended_start_pose = selected_auto.get_starting_pose()
@@ -417,5 +420,5 @@ class MyRobot(magicbot.MagicRobot):
         super().robotPeriodic()
         self.intake_component.periodic()
         # Clear component per-loop caches.
-        self.starboard_vision._per_loop_cache.clear()
-        self.port_vision._per_loop_cache.clear()
+        for localizer in self.localizers:
+            localizer._per_loop_cache.clear()
