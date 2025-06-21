@@ -135,6 +135,10 @@ class WristComponent:
         return self.motor_encoder.getVelocity()
 
     @feedback
+    def current_input(self) -> float:
+        return self.motor.getAppliedOutput()
+
+    @feedback
     def at_setpoint(self) -> bool:
         return (
             abs(self.desired_state.position - self.inclination())
