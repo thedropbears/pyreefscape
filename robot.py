@@ -43,7 +43,8 @@ class MyRobot(magicbot.MagicRobot):
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     starboard_vision: VisualLocalizer
-    port_vision: VisualLocalizer
+    if not RioSerialNumber.TEST_BOT.is_current():
+        port_vision: VisualLocalizer
     wrist: WristComponent
     intake_component: IntakeComponent
     status_lights: LightStrip
@@ -94,7 +95,7 @@ class MyRobot(magicbot.MagicRobot):
         self.starboard_vision_servo_id = PwmChannel.STARBOARD_VISION_SERVO
         self.port_vision_encoder_id = DioChannel.PORT_VISION_ENCODER
         self.port_vision_servo_id = PwmChannel.PORT_VISION_SERVO
-        if wpilib.RobotController.getSerialNumber() == RioSerialNumber.TEST_BOT:
+        if RioSerialNumber.TEST_BOT.is_current():
             self.chassis_swerve_config = SwerveConfig(
                 drive_ratio=(14.0 / 50.0) * (25.0 / 19.0) * (15.0 / 45.0),
                 drive_gains=Slot0Configs()
@@ -203,7 +204,9 @@ class MyRobot(magicbot.MagicRobot):
 
     def robotInit(self) -> None:
         super().robotInit()
-        localizers = [self.starboard_vision, self.port_vision]
+        localizers = [self.starboard_vision]
+        if RioSerialNumber.COMP_BOT.is_current():
+            localizers.append(self.port_vision)
         self.localizers: Sequence[VisualLocalizer] = localizers
 
     def teleopInit(self) -> None:

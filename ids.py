@@ -1,5 +1,7 @@
 import enum
 
+import wpilib
+
 
 @enum.unique
 class TalonId(enum.IntEnum):
@@ -85,11 +87,15 @@ class PwmChannel(enum.IntEnum):
 
 
 @enum.unique
-class RioSerialNumber(enum.StrEnum):
+class RioSerialNumber(enum.Enum):
     """roboRIO serial number"""
 
     TEST_BOT = "0305cc42"
     COMP_BOT = "03062898"
+
+    def is_current(self) -> bool:
+        """Check if we're on this roboRIO."""
+        return wpilib.RobotController.getSerialNumber() == self.value
 
 
 @enum.unique
