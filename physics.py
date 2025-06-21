@@ -13,7 +13,6 @@ from photonlibpy.simulation import PhotonCameraSim, SimCameraProperties, VisionS
 from pyfrc.physics.core import PhysicsInterface
 from wpilib.simulation import (
     DCMotorSim,
-    DIOSim,
     DutyCycleEncoderSim,
     PWMSim,
     SingleJointedArmSim,
@@ -23,8 +22,6 @@ from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
 from components.chassis import SwerveModule
-from components.intake import IntakeComponent
-from components.wrist import WristComponent
 from utilities import game
 from utilities.functions import constrain_angle
 
@@ -156,58 +153,58 @@ class PhysicsEngine:
             )
             for module in robot.chassis.modules
         ]
-        self.flywheels = [
-            TalonFXMotorSim(
-                DCMotor.falcon500,
-                robot.shooter_component.top_flywheel,
-                gearing=1 / 1,
-                moi=0.00105679992,
-            ),
-            TalonFXMotorSim(
-                DCMotor.falcon500,
-                robot.shooter_component.bottom_flywheel,
-                gearing=1 / 1,
-                moi=0.00156014845,
-            ),
-        ]
+        # self.flywheels = [
+        #     TalonFXMotorSim(
+        #         DCMotor.falcon500,
+        #         robot.shooter_component.top_flywheel,
+        #         gearing=1 / 1,
+        #         moi=0.00105679992,
+        #     ),
+        #     TalonFXMotorSim(
+        #         DCMotor.falcon500,
+        #         robot.shooter_component.bottom_flywheel,
+        #         gearing=1 / 1,
+        #         moi=0.00156014845,
+        #     ),
+        # ]
 
         # Intake arm simulation
-        intake_arm_gearbox = DCMotor.NEO(1)
-        self.intake_arm_motor = rev.SparkMaxSim(
-            robot.intake_component.arm_motor, intake_arm_gearbox
-        )
-        self.intake_arm_encoder_sim = DutyCycleEncoderSim(
-            robot.intake_component.encoder
-        )
-        self.intake_arm = SparkArmSim(
-            SingleJointedArmSim(
-                intake_arm_gearbox,
-                IntakeComponent.gear_ratio,
-                moi=IntakeComponent.ARM_MOI,
-                armLength=0.22,
-                minAngle=IntakeComponent.DEPLOYED_ANGLE_LOWER,
-                maxAngle=IntakeComponent.RETRACTED_ANGLE,
-                simulateGravity=True,
-                startingAngle=IntakeComponent.RETRACTED_ANGLE,
-            ),
-            self.intake_arm_motor,
-        )
+        # intake_arm_gearbox = DCMotor.NEO(1)
+        # self.intake_arm_motor = rev.SparkMaxSim(
+        #     robot.intake_component.arm_motor, intake_arm_gearbox
+        # )
+        # self.intake_arm_encoder_sim = DutyCycleEncoderSim(
+        #     robot.intake_component.encoder
+        # )
+        # self.intake_arm = SparkArmSim(
+        #     SingleJointedArmSim(
+        #         intake_arm_gearbox,
+        #         IntakeComponent.gear_ratio,
+        #         moi=IntakeComponent.ARM_MOI,
+        #         armLength=0.22,
+        #         minAngle=IntakeComponent.DEPLOYED_ANGLE_LOWER,
+        #         maxAngle=IntakeComponent.RETRACTED_ANGLE,
+        #         simulateGravity=True,
+        #         startingAngle=IntakeComponent.RETRACTED_ANGLE,
+        #     ),
+        #     self.intake_arm_motor,
+        # )
 
-        wrist_gearbox = DCMotor.NEO(1)
-        wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
-        self.wrist_encoder_sim = DutyCycleEncoderSim(robot.wrist.wrist_encoder)
+        # wrist_gearbox = DCMotor.NEO(1)
+        # wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
+        # self.wrist_encoder_sim = DutyCycleEncoderSim(robot.wrist.wrist_encoder)
 
-        wrist_sim = SingleJointedArmSim(
-            wrist_gearbox,
-            WristComponent.wrist_gear_ratio,
-            moi=0.295209215,
-            armLength=0.5,
-            minAngle=WristComponent.MAXIMUM_DEPRESSION,
-            maxAngle=WristComponent.MAXIMUM_ELEVATION,
-            simulateGravity=True,
-            startingAngle=WristComponent.MAXIMUM_DEPRESSION,
-        )
-        self.wrist = SparkArmSim(wrist_sim, wrist_motor)
+        # wrist_sim = SingleJointedArmSim(
+        #     wrist_gearbox,
+        #     WristComponent.wrist_gear_ratio,
+        #     moi=0.295209215,
+        #     armLength=0.5,
+        #     minAngle=WristComponent.MAXIMUM_DEPRESSION,
+        #     maxAngle=WristComponent.MAXIMUM_ELEVATION,
+        #     simulateGravity=True,
+        #     startingAngle=WristComponent.MAXIMUM_DEPRESSION,
+        # )
+        # self.wrist = SparkArmSim(wrist_sim, wrist_motor)
 
         self.imu = robot.chassis.imu.sim_state
 
@@ -217,7 +214,7 @@ class PhysicsEngine:
         self.starboard_camera = PhotonCameraSim(
             robot.starboard_vision.camera, properties
         )
-        self.port_camera = PhotonCameraSim(robot.port_vision.camera, properties)
+        # self.port_camera = PhotonCameraSim(robot.port_vision.camera, properties)
         self.starboard_camera.setMaxSightRange(5.0)
         self.starboard_visual_localiser = robot.starboard_vision
         self.vision_sim.addCamera(
@@ -226,30 +223,30 @@ class PhysicsEngine:
                 wpilib.Timer.getFPGATimestamp()
             ),
         )
-        self.port_camera.setMaxSightRange(5.0)
-        self.port_visual_localiser = robot.port_vision
-        self.vision_sim.addCamera(
-            self.port_camera,
-            self.port_visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
-        )
+        # self.port_camera.setMaxSightRange(5.0)
+        # self.port_visual_localiser = robot.port_vision
+        # self.vision_sim.addCamera(
+        #     self.port_camera,
+        #     self.port_visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
+        # )
         self.vision_sim_counter = 0
 
         self.starboard_vision_servo_sim = PWMSim(self.starboard_visual_localiser.servo)
         self.starboard_vision_encoder_sim = DutyCycleEncoderSim(
             self.starboard_visual_localiser.encoder
         )
-        self.port_vision_servo_sim = PWMSim(self.port_visual_localiser.servo)
-        self.port_vision_encoder_sim = DutyCycleEncoderSim(
-            self.port_visual_localiser.encoder
-        )
+        # self.port_vision_servo_sim = PWMSim(self.port_visual_localiser.servo)
+        # self.port_vision_encoder_sim = DutyCycleEncoderSim(
+        #     self.port_visual_localiser.encoder
+        # )
 
-        self.algae_limit_switch_sim = DIOSim(
-            robot.injector_component.algae_limit_switch
-        )
-        self.algae_pickup_counter = 0
-        self.floor_intake = robot.floor_intake
-        self.reef_intake = robot.reef_intake
-        self.algae_shooter = robot.algae_shooter
+        # self.algae_limit_switch_sim = DIOSim(
+        #     robot.injector_component.algae_limit_switch
+        # )
+        # self.algae_pickup_counter = 0
+        # self.floor_intake = robot.floor_intake
+        # self.reef_intake = robot.reef_intake
+        # self.algae_shooter = robot.algae_shooter
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         # Enable the Phoenix6 simulated devices
@@ -261,8 +258,8 @@ class PhysicsEngine:
             wheel.update(tm_diff)
         for steer in self.steer:
             steer.update(tm_diff)
-        for flywheel in self.flywheels:
-            flywheel.update(tm_diff)
+        # for flywheel in self.flywheels:
+        #     flywheel.update(tm_diff)
 
         speeds = self.kinematics.toChassisSpeeds(
             (
@@ -290,18 +287,18 @@ class PhysicsEngine:
             )
         )
 
-        self.port_vision_encoder_sim.set(
-            constrain_angle(
-                (
-                    (
-                        self.port_visual_localiser.servo_offsets.full_range
-                        - self.port_visual_localiser.servo_offsets.neutral
-                    )
-                    * (2.0 * self.port_visual_localiser.servo.getPosition() - 1.0)
-                    + self.port_visual_localiser.servo_offsets.neutral
-                ).radians()
-            )
-        )
+        # self.port_vision_encoder_sim.set(
+        #     constrain_angle(
+        #         (
+        #             (
+        #                 self.port_visual_localiser.servo_offsets.full_range
+        #                 - self.port_visual_localiser.servo_offsets.neutral
+        #             )
+        #             * (2.0 * self.port_visual_localiser.servo.getPosition() - 1.0)
+        #             + self.port_visual_localiser.servo_offsets.neutral
+        #         ).radians()
+        #     )
+        # )
 
         # Simulate slow vision updates.
         self.vision_sim_counter += 1
@@ -312,44 +309,44 @@ class PhysicsEngine:
                     wpilib.Timer.getFPGATimestamp()
                 ),
             )
-            self.vision_sim.adjustCamera(
-                self.port_camera,
-                self.port_visual_localiser.robot_to_camera(
-                    wpilib.Timer.getFPGATimestamp()
-                ),
-            )
+            # self.vision_sim.adjustCamera(
+            #     self.port_camera,
+            #     self.port_visual_localiser.robot_to_camera(
+            #         wpilib.Timer.getFPGATimestamp()
+            #     ),
+            # )
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
 
         # Update intake arm simulation
-        self.intake_arm.update(tm_diff)
-        self.intake_arm_encoder_sim.set(
-            self.intake_arm.mech_sim.getAngle() + IntakeComponent.ARM_ENCODER_OFFSET
-        )
+        # self.intake_arm.update(tm_diff)
+        # self.intake_arm_encoder_sim.set(
+        #     self.intake_arm.mech_sim.getAngle() + IntakeComponent.ARM_ENCODER_OFFSET
+        # )
 
-        # Update wrist simulation
-        self.wrist.update(tm_diff)
-        self.wrist_encoder_sim.set(
-            self.wrist.mech_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
-        )
+        # # Update wrist simulation
+        # self.wrist.update(tm_diff)
+        # self.wrist_encoder_sim.set(
+        #     self.wrist.mech_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
+        # )
 
-        # Simulate algae pick up
-        if self.floor_intake.current_state == "intaking":
-            # Simulate driving around for a couple of seconds
-            self.algae_pickup_counter += 1
-            if self.algae_pickup_counter == 100:
-                self.algae_limit_switch_sim.setValue(False)
-        else:
-            self.algae_pickup_counter = 0
-        if self.reef_intake.current_state == "intaking":
-            # Check near reef
-            pose = self.physics_controller.get_pose()
-            pos = pose.translation()
-            if (
-                pos.distance(game.BLUE_REEF_POS) < 2.0
-                or pos.distance(game.RED_REEF_POS) < 2.0
-            ):
-                self.algae_limit_switch_sim.setValue(False)
-        # Algae shooting
-        if self.algae_shooter.current_state == "shooting":
-            self.algae_limit_switch_sim.setValue(True)
+        # # Simulate algae pick up
+        # if self.floor_intake.current_state == "intaking":
+        #     # Simulate driving around for a couple of seconds
+        #     self.algae_pickup_counter += 1
+        #     if self.algae_pickup_counter == 100:
+        #         self.algae_limit_switch_sim.setValue(False)
+        # else:
+        #     self.algae_pickup_counter = 0
+        # if self.reef_intake.current_state == "intaking":
+        #     # Check near reef
+        #     pose = self.physics_controller.get_pose()
+        #     pos = pose.translation()
+        #     if (
+        #         pos.distance(game.BLUE_REEF_POS) < 2.0
+        #         or pos.distance(game.RED_REEF_POS) < 2.0
+        #     ):
+        #         self.algae_limit_switch_sim.setValue(False)
+        # # Algae shooting
+        # if self.algae_shooter.current_state == "shooting":
+        #     self.algae_limit_switch_sim.setValue(True)
