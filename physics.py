@@ -18,10 +18,12 @@ from wpilib.simulation import (
     PWMSim,
     SingleJointedArmSim,
 )
+from wpimath import geometry
 from wpimath.kinematics import SwerveDrive4Kinematics
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.units import kilogram_square_meters
 
+from components import vision
 from components.chassis import SwerveModule
 from components.intake import IntakeComponent
 from components.wrist import WristComponent
@@ -119,13 +121,38 @@ class SparkArmSim:
         self.motor_encoder_sim.iterate(self.mech_sim.getVelocity(), dt)
 
 
-# class ServoEncoderSim:
-#     def __init__(self, pwm, encoder):
-#         self.pwm_sim = PWMSim(pwm)
-#         self.encoder_sim = DutyCycleEncoderSim(encoder)
+class VisionSimCamera:
+    def __init__(self, visual_localiser: vision.VisualLocalizer) -> None:
+        self._visual_localiser = visual_localiser
+        self.camera = PhotonCameraSim(
+            visual_localiser.camera, SimCameraProperties.OV9281_1280_720()
+        )
+        self.camera.setMaxSightRange(5.0)
 
-#     def update(self):
-#         command = self.pwm_sim.getPosition()
+    def robot_to_camera(self) -> geometry.Transform3d:
+        return self._visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp())
+
+
+class VisionTurretSim:
+    def __init__(
+        self,
+        servo: wpilib.Servo,
+        encoder: wpilib.DutyCycleEncoder,
+        offsets: vision.ServoOffsets,
+    ) -> None:
+        self.pwm_sim = PWMSim(servo)
+        self.encoder_sim = DutyCycleEncoderSim(encoder)
+        self.offsets = offsets
+
+    def update(self) -> None:
+        command = self.pwm_sim.getPosition()
+        final_angle = constrain_angle(
+            (
+                (self.offsets.full_range - self.offsets.neutral) * (2.0 * command - 1.0)
+                + self.offsets.neutral
+            ).radians()
+        )
+        self.encoder_sim.set(final_angle)
 
 
 class PhysicsEngine:
@@ -213,35 +240,24 @@ class PhysicsEngine:
 
         self.vision_sim = VisionSystemSim("main")
         self.vision_sim.addAprilTags(game.apriltag_layout)
-        properties = SimCameraProperties.OV9281_1280_720()
-        self.starboard_camera = PhotonCameraSim(
-            robot.starboard_vision.camera, properties
-        )
-        self.port_camera = PhotonCameraSim(robot.port_vision.camera, properties)
-        self.starboard_camera.setMaxSightRange(5.0)
-        self.starboard_visual_localiser = robot.starboard_vision
-        self.vision_sim.addCamera(
-            self.starboard_camera,
-            self.starboard_visual_localiser.robot_to_camera(
-                wpilib.Timer.getFPGATimestamp()
-            ),
-        )
-        self.port_camera.setMaxSightRange(5.0)
-        self.port_visual_localiser = robot.port_vision
-        self.vision_sim.addCamera(
-            self.port_camera,
-            self.port_visual_localiser.robot_to_camera(wpilib.Timer.getFPGATimestamp()),
-        )
+        starboard_camera_sim = VisionSimCamera(robot.starboard_vision)
+        port_camera_sim = VisionSimCamera(robot.port_vision)
+        self.vision_cameras = [starboard_camera_sim, port_camera_sim]
+        for camera in self.vision_cameras:
+            self.vision_sim.addCamera(camera.camera, camera.robot_to_camera())
         self.vision_sim_counter = 0
 
-        self.starboard_vision_servo_sim = PWMSim(self.starboard_visual_localiser.servo)
-        self.starboard_vision_encoder_sim = DutyCycleEncoderSim(
-            self.starboard_visual_localiser.encoder
+        starboard_vision_turret = VisionTurretSim(
+            robot.starboard_vision.servo,
+            robot.starboard_vision.encoder,
+            robot.starboard_vision.servo_offsets,
         )
-        self.port_vision_servo_sim = PWMSim(self.port_visual_localiser.servo)
-        self.port_vision_encoder_sim = DutyCycleEncoderSim(
-            self.port_visual_localiser.encoder
+        port_vision_turret = VisionTurretSim(
+            robot.port_vision.servo,
+            robot.port_vision.encoder,
+            robot.port_vision.servo_offsets,
         )
+        self.vision_turrets = [starboard_vision_turret, port_vision_turret]
 
         self.algae_limit_switch_sim = DIOSim(
             robot.injector_component.algae_limit_switch
@@ -277,47 +293,14 @@ class PhysicsEngine:
 
         self.physics_controller.drive(speeds, tm_diff)
 
-        self.starboard_vision_encoder_sim.set(
-            constrain_angle(
-                (
-                    (
-                        self.starboard_visual_localiser.servo_offsets.full_range
-                        - self.starboard_visual_localiser.servo_offsets.neutral
-                    )
-                    * (2.0 * self.starboard_visual_localiser.servo.getPosition() - 1.0)
-                    + self.starboard_visual_localiser.servo_offsets.neutral
-                ).radians()
-            )
-        )
-
-        self.port_vision_encoder_sim.set(
-            constrain_angle(
-                (
-                    (
-                        self.port_visual_localiser.servo_offsets.full_range
-                        - self.port_visual_localiser.servo_offsets.neutral
-                    )
-                    * (2.0 * self.port_visual_localiser.servo.getPosition() - 1.0)
-                    + self.port_visual_localiser.servo_offsets.neutral
-                ).radians()
-            )
-        )
+        for vision_turret in self.vision_turrets:
+            vision_turret.update()
 
         # Simulate slow vision updates.
         self.vision_sim_counter += 1
         if self.vision_sim_counter == 10:
-            self.vision_sim.adjustCamera(
-                self.starboard_camera,
-                self.starboard_visual_localiser.robot_to_camera(
-                    wpilib.Timer.getFPGATimestamp()
-                ),
-            )
-            self.vision_sim.adjustCamera(
-                self.port_camera,
-                self.port_visual_localiser.robot_to_camera(
-                    wpilib.Timer.getFPGATimestamp()
-                ),
-            )
+            for camera in self.vision_cameras:
+                self.vision_sim.adjustCamera(camera.camera, camera.robot_to_camera())
             self.vision_sim.update(self.physics_controller.get_pose())
             self.vision_sim_counter = 0
 
