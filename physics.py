@@ -240,24 +240,15 @@ class PhysicsEngine:
 
         self.vision_sim = VisionSystemSim("main")
         self.vision_sim.addAprilTags(game.apriltag_layout)
-        starboard_camera_sim = VisionSimCamera(robot.starboard_vision)
-        port_camera_sim = VisionSimCamera(robot.port_vision)
-        self.vision_cameras = [starboard_camera_sim, port_camera_sim]
+        self.vision_cameras = [VisionSimCamera(vision) for vision in robot.localizers]
         for camera in self.vision_cameras:
             self.vision_sim.addCamera(camera.camera, camera.robot_to_camera())
         self.vision_sim_counter = 0
 
-        starboard_vision_turret = VisionTurretSim(
-            robot.starboard_vision.servo,
-            robot.starboard_vision.encoder,
-            robot.starboard_vision.servo_offsets,
-        )
-        port_vision_turret = VisionTurretSim(
-            robot.port_vision.servo,
-            robot.port_vision.encoder,
-            robot.port_vision.servo_offsets,
-        )
-        self.vision_turrets = [starboard_vision_turret, port_vision_turret]
+        self.vision_turrets = [
+            VisionTurretSim(vision.servo, vision.encoder, vision.servo_offsets)
+            for vision in robot.localizers
+        ]
 
         self.algae_limit_switch_sim = DIOSim(
             robot.injector_component.algae_limit_switch

@@ -202,8 +202,8 @@ class MyRobot(magicbot.MagicRobot):
             self.event_loop, self.coast_button.get
         ).falling()
 
-    def robotInit(self) -> None:
-        super().robotInit()
+    def _create_components(self) -> None:
+        super()._create_components()
         localizers = [self.starboard_vision]
         if RioSerialNumber.COMP_BOT.is_current():
             localizers.append(self.port_vision)
