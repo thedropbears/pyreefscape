@@ -78,6 +78,7 @@ class WristComponent:
         self.motor_encoder = self.motor.getEncoder()
 
         self.desired_state = TrapezoidProfile.State(WristComponent.NEUTRAL_ANGLE, 0.0)
+        self.tracked_state = self.desired_state
 
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(
@@ -135,6 +136,14 @@ class WristComponent:
         return self.motor_encoder.getVelocity()
 
     @feedback
+    def current_target_velocity(self) -> float:
+        return self.tracked_state.velocity
+
+    @feedback
+    def current_target_position(self) -> float:
+        return self.tracked_state.position
+
+    @feedback
     def current_input(self) -> float:
         return self.motor.getAppliedOutput()
 
@@ -178,15 +187,18 @@ class WristComponent:
         return self.motor.getReverseLimitSwitch().get()
 
     def execute(self) -> None:
-        tracked_state = self.wrist_profile.calculate(
+        self.tracked_state = self.wrist_profile.calculate(
             wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
             self.initial_state,
             self.desired_state,
         )
-        ff = self.wrist_ff.calculate(tracked_state.position, tracked_state.velocity)
+
+        ff = self.wrist_ff.calculate(
+            self.tracked_state.position, self.tracked_state.velocity
+        )
 
         self.motor.setVoltage(
-            self.pid.calculate(self.inclination(), tracked_state.position) + ff
+            self.pid.calculate(self.inclination(), self.tracked_state.position) + ff
         )
 
         self.wrist_ligament.setAngle(self.shooter_FOR_inclination_deg())
