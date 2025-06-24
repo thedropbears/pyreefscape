@@ -58,9 +58,17 @@ class BallisticsComponent:
     }
 
     FLYWHEEL_ANGLE_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
+        ALGAE_MIN_DIAMETER: (
+            math.radians(-10),
+            math.radians(-15),
+            math.radians(-25)
+        ),
         # 16.5: (math.radians(-11.0), math.radians(-19), -25),
-        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
+        ALGAE_MAX_DIAMETER: (
+            math.radians(-10),
+            math.radians(-15),
+            math.radians(-25)
+        ),
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())

@@ -33,7 +33,7 @@ class FloorIntake(StateMachine):
 
         self.intake_component.intake(self.intake_upper)
 
-        self.wrist.tilt_to(self.HANDOFF_POSITION)
+        self.wrist.tilt_to_shooter_FOR(self.HANDOFF_POSITION)
 
         self.shooter_component.intake()
         self.injector_component.intake()
