@@ -27,8 +27,8 @@ class WristComponent:
     MAXIMUM_ELEVATION = math.radians(0) + COM_DIFFERENCE
     NEUTRAL_ANGLE = math.radians(-90.0)
 
-    WRIST_MAX_VEL = math.radians(180.0)
-    WRIST_MAX_ACC = math.radians(360.0)
+    WRIST_MAX_VEL = math.radians(720.0)
+    WRIST_MAX_ACC = math.radians(1080.0)
     wrist_gear_ratio = 208.206
     TOLERANCE = math.radians(3.0)
     VEL_TOLERANCE = math.radians(6.0)
@@ -63,8 +63,8 @@ class WristComponent:
         # theoretical max pos 0.01 max velocity 0.05
         self.pid = PIDController(Kp=19.508, Ki=0, Kd=0.048599)
 
-        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A8%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.15%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A-10%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A432%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A-110%2C%22u%22%3A%22deg%22%7D
-        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.48, kV=4.10, kA=0.02)
+        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A12%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.24044%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A80%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A-10%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A208.206%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A-112%2C%22u%22%3A%22deg%22%7D
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.45, kV=4.06, kA=0.01)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
@@ -78,6 +78,7 @@ class WristComponent:
         self.motor_encoder = self.motor.getEncoder()
 
         self.desired_state = TrapezoidProfile.State(WristComponent.NEUTRAL_ANGLE, 0.0)
+        self.tracked_state = self.desired_state
 
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(
@@ -135,6 +136,18 @@ class WristComponent:
         return self.motor_encoder.getVelocity()
 
     @feedback
+    def current_target_velocity(self) -> float:
+        return self.tracked_state.velocity
+
+    @feedback
+    def current_target_position(self) -> float:
+        return self.tracked_state.position
+
+    @feedback
+    def current_input(self) -> float:
+        return self.motor.getAppliedOutput()
+
+    @feedback
     def at_setpoint(self) -> bool:
         return (
             abs(self.desired_state.position - self.inclination())
@@ -174,15 +187,18 @@ class WristComponent:
         return self.motor.getReverseLimitSwitch().get()
 
     def execute(self) -> None:
-        tracked_state = self.wrist_profile.calculate(
+        self.tracked_state = self.wrist_profile.calculate(
             wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
             self.initial_state,
             self.desired_state,
         )
-        ff = self.wrist_ff.calculate(tracked_state.position, tracked_state.velocity)
+
+        ff = self.wrist_ff.calculate(
+            self.tracked_state.position, self.tracked_state.velocity
+        )
 
         self.motor.setVoltage(
-            self.pid.calculate(self.inclination(), tracked_state.position) + ff
+            self.pid.calculate(self.inclination(), self.tracked_state.position) + ff
         )
 
         self.wrist_ligament.setAngle(self.shooter_FOR_inclination_deg())
