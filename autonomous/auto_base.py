@@ -3,7 +3,7 @@ import math
 import choreo
 import wpilib
 from choreo.trajectory import SwerveSample, SwerveTrajectory
-from magicbot import AutonomousStateMachine, state, timed_state
+from magicbot import AutonomousStateMachine, state, timed_state, tunable
 from wpilib import RobotBase
 from wpimath.controller import PIDController
 from wpimath.geometry import Pose2d
@@ -41,6 +41,11 @@ class AutoBase(AutonomousStateMachine):
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
     ROTATIONAL_SPEED_TOLERANCE = 0.1
+
+    is_shooting_leg = tunable(False)
+    is_in_distance_tolerance = tunable(False)
+    is_in_angle_tolerance = tunable(False)
+    is_in_second_half_of_leg = tunable(False)
 
     def __init__(self, trajectory_names: list[str]) -> None:
         # We want to parameterise these by paths and potentially a sequence of events
@@ -111,21 +116,20 @@ class AutoBase(AutonomousStateMachine):
             self.done()
             return
 
-        # get next leg on entry
-        current_pose = self.chassis.get_pose()
         final_pose = self.trajectories[self.current_leg].get_final_pose(game.is_red())
         if final_pose is None:
             self.done()
             return
 
+        # get next leg on entry
+        current_pose = self.chassis.get_pose()
+
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
-        velocity = self.chassis.get_velocity()
-        speed = math.sqrt(math.pow(velocity.vx, 2.0) + math.pow(velocity.vy, 2.0))
 
-        is_shooting_leg = self.current_leg % 2 != 0
+        self.is_shooting_leg = self.current_leg % 2 != 0
 
-        if is_shooting_leg:
+        if self.is_shooting_leg:
             self.algae_shooter.shoot()
         else:
             self.reef_intake.intake()
@@ -133,27 +137,30 @@ class AutoBase(AutonomousStateMachine):
         if distance < self.CORAL_DISTANCE_TOLERANCE:
             self.reef_intake.holding_coral = False
 
-        is_in_distance_tolerance = (
+        self.is_in_distance_tolerance = (
             distance < self.SHOOT_DISTANCE_TOLERANCE
-            if is_shooting_leg
+            if self.is_shooting_leg
             else distance < self.DISTANCE_TOLERANCE
         )
 
+        self.is_in_angle_tolerance = math.isclose(
+            angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE
+        )
+        self.is_in_second_half_of_leg = (
+            state_tm > self.trajectories[self.current_leg].get_total_time() / 2.0
+        )
+
         if (
-            is_in_distance_tolerance
-            and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
-            and math.isclose(speed, 0.0, abs_tol=self.TRANSLATIONAL_SPEED_TOLERANCE)
-            and math.isclose(
-                velocity.omega, 0.0, abs_tol=self.ROTATIONAL_SPEED_TOLERANCE
-            )
-            and state_tm > self.trajectories[self.current_leg].get_total_time() / 2.0
+            self.is_in_distance_tolerance
+            and self.is_in_angle_tolerance
+            and self.chassis.is_stationary()
+            and self.is_in_second_half_of_leg
         ):
             # run cycles of pick up -> shoot
-            if self.injector_component.has_algae():
+            if self.is_shooting_leg:
                 self.next_state("shooting_algae")
             else:
                 self.next_state("intaking_algae")
-            return
 
         sample = self.trajectories[self.current_leg].sample_at(state_tm, game.is_red())
         if sample is not None:
@@ -189,5 +196,8 @@ class AutoBase(AutonomousStateMachine):
     def shooting_algae(self) -> None:
         self.algae_shooter.shoot()
 
-        if not self.algae_shooter.is_executing:
+        if (
+            not self.injector_component.has_algae()
+            and not self.algae_shooter.is_executing
+        ):
             self.next_state("tracking_trajectory")
