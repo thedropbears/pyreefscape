@@ -36,6 +36,7 @@ class AutoBase(AutonomousStateMachine):
     field: wpilib.Field2d
 
     DISTANCE_TOLERANCE = 0.1  # metres
+    SHOOT_DISTANCE_TOLERANCE = 0.2  # metres
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
@@ -122,7 +123,9 @@ class AutoBase(AutonomousStateMachine):
         velocity = self.chassis.get_velocity()
         speed = math.sqrt(math.pow(velocity.vx, 2.0) + math.pow(velocity.vy, 2.0))
 
-        if self.current_leg % 2 != 0:
+        is_shooting_leg = self.current_leg % 2 != 0
+
+        if is_shooting_leg:
             self.algae_shooter.shoot()
         else:
             self.reef_intake.intake()
@@ -130,8 +133,14 @@ class AutoBase(AutonomousStateMachine):
         if distance < self.CORAL_DISTANCE_TOLERANCE:
             self.reef_intake.holding_coral = False
 
+        is_in_distance_tolerance = (
+            distance < self.SHOOT_DISTANCE_TOLERANCE
+            if is_shooting_leg
+            else distance < self.DISTANCE_TOLERANCE
+        )
+
         if (
-            distance < self.DISTANCE_TOLERANCE
+            is_in_distance_tolerance
             and math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
             and math.isclose(speed, 0.0, abs_tol=self.TRANSLATIONAL_SPEED_TOLERANCE)
             and math.isclose(
