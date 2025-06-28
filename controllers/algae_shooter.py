@@ -44,13 +44,7 @@ class AlgaeShooter(StateMachine):
             return
         self.engage()
 
-    @state(first=True)
-    def measuring(self):
-        self.wrist.tilt_to_shooter_FOR(self.MEASURING_ANGLE)
-
-        self.next_state(self.preparing)
-
-    @state(must_finish=True)
+    @state(first=True, must_finish=True)
     def preparing(self):
         if self.use_ballistics:
             solution = self.ballistics_component.current_solution()
