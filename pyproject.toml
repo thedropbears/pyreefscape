@@ -28,7 +28,7 @@ exclude = [
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers -v --maxfail=2"
-faulthandler_timeout = 20
+faulthandler_timeout = 60
 pythonpath = "."
 testpaths = ["tests"]
 xfail_strict = true
