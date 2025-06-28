@@ -196,5 +196,8 @@ class AutoBase(AutonomousStateMachine):
     def shooting_algae(self) -> None:
         self.algae_shooter.shoot()
 
-        if not self.injector_component.has_algae():
+        if (
+            not self.injector_component.has_algae()
+            and not self.algae_shooter.is_executing
+        ):
             self.next_state("tracking_trajectory")
