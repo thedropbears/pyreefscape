@@ -12,7 +12,6 @@ from autonomous.auto_base import AutoBase
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
-from components.coral_depositor import CoralDepositorComponent
 from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
@@ -38,7 +37,6 @@ class MyRobot(magicbot.MagicRobot):
     # Components
     chassis: ChassisComponent
     climber: ClimberComponent
-    coral_depositor_component: CoralDepositorComponent
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     starboard_vision: VisualLocalizer
@@ -328,13 +326,6 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getAButton():
             self.climber_state_machine.retract()
 
-        if self.gamepad.getXButton():
-            self.coral_depositor_component.deposit()
-        elif self.gamepad.getAButton():
-            self.coral_depositor_component.retract()
-        elif self.gamepad.getBackButton():
-            self.coral_depositor_component.tuck()
-
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
 
@@ -349,7 +340,6 @@ class MyRobot(magicbot.MagicRobot):
 
         # Components
         self.climber.execute()
-        self.coral_depositor_component.execute()
         self.shooter_component.execute()
         self.injector_component.execute()
         if self.gamepad.getLeftStickButton():
