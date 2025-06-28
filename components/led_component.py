@@ -124,7 +124,7 @@ class LightStrip:
         self.last_update_time = time.monotonic()
 
     def reef_offset(self, offset: float) -> None:
-        flash_delay = round(min(1.0, abs(offset)) * 0.5, 1)
+        flash_delay = max(min(1.0, abs(offset)), 0.1)
         if abs(offset) < 0.05:
             self.pattern = LEDPattern.solid(Color.kGreen)
         elif (
