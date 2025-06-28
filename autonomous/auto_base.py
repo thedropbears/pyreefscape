@@ -111,12 +111,13 @@ class AutoBase(AutonomousStateMachine):
             self.done()
             return
 
-        # get next leg on entry
-        current_pose = self.chassis.get_pose()
         final_pose = self.trajectories[self.current_leg].get_final_pose(game.is_red())
         if final_pose is None:
             self.done()
             return
+
+        # get next leg on entry
+        current_pose = self.chassis.get_pose()
 
         distance = current_pose.translation().distance(final_pose.translation())
         angle_error = (final_pose.rotation() - current_pose.rotation()).radians()
