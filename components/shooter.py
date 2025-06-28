@@ -74,7 +74,7 @@ class ShooterComponent:
         bottom_flywheel_config.apply(flywheel_gear_ratio)
         bottom_flywheel_config.apply(flywheel_closed_loop_ramp_config)
 
-        self._algae_size = 16.25
+        self._algae_size = 16.4
         self.has_measured = True
 
     @property
