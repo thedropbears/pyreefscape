@@ -112,7 +112,7 @@ class BallisticsComponent:
             robot_to_barge_X_offset
             / (robot_pose.rotation() + self.robot_to_shooter).cos()
         )
-        return distance + 0.3
+        return distance
 
     @feedback
     def is_aligned(self) -> bool:
