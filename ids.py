@@ -81,8 +81,6 @@ class PwmChannel(enum.IntEnum):
 
     LIGHT_STRIP = 2
 
-    CORAL_SERVO = 4
-
 
 @enum.unique
 class RioSerialNumber(enum.StrEnum):

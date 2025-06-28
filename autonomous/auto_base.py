@@ -10,7 +10,6 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
 from components.chassis import ChassisComponent
-from components.coral_depositor import CoralDepositorComponent
 from components.injector import InjectorComponent
 from components.shooter import ShooterComponent
 from controllers.algae_shooter import AlgaeShooter
@@ -28,7 +27,6 @@ class AutoBase(AutonomousStateMachine):
     algae_shooter: AlgaeShooter
     reef_intake: ReefIntake
 
-    coral_depositor_component: CoralDepositorComponent
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     chassis: ChassisComponent
@@ -186,10 +184,7 @@ class AutoBase(AutonomousStateMachine):
 
     @timed_state(duration=1.0, next_state="tracking_trajectory")
     def intaking_algae(self) -> None:
-        if self.current_leg == 0:
-            self.coral_depositor_component.deposit()
         if self.injector_component.has_algae():
-            self.coral_depositor_component.tuck()
             self.next_state("tracking_trajectory")
 
     @timed_state(duration=1.0, next_state="tracking_trajectory")
