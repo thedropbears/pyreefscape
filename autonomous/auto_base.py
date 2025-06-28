@@ -10,11 +10,6 @@ from wpimath.geometry import Pose2d
 from wpimath.kinematics import ChassisSpeeds
 
 from components.chassis import ChassisComponent
-from components.coral_depositor import CoralDepositorComponent
-from components.injector import InjectorComponent
-from components.shooter import ShooterComponent
-from controllers.algae_shooter import AlgaeShooter
-from controllers.reef_intake import ReefIntake
 from utilities import game
 
 x_controller = PIDController(2.0, 0.0, 0.0)
@@ -25,12 +20,12 @@ wpilib.SmartDashboard.putData("Auto Y PID", y_controller)
 
 
 class AutoBase(AutonomousStateMachine):
-    algae_shooter: AlgaeShooter
-    reef_intake: ReefIntake
+    # algae_shooter: AlgaeShooter
+    # reef_intake: ReefIntake
 
-    coral_depositor_component: CoralDepositorComponent
-    shooter_component: ShooterComponent
-    injector_component: InjectorComponent
+    # coral_depositor_component: CoralDepositorComponent
+    # shooter_component: ShooterComponent
+    # injector_component: InjectorComponent
     chassis: ChassisComponent
 
     field: wpilib.Field2d
@@ -96,6 +91,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state(first=True)
     def initialising(self) -> None:
+        return
         # Add any tasks that need doing first
         self.reef_intake.holding_coral = True
         self.chassis.do_smooth = False
@@ -104,6 +100,7 @@ class AutoBase(AutonomousStateMachine):
 
     @state
     def tracking_trajectory(self, initial_call, state_tm) -> None:
+        return
         if initial_call:
             self.current_leg += 1
 
@@ -179,6 +176,7 @@ class AutoBase(AutonomousStateMachine):
 
     @timed_state(duration=1.0, next_state="tracking_trajectory")
     def intaking_algae(self) -> None:
+        return
         if self.current_leg == 0:
             self.coral_depositor_component.deposit()
         if self.injector_component.has_algae():
@@ -187,6 +185,7 @@ class AutoBase(AutonomousStateMachine):
 
     @timed_state(duration=1.0, next_state="tracking_trajectory")
     def shooting_algae(self) -> None:
+        return
         self.algae_shooter.shoot()
 
         if not self.algae_shooter.is_executing:
