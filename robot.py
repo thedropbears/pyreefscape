@@ -54,6 +54,7 @@ class MyRobot(magicbot.MagicRobot):
     lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
+    is_robot_oriented = tunable(False)
 
     START_POS_TOLERANCE = 0.2
 
@@ -219,6 +220,7 @@ class MyRobot(magicbot.MagicRobot):
             -rescale_js(self.gamepad.getRightX(), 0.1, exponential=20) * max_spin_rate
         )
         local_driving = self.gamepad.getRightBumperButton()
+        self.is_robot_oriented = local_driving
 
         if local_driving:
             if (
@@ -228,6 +230,7 @@ class MyRobot(magicbot.MagicRobot):
             ):
                 # Make the shooter behave like the front of the robot
                 self.chassis.drive_local(-drive_x, -drive_y, drive_z)
+
             else:
                 # Climber is front as defined in the chassis
                 self.chassis.drive_local(drive_x, drive_y, drive_z)
