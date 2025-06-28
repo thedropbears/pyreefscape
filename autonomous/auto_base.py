@@ -157,7 +157,7 @@ class AutoBase(AutonomousStateMachine):
             and self.is_in_second_half_of_leg
         ):
             # run cycles of pick up -> shoot
-            if self.injector_component.has_algae():
+            if self.is_shooting_leg:
                 self.next_state("shooting_algae")
             else:
                 self.next_state("intaking_algae")
