@@ -161,7 +161,6 @@ class AutoBase(AutonomousStateMachine):
                 self.next_state("shooting_algae")
             else:
                 self.next_state("intaking_algae")
-            return
 
         sample = self.trajectories[self.current_leg].sample_at(state_tm, game.is_red())
         if sample is not None:
