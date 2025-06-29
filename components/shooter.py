@@ -25,6 +25,9 @@ class ShooterComponent:
     FLYWHEEL_RAMP_TIME = 1
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
+    BASE_ALGAE_SIZE = 16
+    algae_size_scale = tunable(1.0)
+
     def __init__(self) -> None:
         self.top_flywheel = TalonFX(TalonId.TOP_FLYWHEEL)
         self.bottom_flywheel = TalonFX(TalonId.BOTTOM_FLYWHEEL)
@@ -74,13 +77,12 @@ class ShooterComponent:
         bottom_flywheel_config.apply(flywheel_gear_ratio)
         bottom_flywheel_config.apply(flywheel_closed_loop_ramp_config)
 
-        self._algae_size = 16.4
         self.has_measured = True
 
     @property
     def algae_size(self) -> float:
         return (
-            self._algae_size
+            self.BASE_ALGAE_SIZE + self.algae_size_scale * 0.5
             if not wpilib.RobotBase.isSimulation()
             else (ALGAE_MIN_DIAMETER + ALGAE_MAX_DIAMETER) / 2.0
         )
