@@ -35,6 +35,7 @@ class AutoBase(AutonomousStateMachine):
 
     DISTANCE_TOLERANCE = 0.1  # metres
     SHOOT_DISTANCE_TOLERANCE = 0.2  # metres
+    SHOOT_ANGLE_TOLERANCE = math.radians(6)
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
@@ -151,8 +152,10 @@ class AutoBase(AutonomousStateMachine):
             else distance < self.DISTANCE_TOLERANCE
         )
 
-        self.is_in_angle_tolerance = math.isclose(
-            angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE
+        self.is_in_angle_tolerance = (
+            math.isclose(angle_error, 0.0, abs_tol=self.SHOOT_ANGLE_TOLERANCE)
+            if self.is_shooting_leg
+            else math.isclose(angle_error, 0.0, abs_tol=self.ANGLE_TOLERANCE)
         )
         self.is_in_second_half_of_leg = (
             state_tm > self.trajectories[self.current_leg].get_total_time() / 2.0
