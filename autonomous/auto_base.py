@@ -111,9 +111,18 @@ class AutoBase(AutonomousStateMachine):
         if initial_call:
             self.current_leg += 1
 
-        if self.current_leg == len(self.trajectories):
-            self.done()
-            return
+            if self.current_leg == len(self.trajectories):
+                self.done()
+                return
+
+            trajectory = (
+                self.trajectories[self.current_leg].flipped()
+                if game.is_red()
+                else self.trajectories[self.current_leg]
+            )
+
+            trajectory_poses = trajectory.get_poses()
+            self.field.getObject("trajectory").setPoses(trajectory_poses)
 
         final_pose = self.trajectories[self.current_leg].get_final_pose(game.is_red())
         if final_pose is None:
