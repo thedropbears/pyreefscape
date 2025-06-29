@@ -63,6 +63,7 @@ class AutoBase(AutonomousStateMachine):
 
     def setup(self) -> None:
         #  setup path tracking controllers
+        self.auto_sample_field_obj = self.field.getObject("auto_sample")
 
         # init any other defaults
         pass
@@ -163,6 +164,7 @@ class AutoBase(AutonomousStateMachine):
         sample = self.trajectories[self.current_leg].sample_at(state_tm, game.is_red())
         if sample is not None:
             self.follow_trajectory(sample)
+            self.auto_sample_field_obj.setPose(sample.get_pose())
 
     def follow_trajectory(self, sample: SwerveSample):
         # track path
