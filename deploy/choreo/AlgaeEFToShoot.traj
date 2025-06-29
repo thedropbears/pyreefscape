@@ -20,8 +20,8 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"AlgaeEF.x", "val":5.223314729359999}, "y":{"exp":"AlgaeEF.y", "val":2.7578907178}, "heading":{"exp":"AlgaeEF.heading", "val":5.235987755982989}, "intervals":15, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"AlgaeEFRetreat.x", "val":5.4233147293599995}, "y":{"exp":"AlgaeEFRetreat.y", "val":2.411480556288}, "heading":{"exp":"AlgaeEFRetreat.heading", "val":5.235987755982989}, "intervals":27, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"AlgaeEF.x", "val":5.203314729359999}, "y":{"exp":"AlgaeEF.y", "val":2.7478907178}, "heading":{"exp":"AlgaeEF.heading", "val":5.235987755982989}, "intervals":15, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"AlgaeEFRetreat.x", "val":5.40331472936}, "y":{"exp":"AlgaeEFRetreat.y", "val":2.401480556288}, "heading":{"exp":"AlgaeEFRetreat.heading", "val":5.235987755982989}, "intervals":27, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"6.132148742675781 m", "val":6.132148742675781}, "y":{"exp":"2.4054338932037354 m", "val":2.4054338932037354}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":23, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"6.714689254760742 m", "val":6.714689254760742}, "y":{"exp":"3.105619430541992 m", "val":3.105619430541992}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":53, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
     {"x":{"exp":"Shoot.x", "val":6.898591041564941}, "y":{"exp":"Shoot.y", "val":5.13}, "heading":{"exp":"Shoot.heading", "val":3.141592653589793}, "intervals":0, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],

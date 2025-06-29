@@ -22,8 +22,8 @@
   "waypoints":[
     {"x":{"exp":"ShootIJ.x", "val":6.518761157989502}, "y":{"exp":"ShootIJ.y", "val":6.1280436515808105}, "heading":{"exp":"ShootIJ.heading", "val":2.714965544704036}, "intervals":52, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"4.213788986206055 m", "val":4.213788986206055}, "y":{"exp":"6.361125469207764 m", "val":6.361125469207764}, "heading":{"exp":"1.6932578008401062 rad", "val":1.6932578008401062}, "intervals":29, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"AlgaeKLRetreat.x", "val":3.55868527064}, "y":{"exp":"AlgaeKLRetreat.y", "val":5.640519443712}, "heading":{"exp":"AlgaeKLRetreat.heading", "val":2.0943951023931957}, "intervals":15, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
-    {"x":{"exp":"AlgaeKL.x", "val":3.75868527064}, "y":{"exp":"AlgaeKL.y", "val":5.294109282199999}, "heading":{"exp":"AlgaeKL.heading", "val":2.0943951023931957}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"AlgaeKLRetreat.x", "val":3.57868527064}, "y":{"exp":"AlgaeKLRetreat.y", "val":5.650519443712}, "heading":{"exp":"AlgaeKLRetreat.heading", "val":2.0943951023931957}, "intervals":15, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"AlgaeKL.x", "val":3.77868527064}, "y":{"exp":"AlgaeKL.y", "val":5.3041092822}, "heading":{"exp":"AlgaeKL.heading", "val":2.0943951023931957}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
