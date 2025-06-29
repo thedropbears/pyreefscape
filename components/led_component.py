@@ -156,7 +156,7 @@ class LightStrip:
         self.keep_alive()
         self.is_reef_offset_flashing = True
 
-    def climber_deploying(self, left_okay: bool, right_okay: bool) -> None:
+    def climber_deployed(self, left_okay: bool, right_okay: bool) -> None:
         self.pattern = LEDPattern.breathe(
             LEDPattern.steps(
                 [
@@ -168,7 +168,7 @@ class LightStrip:
         )
         self.keep_alive()
 
-    def climber_deployed(self, left_okay: bool, right_okay: bool) -> None:
+    def climber_deploying(self, left_okay: bool, right_okay: bool) -> None:
         self.pattern = LEDPattern.steps(
             [
                 (0.0, Color.kGreen if left_okay else Color.kRed),
