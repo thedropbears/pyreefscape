@@ -34,8 +34,8 @@ class AutoBase(AutonomousStateMachine):
     field: wpilib.Field2d
 
     DISTANCE_TOLERANCE = 0.1  # metres
-    SHOOT_DISTANCE_TOLERANCE = 0.2  # metres
-    SHOOT_ANGLE_TOLERANCE = math.radians(6)
+    SHOOT_DISTANCE_TOLERANCE = 0.4  # metres
+    SHOOT_ANGLE_TOLERANCE = math.radians(10)
     ANGLE_TOLERANCE = math.radians(3)
     CORAL_DISTANCE_TOLERANCE = 0.2  # metres
     TRANSLATIONAL_SPEED_TOLERANCE = 0.2
