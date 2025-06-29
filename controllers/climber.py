@@ -50,14 +50,18 @@ class ClimberStateMachine(StateMachine):
             self.seen_left = True
         if self.climber.is_right_engaged():
             self.seen_right = True
-        self.status_lights.climber_deploying(
-            left_okay=self.seen_left,
-            right_okay=self.seen_right,
-        )
 
         if self.climber.is_deployed():
             self.climber.stop_pid_update()
             self.has_deployed = True
+            self.status_lights.climber_deployed(
+                left_okay=self.seen_left, right_okay=self.seen_right
+            )
+        else:
+            self.status_lights.climber_deploying(
+                left_okay=self.seen_left,
+                right_okay=self.seen_right,
+            )
 
         if self.should_localize:
             cage_positions = cage_pos(is_red())

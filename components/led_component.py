@@ -168,6 +168,16 @@ class LightStrip:
         )
         self.keep_alive()
 
+    def climber_deployed(self, left_okay: bool, right_okay: bool) -> None:
+        self.pattern = LEDPattern.steps(
+            [
+                (0.0, Color.kGreen if left_okay else Color.kRed),
+                (self.halfway_split, Color.kGreen if right_okay else Color.kRed),
+            ]
+        )
+
+        self.keep_alive()
+
     def climber_retracting(self) -> None:
         colour = Color.kRed if is_red() else Color.kBlue
         steps = []
