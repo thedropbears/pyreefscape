@@ -228,6 +228,7 @@ class ChassisComponent:
     WIDTH = LENGTH
 
     DRIVE_CURRENT_THRESHOLD = 35
+    ALIGN_Y_AXIS_SPEED = 0.2
 
     HEADING_TOLERANCE = math.radians(1)
 
@@ -380,6 +381,16 @@ class ChassisComponent:
     def drive_local(self, vx: float, vy: float, omega: float) -> None:
         """Robot oriented drive commands"""
         self.chassis_speeds = ChassisSpeeds(vx, vy, omega)
+
+    def align_on_y(self, offset: float, precision: float) -> None:
+        if abs(offset) > precision:
+            self.chassis_speeds.vy = self.ALIGN_Y_AXIS_SPEED * -math.copysign(1, offset)
+            # move in direction opposite to offset
+        else:
+            self.stop_align_on_y()
+
+    def stop_align_on_y(self) -> None:
+        self.chassis_speeds.vy = 0
 
     def limit_to_positive_longitudinal_velocity(self) -> None:
         self.chassis_speeds.vy = 0.0
