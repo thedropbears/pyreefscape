@@ -258,6 +258,12 @@ class MyRobot(magicbot.MagicRobot):
         ):
             self.reef_intake.intake()
 
+        if self.gamepad.getLeftBumperButton() and self.reef_intake.is_executing:
+            self.reef_intake.is_aligning = True
+
+        if (not self.gamepad.getLeftBumperButton()) and self.reef_intake.is_executing:
+            self.reef_intake.is_aligning = False
+
         if self.gamepad.getYButton():
             self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
