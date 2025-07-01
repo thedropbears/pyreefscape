@@ -383,8 +383,8 @@ class ChassisComponent:
         self.chassis_speeds = ChassisSpeeds(vx, vy, omega)
 
     def align_on_y(self, offset: float, precision: float) -> None:
-        if abs(offset) > precision:
-            self.chassis_speeds.vy =  -math.copysign(self.ALIGN_Y_AXIS_SPEED , offset)
+        if abs(offset) > precision and self.at_desired_heading:
+            self.chassis_speeds.vy = -math.copysign(self.ALIGN_Y_AXIS_SPEED, offset)
             # move in direction opposite to offset
         else:
             self.stop_align_on_y()
