@@ -387,10 +387,7 @@ class ChassisComponent:
             self.chassis_speeds.vy = -math.copysign(self.ALIGN_Y_AXIS_SPEED, offset)
             # move in direction opposite to offset
         else:
-            self.stop_align_on_y()
-
-    def stop_align_on_y(self) -> None:
-        self.chassis_speeds.vy = 0
+            self.chassis_speeds.vy = 0
 
     def limit_to_positive_longitudinal_velocity(self) -> None:
         self.chassis_speeds.vy = 0.0

@@ -92,7 +92,6 @@ class ReefIntake(StateMachine):
         if initial_call:
             self.origin_robot_pose = self.chassis.get_pose()
             self.chassis.stop_snapping()
-            self.chassis.stop_align_on_y()
 
         robot_pose = self.chassis.get_pose()
 
