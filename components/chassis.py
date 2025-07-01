@@ -228,7 +228,8 @@ class ChassisComponent:
     WIDTH = LENGTH
 
     DRIVE_CURRENT_THRESHOLD = 35
-    ALIGN_Y_AXIS_SPEED = 0.2
+    ALIGN_Y_AXIS_SPEED = 1.0
+    PROPORTIONAL_ALIGN_SPEED_CHANGE = 2.0
 
     HEADING_TOLERANCE = math.radians(1)
 
@@ -384,7 +385,11 @@ class ChassisComponent:
 
     def align_on_y(self, offset: float, precision: float) -> None:
         if abs(offset) > precision and self.at_desired_heading():
-            self.chassis_speeds.vy = -math.copysign(self.ALIGN_Y_AXIS_SPEED, offset)
+            self.chassis_speeds.vy = (
+                -math.copysign(self.ALIGN_Y_AXIS_SPEED, offset)
+                * offset
+                * self.PROPORTIONAL_ALIGN_SPEED_CHANGE
+            )
             # move in direction opposite to offset
         else:
             self.chassis_speeds.vy = 0
