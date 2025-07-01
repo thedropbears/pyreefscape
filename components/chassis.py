@@ -30,7 +30,7 @@ from wpimath.kinematics import (
 
 from ids import CancoderId, TalonId
 from utilities.ctre import FALCON_FREE_RPS
-from utilities.functions import rate_limit_module
+from utilities.functions import clamp, rate_limit_module
 from utilities.game import is_red
 from utilities.position import TeamPoses
 
@@ -228,8 +228,9 @@ class ChassisComponent:
     WIDTH = LENGTH
 
     DRIVE_CURRENT_THRESHOLD = 35
-    ALIGN_Y_AXIS_SPEED = 1.0
-    PROPORTIONAL_ALIGN_SPEED_CHANGE = 2.0
+
+    MIN_ALIGN_Y_AXIS_SPEED = 0.2
+    MAX_ALIGN_Y_AXIS_SPEED = 1
 
     HEADING_TOLERANCE = math.radians(1)
 
@@ -385,12 +386,13 @@ class ChassisComponent:
 
     def align_on_y(self, offset: float, precision: float) -> None:
         if abs(offset) > precision and self.at_desired_heading():
-            self.chassis_speeds.vy = (
-                -math.copysign(self.ALIGN_Y_AXIS_SPEED, offset)
-                * offset
-                * self.PROPORTIONAL_ALIGN_SPEED_CHANGE
+            offset = clamp(offset, -1, 1)
+            self.chassis_speeds.vy = -math.copysign(
+                self.MIN_ALIGN_Y_AXIS_SPEED
+                + (self.MAX_ALIGN_Y_AXIS_SPEED - self.MIN_ALIGN_Y_AXIS_SPEED) * offset,
+                offset,
             )
-            # move in direction opposite to offset
+            # move in direction opposite to offset, proportional to offset, clamped at 1m/s to 0.2m/s
         else:
             self.chassis_speeds.vy = 0
 
