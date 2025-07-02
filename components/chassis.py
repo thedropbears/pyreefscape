@@ -28,9 +28,11 @@ from wpimath.kinematics import (
     SwerveModuleState,
 )
 
+import utilities
+import utilities.scalers
 from ids import CancoderId, TalonId
 from utilities.ctre import FALCON_FREE_RPS
-from utilities.functions import clamp, rate_limit_module
+from utilities.functions import rate_limit_module
 from utilities.game import is_red
 from utilities.position import TeamPoses
 
@@ -229,8 +231,8 @@ class ChassisComponent:
 
     DRIVE_CURRENT_THRESHOLD = 35
 
-    MIN_ALIGN_Y_AXIS_SPEED = 0.2
-    MAX_ALIGN_Y_AXIS_SPEED = 1
+    MIN_ALIGN_Y_AXIS_SPEED = 0.4
+    MAX_ALIGN_Y_AXIS_SPEED = 1.5
 
     HEADING_TOLERANCE = math.radians(1)
 
@@ -384,17 +386,22 @@ class ChassisComponent:
         """Robot oriented drive commands"""
         self.chassis_speeds = ChassisSpeeds(vx, vy, omega)
 
-    def align_on_y(self, offset: float, precision: float) -> None:
-        if abs(offset) > precision and self.at_desired_heading():
-            offset = clamp(offset, -1, 1)
+    def align_on_y(self, offset: float, distance_tol: float, angle_tol: float) -> None:
+        if math.isclose(offset, 0.0, abs_tol=distance_tol):
+            self.chassis_speeds.vy = 0
+
+        elif math.isclose(self.heading_controller.getError(), 0.0, abs_tol=angle_tol):
+            # move in direction opposite to offset, proportional to offset
             self.chassis_speeds.vy = -math.copysign(
-                self.MIN_ALIGN_Y_AXIS_SPEED
-                + (self.MAX_ALIGN_Y_AXIS_SPEED - self.MIN_ALIGN_Y_AXIS_SPEED) * offset,
+                utilities.scalers.scale_value(
+                    abs(offset),
+                    0,
+                    2,
+                    self.MIN_ALIGN_Y_AXIS_SPEED,
+                    self.MAX_ALIGN_Y_AXIS_SPEED,
+                ),
                 offset,
             )
-            # move in direction opposite to offset, proportional to offset, clamped at 1m/s to 0.2m/s
-        else:
-            self.chassis_speeds.vy = 0
 
     def limit_to_positive_longitudinal_velocity(self) -> None:
         self.chassis_speeds.vy = 0.0
