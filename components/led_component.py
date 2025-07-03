@@ -123,9 +123,9 @@ class LightStrip:
         # Refresh the timer to stop the LEDs being turned off
         self.last_update_time = time.monotonic()
 
-    def reef_offset(self, offset: float) -> None:
+    def reef_offset(self, offset: float, offset_tol: float) -> None:
         flash_delay = max(min(1.0, abs(offset)), 0.1)
-        if abs(offset) < 0.05:
+        if abs(offset) < offset_tol:
             self.pattern = LEDPattern.solid(Color.kGreen)
         elif (
             not self.is_reef_offset_flashing
