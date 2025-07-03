@@ -364,7 +364,11 @@ class VisualLocalizer(HasPerLoopCache):
                 self.last_timestamp = timestamp
                 for target in results.getTargets():
                     # filter out likely bad targets
-                    if target.getPoseAmbiguity() > 0.1:
+                    if (
+                        target.getPoseAmbiguity() > 0.1
+                        or target.getBestCameraToTarget().translation().norm()
+                        > self.CAMERA_MAX_RANGE
+                    ):
                         continue
 
                     heading = self.heading_buffer.sample(results.getTimestampSeconds())
