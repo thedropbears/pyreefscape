@@ -23,9 +23,12 @@ class ReefIntake(StateMachine):
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
+    AUTO_REEF_ALIGN_DISTANCE = tunable(0.04)  # metres
+    AUTO_REEF_ALIGN_ANGLE = math.radians(3)
 
     def __init__(self):
         self.last_l3 = False
+        self.is_aligning = False
         self.holding_coral = False
 
     def intake(self) -> None:
@@ -67,7 +70,13 @@ class ReefIntake(StateMachine):
             self.chassis.snap_to_heading(self.rotation_lock.radians())
         tag_to_robot = current_pose.relativeTo(nearest_tag_pose)
         offset = tag_to_robot.translation().Y()
+
         self.status_lights.reef_offset(offset)
+
+        if self.is_aligning:
+            self.chassis.align_on_y(
+                offset, self.AUTO_REEF_ALIGN_DISTANCE, self.AUTO_REEF_ALIGN_ANGLE
+            )
 
         current_is_L3 = self.is_L3()
 
