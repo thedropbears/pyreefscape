@@ -5,7 +5,7 @@ from logging import Logger
 import magicbot
 import ntcore
 import wpilib
-from magicbot import feedback
+from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopGeneralConfigs,
     FeedbackConfigs,
@@ -231,8 +231,8 @@ class ChassisComponent:
 
     DRIVE_CURRENT_THRESHOLD = 35
 
-    MIN_ALIGN_Y_AXIS_SPEED = 0.4
-    MAX_ALIGN_Y_AXIS_SPEED = 1.5
+    MIN_ALIGN_Y_AXIS_SPEED = tunable(0.4)
+    MAX_ALIGN_Y_AXIS_SPEED = tunable(1.5)
 
     HEADING_TOLERANCE = math.radians(1)
 
