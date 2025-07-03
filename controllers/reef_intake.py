@@ -23,8 +23,8 @@ class ReefIntake(StateMachine):
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
-    AUTO_REEF_ALIGN_DISTANCE = tunable(0.05)  # metres
-    AUTO_REEF_ALIGN_ANGLE = math.radians(1)
+    AUTO_REEF_ALIGN_DISTANCE = tunable(0.04)  # metres
+    AUTO_REEF_ALIGN_ANGLE = math.radians(3)
 
     def __init__(self):
         self.last_l3 = False
