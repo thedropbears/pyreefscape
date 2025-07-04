@@ -28,11 +28,17 @@ class ReefIntake(StateMachine):
 
     def __init__(self):
         self.last_l3 = False
-        self.is_aligning = False
+        self.should_align = False
         self.holding_coral = False
 
     def intake(self) -> None:
         self.engage()
+
+    def align(self) -> None:
+        self.should_align = True
+
+    def stop_align(self) -> None:
+        self.should_align = False
 
     @feedback
     def is_L3(self) -> bool:
@@ -73,7 +79,7 @@ class ReefIntake(StateMachine):
 
         self.status_lights.reef_offset(offset, self.AUTO_REEF_DISTANCE_TOL)
 
-        if self.is_aligning:
+        if self.should_align:
             self.chassis.align_on_y(
                 offset, self.AUTO_REEF_DISTANCE_TOL, self.AUTO_REEF_ANGLE_TOL
             )
