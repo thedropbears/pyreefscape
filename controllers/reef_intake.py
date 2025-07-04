@@ -1,7 +1,7 @@
 import math
 
 import wpilib
-from magicbot import StateMachine, feedback, state, tunable
+from magicbot import StateMachine, feedback, state, tunable, will_reset_to
 
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
@@ -26,9 +26,10 @@ class ReefIntake(StateMachine):
     AUTO_REEF_DISTANCE_TOL = tunable(0.04)  # metres
     AUTO_REEF_ANGLE_TOL = math.radians(3)
 
+    should_align = will_reset_to(False)
+
     def __init__(self):
         self.last_l3 = False
-        self.should_align = False
         self.holding_coral = False
 
     def intake(self) -> None:
@@ -36,9 +37,6 @@ class ReefIntake(StateMachine):
 
     def align(self) -> None:
         self.should_align = True
-
-    def stop_align(self) -> None:
-        self.should_align = False
 
     @feedback
     def is_L3(self) -> bool:
