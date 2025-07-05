@@ -25,6 +25,7 @@ class ReefIntake(StateMachine):
     ENGAGE_DISTANCE = tunable(1.5)  # metres
     AUTO_REEF_DISTANCE_TOL = tunable(0.04)  # metres
     AUTO_REEF_ANGLE_TOL = math.radians(3)
+    REEF_ALIGN_ANGLE_FUDGE = tunable(2)
 
     should_align = will_reset_to(False)
 
@@ -71,7 +72,9 @@ class ReefIntake(StateMachine):
         nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]
         self.rotation_lock = nearest_tag_pose.rotation()
         if not wpilib.DriverStation.isAutonomous():
-            self.chassis.snap_to_heading(self.rotation_lock.radians())
+            self.chassis.snap_to_heading(
+                self.rotation_lock.radians() - math.radians(self.REEF_ALIGN_ANGLE_FUDGE)
+            )
         tag_to_robot = current_pose.relativeTo(nearest_tag_pose)
         offset = tag_to_robot.translation().Y()
 
