@@ -1,7 +1,7 @@
 import math
 
 import wpilib
-from magicbot import StateMachine, feedback, state, tunable
+from magicbot import StateMachine, feedback, state, tunable, will_reset_to
 
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
@@ -19,20 +19,24 @@ class ReefIntake(StateMachine):
     status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(-55.0)
-    L3_INTAKE_ANGLE = tunable(-7.0)
+    L3_INTAKE_ANGLE = tunable(-15.0)
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
-    AUTO_REEF_ALIGN_DISTANCE = tunable(0.04)  # metres
-    AUTO_REEF_ALIGN_ANGLE = math.radians(3)
+    AUTO_REEF_DISTANCE_TOL = tunable(0.04)  # metres
+    AUTO_REEF_ANGLE_TOL = math.radians(3)
+
+    should_align = will_reset_to(False)
 
     def __init__(self):
         self.last_l3 = False
-        self.is_aligning = False
         self.holding_coral = False
 
     def intake(self) -> None:
         self.engage()
+
+    def align(self) -> None:
+        self.should_align = True
 
     @feedback
     def is_L3(self) -> bool:
@@ -71,11 +75,11 @@ class ReefIntake(StateMachine):
         tag_to_robot = current_pose.relativeTo(nearest_tag_pose)
         offset = tag_to_robot.translation().Y()
 
-        self.status_lights.reef_offset(offset)
+        self.status_lights.reef_offset(offset, self.AUTO_REEF_DISTANCE_TOL)
 
-        if self.is_aligning:
+        if self.should_align:
             self.chassis.align_on_y(
-                offset, self.AUTO_REEF_ALIGN_DISTANCE, self.AUTO_REEF_ALIGN_ANGLE
+                offset, self.AUTO_REEF_DISTANCE_TOL, self.AUTO_REEF_ANGLE_TOL
             )
 
         current_is_L3 = self.is_L3()
