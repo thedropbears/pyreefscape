@@ -396,7 +396,7 @@ class ChassisComponent:
                 utilities.scalers.scale_value(
                     abs(offset),
                     0,
-                    2,
+                    1.5,
                     self.MIN_ALIGN_Y_AXIS_SPEED,
                     self.MAX_ALIGN_Y_AXIS_SPEED,
                 ),
