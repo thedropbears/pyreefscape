@@ -231,7 +231,7 @@ class ChassisComponent:
 
     DRIVE_CURRENT_THRESHOLD = 35
 
-    MIN_ALIGN_Y_AXIS_SPEED = tunable(0.4)
+    MIN_ALIGN_Y_AXIS_SPEED = tunable(0.3)
     MAX_ALIGN_Y_AXIS_SPEED = tunable(1.5)
 
     HEADING_TOLERANCE = math.radians(1)
