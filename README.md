@@ -1,4 +1,4 @@
-# py2025
+# pyreefscape
 
 The Drop Bears' robot code for FRC 2025
 
@@ -11,18 +11,13 @@ This includes the Python version, and any Python packages such as `wpilib`.
 
 Install `uv` by following the [`uv` docs](https://docs.astral.sh/uv/).
 
-After installing `uv`, use it to create a virtual environment and install our dependencies.
+After installing `uv`, download the roboRIO dependencies.
 
 ```sh
-uv sync
-```
-
-Then, download the roboRIO dependencies.
-
-```sh
-uv run python -m ensurepip
 uv run robotpy sync --no-install
 ```
+
+`uv run` will automatically create a virtual environment and install our dependencies for local development.
 
 ### pre-commit
 
@@ -33,7 +28,7 @@ To use pre-commit, you must install it outside of this project's virtual environ
 Either use your system package manager, or use `uv tool`:
 
 ```sh
-uv tool install pre-commit
+uv tool install pre-commit --with pre-commit-uv
 ```
 
 You can then set up the pre-commit hooks to run on commit:
@@ -59,15 +54,13 @@ pre-commit install
 
 ### Simulation
 
-Before your first run, copy the `*.json.orig` files to the main directory and remove the `.orig` extension.
-
 ```
 uv run robotpy sim
 ```
 
 ### Deploy to Robot
 
-Once on robots network
+First, connect to the robot network. Then run:
 
 ```
 uv run robotpy deploy
