@@ -269,6 +269,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
+            self.algae_shooter.done()
             self.climber_state_machine.done()
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
