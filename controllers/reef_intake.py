@@ -19,7 +19,7 @@ class ReefIntake(StateMachine):
     status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(-55.0)
-    L3_INTAKE_ANGLE = tunable(-15.0)
+    L3_INTAKE_ANGLE = tunable(-10.0)
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
