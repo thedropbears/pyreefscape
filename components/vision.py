@@ -64,7 +64,7 @@ class VisualLocalizer(HasPerLoopCache):
     should_log = tunable(True)
 
     last_pose_z = tunable(0.0, writeDefault=False)
-    linear_vision_uncertainty = tunable(0.30)
+    linear_vision_uncertainty = tunable(0.10)
     rotation_vision_uncertainty = tunable(0.6)
 
     linear_vision_uncertainty_multi_tag = tunable(0.05)
