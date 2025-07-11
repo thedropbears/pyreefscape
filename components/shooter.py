@@ -26,7 +26,7 @@ class ShooterComponent:
     FLYWHEEL_GEAR_RATIO = 1 / (1.0 / 1.0)
 
     BASE_ALGAE_SIZE = 16
-    algae_size_scale = tunable(1.0)
+    algae_size_scale = tunable(0.4)
 
     def __init__(self) -> None:
         self.top_flywheel = TalonFX(TalonId.TOP_FLYWHEEL)
