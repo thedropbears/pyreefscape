@@ -142,7 +142,10 @@ def test_fuzz_test(control: TestController) -> None:
         # Start the robot in disabled mode for a short period
         control.step_timing(seconds=0.5, autonomous=False, enabled=False)
 
+        # ... in disabled test mode too
         DriverStationSim.setTest(True)
+        control.step_timing(seconds=0.5, autonomous=False, enabled=False)
+
         DriverStationSim.setEnabled(True)
 
         assert control.robot_is_alive
