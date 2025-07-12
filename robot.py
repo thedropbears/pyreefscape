@@ -60,6 +60,9 @@ class MyRobot(magicbot.MagicRobot):
         self.event_loop = wpilib.event.EventLoop()
         self.data_log = wpilib.DataLogManager.getLog()
 
+        # Log driver station data
+        wpilib.DriverStation.startDataLog(self.data_log)
+
         # Log deploy info to show in AdvantageScope.
         meta_table = ntcore.NetworkTableInstance.getDefault().getTable("Metadata")
         deploy_info = wpilib.deployinfo.getDeployData()
