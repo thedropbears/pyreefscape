@@ -72,6 +72,8 @@ class VisualLocalizer(HasPerLoopCache):
 
     reproj_error_threshold = tunable(2.0)
 
+    tags_state = tunable("none")
+
     def __init__(
         self,
         # The name of the camera in PhotonVision.
@@ -323,6 +325,8 @@ class VisualLocalizer(HasPerLoopCache):
         for results in all_results:
             # if results didn't see any targets
             if not results.getTargets():
+                self.tags_state = "none"
+
                 return
 
             # if we have already processed these results
@@ -353,6 +357,9 @@ class VisualLocalizer(HasPerLoopCache):
                             self.rotation_vision_uncertainty_multi_tag,
                         ),
                     )
+                    self.tags_state = "multi"
+                else:
+                    self.tags_state = "none"
 
                 if self.should_log:
                     # Multitag results don't have best and alternates
@@ -369,6 +376,7 @@ class VisualLocalizer(HasPerLoopCache):
                         or target.getBestCameraToTarget().translation().norm()
                         > self.CAMERA_MAX_RANGE
                     ):
+                        self.tags_state = "none"
                         continue
 
                     heading = self.heading_buffer.sample(results.getTimestampSeconds())
@@ -395,6 +403,8 @@ class VisualLocalizer(HasPerLoopCache):
                             self.rotation_vision_uncertainty,
                         ),
                     )
+
+                    self.tags_state = "single"
 
                     if self.should_log:
                         self.best_log.setPose(pose)
