@@ -28,6 +28,7 @@ class FloorIntake(StateMachine):
     @state(first=True, must_finish=True)
     def intaking(self):
         if self.injector_component.has_algae():
+            self.injector_component.increment_segment()
             self.done()
             return
 
