@@ -19,6 +19,9 @@ class InjectorComponent:
     INJECTOR_RPS_TOLERANCE = 0.5
     INJECTOR_MAX_ACCEL = 0.5
 
+    cycle_counter = tunable(0)
+    cycle_segment = tunable("intaking")
+
     def __init__(self) -> None:
         self.algae_limit_switch = DigitalInput(DioChannel.ALGAE_INTAKE_SWITCH)
 
@@ -55,6 +58,14 @@ class InjectorComponent:
 
     def on_enable(self) -> None:
         self.has_seen_algae = False
+        self.cycle_counter = 0
+
+    def increment_segment(self) -> None:
+        if self.cycle_segment == "intaking":
+            self.cycle_segment = "shooting"
+        else:
+            self.cycle_segment = "intaking"
+            self.cycle_counter += 1
 
     @feedback
     def _algae_limit_switch_pressed(self) -> bool:

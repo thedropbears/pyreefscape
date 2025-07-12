@@ -113,6 +113,7 @@ class ReefIntake(StateMachine):
             self.chassis.limit_to_positive_longitudinal_velocity()
 
         if distance >= self.RETREAT_DISTANCE:
+            self.injector_component.increment_segment()
             self.done()
 
     def done(self) -> None:
