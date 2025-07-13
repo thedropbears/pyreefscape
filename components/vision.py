@@ -20,6 +20,7 @@ from wpimath.geometry import (
 from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 
 from components.chassis import ChassisComponent
+from utilities import game
 from utilities.caching import HasPerLoopCache, cache_per_loop
 from utilities.functions import clamp
 from utilities.game import APRILTAGS_2D, apriltag_layout
@@ -339,7 +340,16 @@ class VisualLocalizer(HasPerLoopCache):
 
             if results.multitagResult:
                 self.last_timestamp = timestamp
+
+                bad_tags = [12, 13, 16] if game.is_red() else [1, 2, 3]
+                concatenated_list = bad_tags + results.multitagResult.fiducialIDsUsed
+                if len(set(concatenated_list)) != len(concatenated_list):
+                    self.tags_state = "none"
+                    self.has_multitag = False
+                    continue
+
                 self.has_multitag = True
+
                 p = results.multitagResult.estimatedPose
                 pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
                 reprojectionErr = p.bestReprojErr
