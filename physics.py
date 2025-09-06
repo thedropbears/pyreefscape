@@ -195,7 +195,7 @@ class PhysicsEngine:
 
         wrist_gearbox = DCMotor.NEO(1)
         wrist_motor = rev.SparkMaxSim(robot.wrist.motor, wrist_gearbox)
-        self.wrist_encoder_sim = DutyCycleEncoderSim(robot.wrist.wrist_encoder)
+        self.wrist_encoder_sim = rev.SparkAbsoluteEncoderSim(robot.wrist.motor)
 
         wrist_sim = SingleJointedArmSim(
             wrist_gearbox,
@@ -329,9 +329,7 @@ class PhysicsEngine:
 
         # Update wrist simulation
         self.wrist.update(tm_diff)
-        self.wrist_encoder_sim.set(
-            self.wrist.mech_sim.getAngle() + WristComponent.ENCODER_ZERO_OFFSET
-        )
+        self.wrist_encoder_sim.setPosition(self.wrist.mech_sim.getAngle())
 
         # Simulate algae pick up
         if self.floor_intake.current_state == "intaking":
