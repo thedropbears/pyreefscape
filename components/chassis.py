@@ -5,7 +5,7 @@ from logging import Logger
 import magicbot
 import ntcore
 import wpilib
-from magicbot import feedback
+from magicbot import feedback, tunable
 from phoenix6.configs import (
     ClosedLoopGeneralConfigs,
     FeedbackConfigs,
@@ -28,6 +28,8 @@ from wpimath.kinematics import (
     SwerveModuleState,
 )
 
+import utilities
+import utilities.scalers
 from ids import CancoderId, TalonId
 from utilities.ctre import FALCON_FREE_RPS
 from utilities.functions import rate_limit_module
@@ -229,6 +231,9 @@ class ChassisComponent:
 
     DRIVE_CURRENT_THRESHOLD = 35
 
+    MIN_ALIGN_Y_AXIS_SPEED = tunable(0.3)
+    MAX_ALIGN_Y_AXIS_SPEED = tunable(1.5)
+
     HEADING_TOLERANCE = math.radians(1)
 
     swerve_config: SwerveConfig
@@ -380,6 +385,23 @@ class ChassisComponent:
     def drive_local(self, vx: float, vy: float, omega: float) -> None:
         """Robot oriented drive commands"""
         self.chassis_speeds = ChassisSpeeds(vx, vy, omega)
+
+    def align_on_y(self, offset: float, distance_tol: float, angle_tol: float) -> None:
+        if math.isclose(offset, 0.0, abs_tol=distance_tol):
+            self.chassis_speeds.vy = 0
+
+        elif math.isclose(self.heading_controller.getError(), 0.0, abs_tol=angle_tol):
+            # move in direction opposite to offset, proportional to offset
+            self.chassis_speeds.vy = -math.copysign(
+                utilities.scalers.scale_value(
+                    abs(offset),
+                    0,
+                    1.5,
+                    self.MIN_ALIGN_Y_AXIS_SPEED,
+                    self.MAX_ALIGN_Y_AXIS_SPEED,
+                ),
+                offset,
+            )
 
     def limit_to_positive_longitudinal_velocity(self) -> None:
         self.chassis_speeds.vy = 0.0

@@ -12,7 +12,6 @@ from autonomous.auto_base import AutoBase
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
-from components.coral_depositor import CoralDepositorComponent
 from components.injector import InjectorComponent
 from components.intake import IntakeComponent
 from components.led_component import LightStrip
@@ -38,7 +37,6 @@ class MyRobot(magicbot.MagicRobot):
     # Components
     chassis: ChassisComponent
     climber: ClimberComponent
-    coral_depositor_component: CoralDepositorComponent
     shooter_component: ShooterComponent
     injector_component: InjectorComponent
     starboard_vision: VisualLocalizer
@@ -48,18 +46,22 @@ class MyRobot(magicbot.MagicRobot):
     status_lights: LightStrip
     ballistics_component: BallisticsComponent
 
-    max_speed = tunable(0.8 * 5.0)  # m/s
-    lower_max_speed = tunable(1.0)  # m/s
-    max_spin_rate = tunable(0.8 * 4.0)  # m/s
+    max_speed = tunable(3.5)  # m/s
+    lower_max_speed = tunable(2.0)  # m/s
+    max_spin_rate = tunable(2.8)  # m/s
     lower_max_spin_rate = tunable(2.0)  # m/s
     inclination_angle = tunable(0.0)
     dpad_max_speed = tunable(0.4)
+    is_robot_oriented = tunable(False)
 
     START_POS_TOLERANCE = 0.2
 
     def createObjects(self) -> None:
         self.event_loop = wpilib.event.EventLoop()
         self.data_log = wpilib.DataLogManager.getLog()
+
+        # Log driver station data
+        wpilib.DriverStation.startDataLog(self.data_log)
 
         # Log deploy info to show in AdvantageScope.
         meta_table = ntcore.NetworkTableInstance.getDefault().getTable("Metadata")
@@ -219,6 +221,7 @@ class MyRobot(magicbot.MagicRobot):
             -rescale_js(self.gamepad.getRightX(), 0.1, exponential=20) * max_spin_rate
         )
         local_driving = self.gamepad.getRightBumperButton()
+        self.is_robot_oriented = local_driving
 
         if local_driving:
             if (
@@ -228,6 +231,7 @@ class MyRobot(magicbot.MagicRobot):
             ):
                 # Make the shooter behave like the front of the robot
                 self.chassis.drive_local(-drive_x, -drive_y, drive_z)
+
             else:
                 # Climber is front as defined in the chassis
                 self.chassis.drive_local(drive_x, drive_y, drive_z)
@@ -257,6 +261,9 @@ class MyRobot(magicbot.MagicRobot):
         ):
             self.reef_intake.intake()
 
+        if self.gamepad.getLeftBumperButton() and self.reef_intake.is_executing:
+            self.reef_intake.align()
+
         if self.gamepad.getYButton():
             self.climber_state_machine.deploy()
         if self.gamepad.getAButton():
@@ -265,6 +272,7 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBButton():
             self.reef_intake.done()
             self.floor_intake.done()
+            self.algae_shooter.done()
             self.climber_state_machine.done()
 
         if self.gamepad.getRightTriggerAxis() > 0.5:
@@ -325,13 +333,6 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getAButton():
             self.climber_state_machine.retract()
 
-        if self.gamepad.getXButton():
-            self.coral_depositor_component.deposit()
-        elif self.gamepad.getAButton():
-            self.coral_depositor_component.retract()
-        elif self.gamepad.getBackButton():
-            self.coral_depositor_component.tuck()
-
         if self.gamepad.getLeftBumperButton():
             self.reef_intake.intake()
 
@@ -346,7 +347,6 @@ class MyRobot(magicbot.MagicRobot):
 
         # Components
         self.climber.execute()
-        self.coral_depositor_component.execute()
         self.shooter_component.execute()
         self.injector_component.execute()
         if self.gamepad.getLeftStickButton():

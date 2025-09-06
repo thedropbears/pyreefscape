@@ -48,19 +48,27 @@ class BallisticsComponent:
     # Tuples are values corresponding to the distances above
     # fmt: off
     FLYWHEEL_TOP_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (17, 19, 26.0),
-        ALGAE_MAX_DIAMETER: (21, 22, 24.0),
+        ALGAE_MIN_DIAMETER: (19, 22, 26.0),
+        ALGAE_MAX_DIAMETER: (25, 28, 28.0),
     }
 
     FLYWHEEL_BOTTOM_SPEED_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (33, 36, 44.0),
-        ALGAE_MAX_DIAMETER: (36, 37, 44.0),
+        ALGAE_MIN_DIAMETER: (35, 37, 42.0),
+        ALGAE_MAX_DIAMETER: (40, 40, 44.0),
     }
 
     FLYWHEEL_ANGLE_LOOKUP = {
-        ALGAE_MIN_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
+        ALGAE_MIN_DIAMETER: (
+            math.radians(-10),
+            math.radians(-15),
+            math.radians(-25)
+        ),
         # 16.5: (math.radians(-11.0), math.radians(-19), -25),
-        ALGAE_MAX_DIAMETER: (math.radians(-10), math.radians(-15), math.radians(-25)),
+        ALGAE_MAX_DIAMETER: (
+            math.radians(-10),
+            math.radians(-15),
+            math.radians(-25)
+        ),
     }
     # fmt: on
     BALL_SIZES = list(FLYWHEEL_ANGLE_LOOKUP.keys())
@@ -104,7 +112,7 @@ class BallisticsComponent:
             robot_to_barge_X_offset
             / (robot_pose.rotation() + self.robot_to_shooter).cos()
         )
-        return distance + 0.3
+        return distance
 
     @feedback
     def is_aligned(self) -> bool:

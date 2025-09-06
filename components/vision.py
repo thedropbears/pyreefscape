@@ -20,6 +20,7 @@ from wpimath.geometry import (
 from wpimath.interpolation import TimeInterpolatableRotation2dBuffer
 
 from components.chassis import ChassisComponent
+from utilities import game
 from utilities.caching import HasPerLoopCache, cache_per_loop
 from utilities.functions import clamp
 from utilities.game import APRILTAGS_2D, apriltag_layout
@@ -64,13 +65,15 @@ class VisualLocalizer(HasPerLoopCache):
     should_log = tunable(True)
 
     last_pose_z = tunable(0.0, writeDefault=False)
-    linear_vision_uncertainty = tunable(0.30)
+    linear_vision_uncertainty = tunable(0.10)
     rotation_vision_uncertainty = tunable(0.6)
 
     linear_vision_uncertainty_multi_tag = tunable(0.05)
     rotation_vision_uncertainty_multi_tag = tunable(0.05)
 
     reproj_error_threshold = tunable(2.0)
+
+    tags_state = tunable("none")
 
     def __init__(
         self,
@@ -323,6 +326,8 @@ class VisualLocalizer(HasPerLoopCache):
         for results in all_results:
             # if results didn't see any targets
             if not results.getTargets():
+                self.tags_state = "none"
+
                 return
 
             # if we have already processed these results
@@ -335,7 +340,16 @@ class VisualLocalizer(HasPerLoopCache):
 
             if results.multitagResult:
                 self.last_timestamp = timestamp
+
+                bad_tags = [12, 13, 16] if game.is_red() else [1, 2, 3]
+                concatenated_list = bad_tags + results.multitagResult.fiducialIDsUsed
+                if len(set(concatenated_list)) != len(concatenated_list):
+                    self.tags_state = "none"
+                    self.has_multitag = False
+                    continue
+
                 self.has_multitag = True
+
                 p = results.multitagResult.estimatedPose
                 pose = (Pose3d() + p.best + camera_to_robot).toPose2d()
                 reprojectionErr = p.bestReprojErr
@@ -353,6 +367,9 @@ class VisualLocalizer(HasPerLoopCache):
                             self.rotation_vision_uncertainty_multi_tag,
                         ),
                     )
+                    self.tags_state = "multi"
+                else:
+                    self.tags_state = "none"
 
                 if self.should_log:
                     # Multitag results don't have best and alternates
@@ -364,7 +381,12 @@ class VisualLocalizer(HasPerLoopCache):
                 self.last_timestamp = timestamp
                 for target in results.getTargets():
                     # filter out likely bad targets
-                    if target.getPoseAmbiguity() > 0.25:
+                    if (
+                        target.getPoseAmbiguity() > 0.1
+                        or target.getBestCameraToTarget().translation().norm()
+                        > self.CAMERA_MAX_RANGE
+                    ):
+                        self.tags_state = "none"
                         continue
 
                     heading = self.heading_buffer.sample(results.getTimestampSeconds())
@@ -391,6 +413,8 @@ class VisualLocalizer(HasPerLoopCache):
                             self.rotation_vision_uncertainty,
                         ),
                     )
+
+                    self.tags_state = "single"
 
                     if self.should_log:
                         self.best_log.setPose(pose)

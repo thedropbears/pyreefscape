@@ -1,7 +1,7 @@
 import math
 
 import wpilib
-from magicbot import StateMachine, feedback, state, tunable
+from magicbot import StateMachine, feedback, state, tunable, will_reset_to
 
 from components.chassis import ChassisComponent
 from components.injector import InjectorComponent
@@ -19,10 +19,15 @@ class ReefIntake(StateMachine):
     status_lights: LightStrip
 
     L2_INTAKE_ANGLE = tunable(-55.0)
-    L3_INTAKE_ANGLE = tunable(-7.0)
+    L3_INTAKE_ANGLE = tunable(-10.0)
 
     RETREAT_DISTANCE = tunable(0.3)  # metres
     ENGAGE_DISTANCE = tunable(1.5)  # metres
+    AUTO_REEF_DISTANCE_TOL = tunable(0.04)  # metres
+    AUTO_REEF_ANGLE_TOL = math.radians(3)
+    REEF_ALIGN_ANGLE_FUDGE = tunable(2)
+
+    should_align = will_reset_to(False)
 
     def __init__(self):
         self.last_l3 = False
@@ -30,6 +35,9 @@ class ReefIntake(StateMachine):
 
     def intake(self) -> None:
         self.engage()
+
+    def align(self) -> None:
+        self.should_align = True
 
     @feedback
     def is_L3(self) -> bool:
@@ -64,17 +72,25 @@ class ReefIntake(StateMachine):
         nearest_tag_pose = (game.nearest_reef_tag(current_pose))[1]
         self.rotation_lock = nearest_tag_pose.rotation()
         if not wpilib.DriverStation.isAutonomous():
-            self.chassis.snap_to_heading(self.rotation_lock.radians())
+            self.chassis.snap_to_heading(
+                self.rotation_lock.radians() - math.radians(self.REEF_ALIGN_ANGLE_FUDGE)
+            )
         tag_to_robot = current_pose.relativeTo(nearest_tag_pose)
         offset = tag_to_robot.translation().Y()
-        self.status_lights.reef_offset(offset)
+
+        self.status_lights.reef_offset(offset, self.AUTO_REEF_DISTANCE_TOL)
+
+        if self.should_align:
+            self.chassis.align_on_y(
+                offset, self.AUTO_REEF_DISTANCE_TOL, self.AUTO_REEF_ANGLE_TOL
+            )
 
         current_is_L3 = self.is_L3()
 
         if current_is_L3:
-            self.wrist.tilt_to(math.radians(self.L3_INTAKE_ANGLE))
+            self.wrist.tilt_to_shooter_FOR(math.radians(self.L3_INTAKE_ANGLE))
         else:
-            self.wrist.tilt_to(math.radians(self.L2_INTAKE_ANGLE))
+            self.wrist.tilt_to_shooter_FOR(math.radians(self.L2_INTAKE_ANGLE))
         self.last_l3 = current_is_L3
 
         if not self.holding_coral:
@@ -97,6 +113,7 @@ class ReefIntake(StateMachine):
             self.chassis.limit_to_positive_longitudinal_velocity()
 
         if distance >= self.RETREAT_DISTANCE:
+            self.injector_component.increment_segment()
             self.done()
 
     def done(self) -> None:

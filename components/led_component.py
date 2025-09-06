@@ -123,9 +123,9 @@ class LightStrip:
         # Refresh the timer to stop the LEDs being turned off
         self.last_update_time = time.monotonic()
 
-    def reef_offset(self, offset: float) -> None:
-        flash_delay = round(min(1.0, abs(offset)) * 0.5, 1)
-        if abs(offset) < 0.1:
+    def reef_offset(self, offset: float, offset_tol: float) -> None:
+        flash_delay = max(min(1.0, abs(offset)), 0.1)
+        if abs(offset) < offset_tol:
             self.pattern = LEDPattern.solid(Color.kGreen)
         elif (
             not self.is_reef_offset_flashing
@@ -166,6 +166,16 @@ class LightStrip:
             ),
             0.5,
         )
+        self.keep_alive()
+
+    def climber_deployed(self, left_okay: bool, right_okay: bool) -> None:
+        self.pattern = LEDPattern.steps(
+            [
+                (0.0, Color.kGreen if left_okay else Color.kRed),
+                (self.halfway_split, Color.kGreen if right_okay else Color.kRed),
+            ]
+        )
+
         self.keep_alive()
 
     def climber_retracting(self) -> None:

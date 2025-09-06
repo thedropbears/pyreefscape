@@ -20,13 +20,14 @@ from utilities.rev import (
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = 4.011863
-    MAXIMUM_DEPRESSION = math.radians(-112.0)
-    MAXIMUM_ELEVATION = math.radians(0)
+    ENCODER_ZERO_OFFSET = 3.46463832679
+    COM_DIFFERENCE = 0.54722467321
+    MAXIMUM_DEPRESSION = math.radians(-112.0) + COM_DIFFERENCE
+    MAXIMUM_ELEVATION = math.radians(0) + COM_DIFFERENCE
     NEUTRAL_ANGLE = math.radians(-90.0)
 
-    WRIST_MAX_VEL = math.radians(180.0)
-    WRIST_MAX_ACC = math.radians(360.0)
+    WRIST_MAX_VEL = math.radians(720.0)
+    WRIST_MAX_ACC = math.radians(1080.0)
     wrist_gear_ratio = 208.206
     TOLERANCE = math.radians(3.0)
     VEL_TOLERANCE = math.radians(6.0)
@@ -34,6 +35,10 @@ class WristComponent:
     def __init__(self, mech_root: wpilib.MechanismRoot2d):
         self.wrist_ligament = mech_root.appendLigament(
             "wrist", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kYellow)
+        )
+
+        self.wrist_COM_ligament = mech_root.appendLigament(
+            "wrist_COM", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kBlue)
         )
 
         self.wrist_encoder = DutyCycleEncoder(DioChannel.WRIST_ENCODER, math.tau, 0)
@@ -53,8 +58,8 @@ class WristComponent:
         # theoretical max pos 0.01 max velocity 0.05
         self.pid = PIDController(Kp=19.508, Ki=0, Kd=0.048599)
 
-        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A8%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.15%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A40%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A-10%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A432%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A-110%2C%22u%22%3A%22deg%22%7D
-        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.48, kV=4.10, kA=0.02)
+        # https://www.reca.lc/arm?armMass=%7B%22s%22%3A12%2C%22u%22%3A%22kg%22%7D&comLength=%7B%22s%22%3A0.24044%2C%22u%22%3A%22m%22%7D&currentLimit=%7B%22s%22%3A80%2C%22u%22%3A%22A%22%7D&efficiency=90&endAngle=%7B%22s%22%3A-10%2C%22u%22%3A%22deg%22%7D&iterationLimit=10000&motor=%7B%22quantity%22%3A1%2C%22name%22%3A%22NEO%22%7D&ratio=%7B%22magnitude%22%3A208.206%2C%22ratioType%22%3A%22Reduction%22%7D&startAngle=%7B%22s%22%3A-112%2C%22u%22%3A%22deg%22%7D
+        self.wrist_ff = ArmFeedforward(kS=0.42619, kG=0.45, kV=4.06, kA=0.01)
 
         wrist_config.encoder.positionConversionFactor(
             math.tau * (1 / self.wrist_gear_ratio)
@@ -68,6 +73,7 @@ class WristComponent:
         self.motor_encoder = self.motor.getEncoder()
 
         self.desired_state = TrapezoidProfile.State(WristComponent.NEUTRAL_ANGLE, 0.0)
+        self.tracked_state = self.desired_state
 
         self.last_setpoint_update_time = wpilib.Timer.getFPGATimestamp()
         self.initial_state = TrapezoidProfile.State(
@@ -113,12 +119,28 @@ class WristComponent:
         return math.degrees(self.inclination())
 
     @feedback
+    def shooter_FOR_inclination_deg(self) -> float:
+        return math.degrees(self.inclination() - self.COM_DIFFERENCE)
+
+    @feedback
     def shoot_angle_deg(self) -> float:
         return self.inclination_deg() + 90
 
     @feedback
     def current_velocity(self) -> float:
         return self.motor_encoder.getVelocity()
+
+    @feedback
+    def current_target_velocity(self) -> float:
+        return self.tracked_state.velocity
+
+    @feedback
+    def current_target_position(self) -> float:
+        return self.tracked_state.position
+
+    @feedback
+    def current_input(self) -> float:
+        return self.motor.getAppliedOutput()
 
     @feedback
     def at_setpoint(self) -> bool:
@@ -129,6 +151,13 @@ class WristComponent:
             self.desired_state.velocity - self.current_velocity()
         ) < WristComponent.VEL_TOLERANCE
 
+    # Tilts to an angle with regards to the shooter frame of reference.
+    # Shooter FOR takes the arm as in-line with the backplate of the shooter
+    # Should be called with angles in the shooter FOR
+    def tilt_to_shooter_FOR(self, pos: float) -> None:
+        self.tilt_to(pos + self.COM_DIFFERENCE)
+
+    # Tilts to an angle with respect to the COM FOR
     def tilt_to(self, pos: float) -> None:
         clamped_angle = clamp(pos, self.MAXIMUM_DEPRESSION, self.MAXIMUM_ELEVATION)
 
@@ -146,19 +175,24 @@ class WristComponent:
         )
 
     def go_to_neutral(self) -> None:
-        self.tilt_to(WristComponent.NEUTRAL_ANGLE)
+        self.tilt_to_shooter_FOR(WristComponent.NEUTRAL_ANGLE)
 
     def execute(self) -> None:
-        tracked_state = self.wrist_profile.calculate(
+        self.tracked_state = self.wrist_profile.calculate(
             wpilib.Timer.getFPGATimestamp() - self.last_setpoint_update_time,
             self.initial_state,
             self.desired_state,
         )
-        ff = self.wrist_ff.calculate(tracked_state.position, tracked_state.velocity)
 
-        self.motor.setVoltage(
-            self.pid.calculate(self.inclination(), tracked_state.position) + ff
+        ff = self.wrist_ff.calculate(
+            self.tracked_state.position, self.tracked_state.velocity
         )
 
-        self.wrist_ligament.setAngle(self.inclination_deg())
+        self.motor.setVoltage(
+            self.pid.calculate(self.inclination(), self.tracked_state.position) + ff
+        )
+
+        self.wrist_ligament.setAngle(self.shooter_FOR_inclination_deg())
+
+        self.wrist_COM_ligament.setAngle(self.inclination_deg())
         # self.wrist_ligament.setAngle(math.degrees(desired_state.position))

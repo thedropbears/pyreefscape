@@ -25,6 +25,8 @@ class AlgaeShooter(StateMachine):
     BOTTOM_SHOOT_SPEED = tunable(65.0)
     use_ballistics = tunable(True)
 
+    MEASURING_ANGLE = math.radians(-15.0)
+
     def __init__(self) -> None:
         pass
 
@@ -42,22 +44,16 @@ class AlgaeShooter(StateMachine):
             return
         self.engage()
 
-    @state(first=True)
-    def measuring(self):
-        self.wrist.tilt_to(math.radians(-15.0))
-
-        self.next_state(self.preparing)
-
-    @state(must_finish=True)
+    @state(first=True, must_finish=True)
     def preparing(self):
         if self.use_ballistics:
             solution = self.ballistics_component.current_solution()
-            self.wrist.tilt_to(solution.inclination)
+            self.wrist.tilt_to_shooter_FOR(solution.inclination)
             self.shooter_component.spin_flywheels(
                 solution.top_speed, solution.bottom_speed
             )
         else:
-            self.wrist.tilt_to(math.radians(self.SHOOT_ANGLE))
+            self.wrist.tilt_to_shooter_FOR(math.radians(self.SHOOT_ANGLE))
             self.shooter_component.spin_flywheels(
                 self.TOP_SHOOT_SPEED, self.BOTTOM_SHOOT_SPEED
             )
@@ -71,7 +67,10 @@ class AlgaeShooter(StateMachine):
             self.next_state(self.shooting)
 
     @timed_state(duration=0.2, must_finish=True)
-    def shooting(self) -> None:
+    def shooting(self, initial_call: bool) -> None:
+        if initial_call:
+            self.injector_component.increment_segment()
+
         if self.use_ballistics:
             solution = self.ballistics_component.current_solution()
             self.shooter_component.spin_flywheels(
