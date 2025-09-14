@@ -6,21 +6,19 @@ from rev import (
     SparkMax,
     SparkMaxConfig,
 )
-from wpilib import DutyCycleEncoder
 from wpimath.controller import ArmFeedforward, PIDController
 from wpimath.trajectory import TrapezoidProfile
 
-from ids import DioChannel, SparkId
+from ids import SparkId
 from utilities.functions import clamp
 from utilities.rev import (
     configure_spark_ephemeral,
     configure_spark_reset_and_persist,
-    configure_through_bore_encoder,
 )
 
 
 class WristComponent:
-    ENCODER_ZERO_OFFSET = 3.46463832679
+    ENCODER_ZERO_OFFSET = 3.46463832679 / math.tau
     COM_DIFFERENCE = 0.54722467321
     MAXIMUM_DEPRESSION = math.radians(-112.0) + COM_DIFFERENCE
     MAXIMUM_ELEVATION = math.radians(0) + COM_DIFFERENCE
@@ -40,10 +38,6 @@ class WristComponent:
         self.wrist_COM_ligament = mech_root.appendLigament(
             "wrist_COM", length=0.5, angle=0, color=wpilib.Color8Bit(wpilib.Color.kBlue)
         )
-
-        self.wrist_encoder = DutyCycleEncoder(DioChannel.WRIST_ENCODER, math.tau, 0)
-        configure_through_bore_encoder(self.wrist_encoder)
-        self.wrist_encoder.setInverted(False)
 
         self.motor = SparkMax(SparkId.WRIST, SparkMax.MotorType.kBrushless)
 
@@ -67,10 +61,15 @@ class WristComponent:
         wrist_config.encoder.velocityConversionFactor(
             (1 / 60) * math.tau * (1 / self.wrist_gear_ratio)
         )
+        wrist_config.absoluteEncoder.positionConversionFactor(math.tau)
+        wrist_config.absoluteEncoder.velocityConversionFactor(math.tau * (1 / 60))
+        wrist_config.absoluteEncoder.zeroOffset(self.ENCODER_ZERO_OFFSET)
+        wrist_config.absoluteEncoder.inverted(False)
 
         configure_spark_reset_and_persist(self.motor, wrist_config)
 
         self.motor_encoder = self.motor.getEncoder()
+        self.wrist_encoder = self.motor.getAbsoluteEncoder()
 
         self.desired_state = TrapezoidProfile.State(WristComponent.NEUTRAL_ANGLE, 0.0)
         self.tracked_state = self.desired_state
@@ -107,12 +106,8 @@ class WristComponent:
         configure_spark_ephemeral(self.motor, wrist_config)
 
     @feedback
-    def raw_encoder(self) -> float:
-        return self.wrist_encoder.get()
-
-    @feedback
     def inclination(self) -> float:
-        return self.wrist_encoder.get() - self.ENCODER_ZERO_OFFSET
+        return self.wrist_encoder.getPosition()
 
     @feedback
     def inclination_deg(self) -> float:
