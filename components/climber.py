@@ -2,13 +2,12 @@ import math
 
 from magicbot import feedback, tunable
 from rev import LimitSwitchConfig, SparkMax, SparkMaxConfig
-from wpilib import DigitalInput, DutyCycleEncoder
+from wpilib import DigitalInput
 from wpimath.controller import PIDController
 
 from components.led_component import LightStrip
 from ids import DioChannel, SparkId
 from utilities.functions import constrain_angle
-from utilities.rev import configure_through_bore_encoder
 
 
 class ClimberComponent:
@@ -18,6 +17,7 @@ class ClimberComponent:
     winch_voltage = tunable(12.0)
 
     def __init__(self) -> None:
+        self.OFFSET = 5.4 / math.tau
         self.START_ANGLE = -30.0
         self.DEPLOY_ANGLE = 16.0
         self.RETRACT_ANGLE = -52.0
@@ -28,17 +28,20 @@ class ClimberComponent:
         self.desired_angle = math.radians(self.START_ANGLE)
         self.update_pid = True
 
-        self.encoder = DutyCycleEncoder(DioChannel.CLIMBER_ENCODER, math.tau, 5.4)
-        configure_through_bore_encoder(self.encoder)
-        self.encoder.setInverted(False)
-
         self.pid = PIDController(Kp=40, Ki=0, Kd=0)
         self.pid.enableContinuousInput(0.0, math.tau)
 
         self.motor = SparkMax(SparkId.CLIMBER, SparkMax.MotorType.kBrushless)
+        self.encoder = self.motor.getAbsoluteEncoder()
+
         motor_config = SparkMaxConfig()
         motor_config.inverted(True)
         motor_config.setIdleMode(SparkMaxConfig.IdleMode.kBrake)
+        motor_config.absoluteEncoder.setSparkMaxDataPortConfig()
+        motor_config.absoluteEncoder.positionConversionFactor(math.tau)
+        motor_config.absoluteEncoder.velocityConversionFactor(math.tau * 1 / 60)
+        motor_config.absoluteEncoder.inverted(False)
+        motor_config.absoluteEncoder.zeroOffset(self.OFFSET)
 
         motor_config.limitSwitch.reverseLimitSwitchType(
             LimitSwitchConfig.Type.kNormallyOpen
@@ -86,11 +89,11 @@ class ClimberComponent:
 
     @feedback
     def raw_encoder_val(self) -> float:
-        return self.encoder.get()
+        return self.encoder.getPosition()
 
     @feedback
     def encoder_angle(self) -> float:
-        return math.degrees(constrain_angle(self.encoder.get()))
+        return math.degrees(constrain_angle(self.encoder.getPosition()))
 
     @feedback
     def is_deployed(self) -> bool:
