@@ -176,8 +176,8 @@ class PhysicsEngine:
         self.intake_arm_motor = rev.SparkMaxSim(
             robot.intake_component.arm_motor, intake_arm_gearbox
         )
-        self.intake_arm_encoder_sim = DutyCycleEncoderSim(
-            robot.intake_component.encoder
+        self.intake_arm_encoder_sim = rev.SparkAbsoluteEncoderSim(
+            robot.intake_component.arm_motor
         )
         self.intake_arm = SparkArmSim(
             SingleJointedArmSim(
@@ -323,9 +323,7 @@ class PhysicsEngine:
 
         # Update intake arm simulation
         self.intake_arm.update(tm_diff)
-        self.intake_arm_encoder_sim.set(
-            self.intake_arm.mech_sim.getAngle() + IntakeComponent.ARM_ENCODER_OFFSET
-        )
+        self.intake_arm_encoder_sim.setPosition(self.intake_arm.mech_sim.getAngle())
 
         # Update wrist simulation
         self.wrist.update(tm_diff)

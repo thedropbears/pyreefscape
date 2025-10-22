@@ -8,7 +8,6 @@ from rev import (
     SparkMax,
     SparkMaxConfig,
 )
-from wpilib import DutyCycleEncoder
 from wpimath.controller import (
     LinearQuadraticRegulator_2_1,
 )
@@ -17,8 +16,7 @@ from wpimath.system import LinearSystemLoop_2_1_2
 from wpimath.system.plant import DCMotor, LinearSystemId
 from wpimath.trajectory import TrapezoidProfile
 
-from ids import DioChannel, SparkId, TalonId
-from utilities.rev import configure_through_bore_encoder
+from ids import SparkId, TalonId
 
 
 class IntakeComponent:
@@ -27,7 +25,7 @@ class IntakeComponent:
 
     # Offset is measured in the vertical position
     VERTICAL_ENCODER_VALUE = 4.610450
-    ARM_ENCODER_OFFSET = VERTICAL_ENCODER_VALUE - math.pi / 2.0
+    ARM_ENCODER_OFFSET = -(VERTICAL_ENCODER_VALUE - math.pi / 2.0) / math.tau
     DEPLOYED_ANGLE_LOWER = 3.392366 - ARM_ENCODER_OFFSET
     DEPLOYED_ANGLE_UPPER = 3.892366 - ARM_ENCODER_OFFSET
     RETRACTED_ANGLE = 4.610450 - ARM_ENCODER_OFFSET
@@ -44,9 +42,6 @@ class IntakeComponent:
         self.intake_motor.setInverted(True)
 
         self.arm_motor = SparkMax(SparkId.INTAKE_ARM, SparkMax.MotorType.kBrushless)
-        self.encoder = DutyCycleEncoder(DioChannel.INTAKE_ENCODER, math.tau, 0)
-        configure_through_bore_encoder(self.encoder)
-        self.encoder.setInverted(True)
 
         spark_config = SparkMaxConfig()
         spark_config.inverted(False)
@@ -56,6 +51,10 @@ class IntakeComponent:
         spark_config.encoder.velocityConversionFactor(
             (1 / 60) * math.tau * (1 / self.gear_ratio)
         )
+        spark_config.absoluteEncoder.positionConversionFactor(math.tau)
+        spark_config.absoluteEncoder.velocityConversionFactor(math.tau * (1 / 60))
+        spark_config.absoluteEncoder.zeroOffset(IntakeComponent.ARM_ENCODER_OFFSET)
+        spark_config.absoluteEncoder.inverted(True)
 
         self.arm_motor.configure(
             spark_config,
@@ -64,6 +63,7 @@ class IntakeComponent:
         )
 
         self.motor_encoder = self.arm_motor.getEncoder()
+        self.encoder = self.arm_motor.getAbsoluteEncoder()
 
         plant = LinearSystemId.singleJointedArmSystem(
             DCMotor.NEO(1), self.ARM_MOI, self.gear_ratio
@@ -129,10 +129,6 @@ class IntakeComponent:
         ):
             self._force_retract()
 
-    @feedback
-    def raw_encoder(self) -> float:
-        return self.encoder.get()
-
     def position_degrees(self) -> float:
         return math.degrees(self.position())
 
@@ -141,7 +137,7 @@ class IntakeComponent:
         return self.loop.xhat(0)
 
     def position_observation(self) -> float:
-        return self.encoder.get() - IntakeComponent.ARM_ENCODER_OFFSET
+        return self.encoder.getPosition()
 
     @feedback
     def position_observation_degrees(self) -> float:
