@@ -376,31 +376,9 @@ class MyRobot(magicbot.MagicRobot):
         if self.gamepad.getBackButtonPressed():
             self._display_auto_trajectory()
 
-        if (
-            self.starboard_vision.sees_multi_tag_target()
-            or self.port_vision.sees_multi_tag_target()
-        ):
-            selected_auto = self._automodes.chooser.getSelected()
-            if isinstance(selected_auto, AutoBase):
-                intended_start_pose = selected_auto.get_starting_pose()
-                current_pose = self.chassis.get_pose()
-                if intended_start_pose is not None:
-                    self.field.getObject("Intended start pos").setPose(
-                        intended_start_pose
-                    )
-                    relative_translation = intended_start_pose.relativeTo(
-                        current_pose
-                    ).translation()
-                    if relative_translation.norm() > self.START_POS_TOLERANCE:
-                        self.status_lights.invalid_start(
-                            relative_translation, self.START_POS_TOLERANCE
-                        )
-                    else:
-                        self.status_lights.rainbow()
-            else:
-                self.status_lights.no_auto()
-        else:
-            self.status_lights.vision_timeout()
+        # Technically this also happens after autonomous and the end of
+        # the match but close enough
+        self._set_prematch_status_lights()
 
         self.status_lights.execute()
 
@@ -412,6 +390,35 @@ class MyRobot(magicbot.MagicRobot):
         selected_auto = self._automodes.chooser.getSelected()
         if isinstance(selected_auto, AutoBase):
             selected_auto.display_trajectory()
+
+    def _set_prematch_status_lights(self) -> None:
+        if not (
+            self.starboard_vision.sees_multi_tag_target()
+            or self.port_vision.sees_multi_tag_target()
+        ):
+            self.status_lights.vision_timeout()
+            return
+
+        selected_auto = self._automodes.chooser.getSelected()
+        if not isinstance(selected_auto, AutoBase):
+            self.status_lights.no_auto()
+            return
+
+        intended_start_pose = selected_auto.get_starting_pose()
+        current_pose = self.chassis.get_pose()
+        if intended_start_pose is not None:
+            self.field.getObject("Intended start pos").setPose(intended_start_pose)
+            relative_translation = intended_start_pose.relativeTo(
+                current_pose
+            ).translation()
+            if relative_translation.norm() > self.START_POS_TOLERANCE:
+                self.status_lights.invalid_start(
+                    relative_translation, self.START_POS_TOLERANCE
+                )
+            else:
+                self.status_lights.rainbow()
+        else:
+            self.status_lights.no_auto()
 
     def robotPeriodic(self) -> None:
         super().robotPeriodic()
