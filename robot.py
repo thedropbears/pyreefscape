@@ -8,7 +8,7 @@ from magicbot import tunable
 from phoenix6.configs import Slot0Configs
 from wpimath.geometry import Rotation2d, Translation3d
 
-from autonomous.auto_base import AutoBase
+from autonomous.auto_base import AutoBase, AutoBaseNoBalls
 from components.ballistics import BallisticsComponent
 from components.chassis import ChassisComponent, SwerveConfig
 from components.climber import ClimberComponent
@@ -381,7 +381,7 @@ class MyRobot(magicbot.MagicRobot):
             or self.port_vision.sees_multi_tag_target()
         ):
             selected_auto = self._automodes.chooser.getSelected()
-            if isinstance(selected_auto, AutoBase):
+            if isinstance(selected_auto, (AutoBase | AutoBaseNoBalls)):
                 intended_start_pose = selected_auto.get_starting_pose()
                 current_pose = self.chassis.get_pose()
                 if intended_start_pose is not None:
@@ -410,7 +410,7 @@ class MyRobot(magicbot.MagicRobot):
 
     def _display_auto_trajectory(self) -> None:
         selected_auto = self._automodes.chooser.getSelected()
-        if isinstance(selected_auto, AutoBase):
+        if isinstance(selected_auto, (AutoBase | AutoBaseNoBalls)):
             selected_auto.display_trajectory()
 
     def robotPeriodic(self) -> None:
